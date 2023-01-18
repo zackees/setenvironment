@@ -5,12 +5,13 @@ This module provides functions for setting environment variables.
 # pylint: disable=import-outside-toplevel
 
 import sys
-from typing import Union
 from pathlib import Path
+from typing import Union
 
 
-def set_env_var(var_name: str, var_value: Union[str, Path], verbose=False):
+def set_env_var(var_name: str, var_value: Union[str, Path, int, float], verbose=False):
     """Sets an environment variable for the platform."""
+    var_value = str(var_value)
     if verbose:
         print(f"$$$ Setting {var_name} to {var_value}")
     if sys.platform == "win32":
@@ -33,6 +34,7 @@ def set_env_var(var_name: str, var_value: Union[str, Path], verbose=False):
 
 def add_env_path(new_path: Union[Path, str]):
     """Adds a path to the front of the PATH environment variable."""
+    new_path = str(new_path)
     if sys.platform == "win32":
         from .setenv_win32 import add_env_path as win32_add_env_path
 

@@ -5,8 +5,6 @@ Adds setenv for unix.
 # pylint: disable=fixme
 
 import os
-from pathlib import Path
-from typing import Union
 
 SOURCE_FILES = ["~/.bash_profile", "~/.bashrc", "~/.bash_login", "~/.profile"]
 TARGET_FILE = None
@@ -30,7 +28,7 @@ def get_path_file() -> str:
     raise FileNotFoundError("No file found that has export PATH")
 
 
-def set_env_var(name: str, value: Union[str, Path]) -> None:
+def set_env_var(name: str, value: str) -> None:
     """Sets an environment variable."""
     value = str(value)
     os.environ[name] = value
@@ -52,7 +50,7 @@ def set_env_var(name: str, value: Union[str, Path]) -> None:
             file.write(f"export {name}={value}\n")
 
 
-def add_env_path(path: Union[str, Path]) -> None:
+def add_env_path(path: str) -> None:
     """Adds a path to the PATH environment variable."""
     path = str(path)
     paths = os.environ["PATH"].split(":")

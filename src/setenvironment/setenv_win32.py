@@ -4,12 +4,10 @@ Dummy
 
 # pylint: disable=missing-function-docstring,import-outside-toplevel,invalid-name,unused-argument,protected-access,c-extension-no-member,consider-using-f-string,import-error
 
-import subprocess
-import re
 import os
-from typing import Optional, Union
-from pathlib import Path
-
+import re
+import subprocess
+from typing import Optional
 
 _DEFAULT_PRINT = print
 _REGISTERLY_VALUE_PATTERN = re.compile(r"    .+    (?P<type>.+)    (?P<value>.+)*")
@@ -111,7 +109,7 @@ def parse_paths(path_str: str) -> list[str]:
     return paths
 
 
-def add_env_path(new_path: Union[Path, str], verbose=False):
+def add_env_path(new_path: str, verbose=False):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
     if verbose:
@@ -127,7 +125,7 @@ def add_env_path(new_path: Union[Path, str], verbose=False):
     os.environ["PATH"] = new_path + sep + os.environ["PATH"]
 
 
-def set_env_var(var_name: str, var_value: Union[str, Path], verbose=True):
+def set_env_var(var_name: str, var_value: str, verbose=True):
     var_name = str(var_name)
     var_value = str(var_value)
     if verbose:
