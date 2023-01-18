@@ -9,6 +9,8 @@ import re
 import subprocess
 from typing import Optional
 
+import win32gui  # type: ignore
+
 _DEFAULT_PRINT = print
 _REGISTERLY_VALUE_PATTERN = re.compile(r"    .+    (?P<type>.+)    (?P<value>.+)*")
 _ENCODINGS = ["utf-8", "cp949", "ansi"]
@@ -81,7 +83,6 @@ def get_reg_env_path() -> str:
 def broadcast_changes():
     print("Broadcasting changes")
     os.system("refreshenv")
-    import win32gui  # type: ignore
 
     HWND_BROADCAST = 0xFFFF
     WM_SETTINGCHANGE = 0x001A
