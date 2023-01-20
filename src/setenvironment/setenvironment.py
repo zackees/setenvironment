@@ -20,15 +20,11 @@ def set_env_var(var_name: str, var_value: Union[str, Path, int, float], verbose=
         var_name = str(var_name)
         var_value = str(var_value)
         win32_set_env_var(var_name, var_value)
-    elif sys.platform == "darwin":
-        from .setenv_macos import set_env_var as macos_set_env_var
-
-        var_name = str(var_name)
-        var_value = str(var_value)
-        macos_set_env_var(var_name, var_value)
     else:
         from .setenv_unix import set_env_var as unix_set_env_var
 
+        var_name = str(var_name)
+        var_value = str(var_value)
         unix_set_env_var(var_name, var_value)
 
 
@@ -39,10 +35,6 @@ def add_env_path(new_path: Union[Path, str]):
         from .setenv_win32 import add_env_path as win32_add_env_path
 
         win32_add_env_path(new_path)
-    elif sys.platform == "darwin":
-        from .setenv_macos import add_env_path as macos_add_env_path
-
-        macos_add_env_path(new_path)
     else:
         from .setenv_unix import add_env_path as unix_add_env_path
 
