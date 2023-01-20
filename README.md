@@ -6,6 +6,8 @@
 
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
+Cross platform way to set the environment.
+
 ```bash
 > pip install setenvironment
 > setenviroment_set foo bar
@@ -20,7 +22,6 @@ set_env_var("FOO", "BAR")
 add_env_path("MYPATH")
 ```
 
-Cross platform way to set the environment.
 
 When setting variables this tool will:
   * unix/macos
@@ -30,6 +31,7 @@ When setting variables this tool will:
   * win32
     * writes to the registery
     * broadcasts the new value (cmd.exe ignores this though) to all available processes
+    * paths like /my/path will be converted to \\my\\path
 
 # Release Notes
   * 1.0.0: Initial release
