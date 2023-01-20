@@ -22,8 +22,14 @@ add_env_path("MYPATH")
 
 Cross platform way to set the environment.
 
-Note that windows does not propagate settings to open terminals as the HWND_BROADCAST, WM_SETTINGCHANGE
-event is ignored.
+When setting variables this tool will:
+  * unix/macos
+    * export the variable (so you can source the script)
+    * set the os.environ to the proper value
+    * write the value to the .bashrc file (make sure it's chmod +w)
+  * win32
+    * writes to the registery
+    * broadcasts the new value (cmd.exe ignores this though) to all available processes
 
 # Release Notes
   * TODO
