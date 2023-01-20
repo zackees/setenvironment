@@ -7,12 +7,11 @@
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
 ```bash
-pip install setenvironment
-setenviroment_set foo bar
-setenviroment_unset foo
-setenviroment_addpath /my/path
-setenviroment_removepath /my/path
-
+> pip install setenvironment
+> setenviroment_set foo bar
+> setenviroment_unset foo
+> setenviroment_addpath /my/path
+> setenviroment_removepath /my/path
 ```
 
 ```python
