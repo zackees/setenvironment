@@ -17,9 +17,11 @@ Cross platform way to set system environment variables and paths that are persis
 ```
 
 ```python
-from setenvironment import set_env_var, add_env_path
+from setenvironment import set_env_var, add_env_path, unset_env_var, remove_env_path
 set_env_var("FOO", "BAR")
 add_env_path("MYPATH")
+unset_env_var("FOO")
+remove_env_path("MYPATH")
 ```
 
 
