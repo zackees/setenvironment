@@ -6,7 +6,7 @@
 
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
-Cross platform way to set the environment.
+Cross platform way to set the environment variables and paths.
 
 ```bash
 > pip install setenvironment
