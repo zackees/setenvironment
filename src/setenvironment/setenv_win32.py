@@ -154,6 +154,8 @@ def unset_env_var(var_name: str, verbose=True):
 
 
 def remove_env_path(path_to_remove: str, verbose=False):
+    # convert / to \\ for Windows
+    path_to_remove = path_to_remove.replace("/", "\\")
     path_str = get_reg_env_path()
     if path_to_remove not in path_str:
         if verbose:
