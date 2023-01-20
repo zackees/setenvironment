@@ -47,9 +47,7 @@ def get_env_var(name: str) -> Optional[str]:
                 current_path = current_path.strip().replace("\r", "").replace("\n", "")
 
     elif completed_process.returncode == 1:
-        _print("environment variable PATH does not exist.")
-        _print(_try_decode(completed_process.stderr))
-        raise OSError("environment variable PATH does not exist.")
+        return None
     return current_path
 
 
