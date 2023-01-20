@@ -163,6 +163,7 @@ def remove_env_path(path_to_remove: str, verbose=False):
     paths = [path for path in paths if path != path_to_remove]
     sep = os.path.pathsep
     new_path_str = sep.join(paths)
+    os.environ["PATH"] = new_path_str
     set_env_var_cmd("PATH", new_path_str)
 
 
