@@ -42,17 +42,25 @@ class MainTester(unittest.TestCase):
 
     def test_cli_bindings(self) -> None:
         """Test the help option."""
-
         cmds = [
             "setenviroment_set",
             "setenviroment_unset",
             "setenviroment_addpath",
             "setenviroment_removepath",
         ]
-
         for cmd in cmds:
             help_cmd = f"{cmd} --help"
             self.assertEqual(0, os.system(help_cmd), f"Error while executing {help_cmd}")
+
+    @unittest.skipIf(sys.platform != "win32", "Windows only tests")
+    def test_env_set_win32(self) -> None:
+        """Test setting an environment variable."""
+        from setenvironment import setenv_win32
+
+        setenv_win32.set_env_var("SETENVIRONMENT_TEST", "test")
+        self.assertEqual(os.environ["SETENVIRONMENT_TEST"], "test")
+        setenv_win32.unset_env_var("SETENVIRONMENT_TEST")
+        self.assertNotIn("SETENVIRONMENT_TEST", os.environ)
 
 
 if __name__ == "__main__":

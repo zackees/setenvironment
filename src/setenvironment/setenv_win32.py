@@ -74,6 +74,16 @@ def set_env_var_cmd(name: str, value: str) -> None:
     assert value in get_env_var(name), f"Failed to set {name}={value}"  # type: ignore
 
 
+def unset_env_var_cmd(name: str) -> None:
+    completed_proc: subprocess.CompletedProcess = _command(
+        ["reg", "delete", "HKCU\\Environment", "/v", name, "/f"]
+    )
+    if completed_proc.returncode != 0:
+        _print(f"Error happened while unsetting {name}")
+        _print(_try_decode(completed_proc.stdout))
+    assert get_env_var(name) is None, f"Failed to unset {name}"  # type: ignore
+
+
 def get_reg_env_path() -> str:
     path = get_env_var("PATH")
     assert path is not None, "PATH was None, which was unexpected."
@@ -133,6 +143,16 @@ def set_env_var(var_name: str, var_value: str, verbose=True):
         print(f"$$$ Setting {var_name} to {var_value}")
     set_env_var_cmd(var_name, var_value)
     os.environ[var_name] = var_value
+
+
+def unset_env_var(var_name: str, verbose=True):
+    var_name = str(var_name)
+    if verbose:
+        print(f"$$$ Unsetting {var_name}")
+    if var_name == "PATH":
+        raise ValueError("Cannot unset PATH")
+    unset_env_var_cmd(var_name)
+    os.environ.pop(var_name)
 
 
 def main():
