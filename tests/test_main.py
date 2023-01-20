@@ -70,9 +70,9 @@ class MainTester(unittest.TestCase):
         from setenvironment import setenv_win32
 
         setenv_win32.add_env_path("/my/path")
-        self.assertIn("/my/path", os.environ["PATH"])
+        self.assertIn("\\my\\path", os.environ["PATH"])
         setenv_win32.remove_env_path("/my/path")
-        self.assertNotIn("/my/path", os.environ["PATH"])
+        self.assertNotIn("\\my\\path", os.environ["PATH"])
 
 
 if __name__ == "__main__":
