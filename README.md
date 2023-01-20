@@ -31,7 +31,7 @@ When setting variables this tool will:
   * win32
     * writes to the registery
     * broadcasts the new value (cmd.exe ignores this though) to all available processes
-    * paths like /my/path will be converted to \\my\\path
+    * paths like `/my/path` will be converted to `\\my\\path`
 
 # Release Notes
   * 1.0.0: Initial release
