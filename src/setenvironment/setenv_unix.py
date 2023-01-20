@@ -5,17 +5,7 @@ Adds setenv for unix.
 import os
 from functools import cache
 
-
-def read_utf8(path: str) -> str:
-    """Reads a file as utf-8."""
-    with open(path, encoding="utf-8", mode="r") as file:
-        return file.read()
-
-
-def write_utf8(path: str, text: str) -> None:
-    """Writes a file as utf-8."""
-    with open(path, encoding="utf-8", mode="w") as file:
-        file.write(text)
+from .util import read_utf8, write_utf8
 
 
 @cache
@@ -50,6 +40,26 @@ def set_env_var(name: str, value: str) -> None:
         write_utf8(settings_file, new_file)
 
 
+def unset_env_var(name: str) -> None:
+    """Unsets an environment variable."""
+    if name in os.environ:
+        del os.environ[name]
+    settings_file = get_target()
+    orig_file = read_utf8(settings_file)
+    lines = orig_file.splitlines()
+    found = False
+    for i, line in enumerate(lines):
+        if line.startswith("export " + name + "="):
+            lines[i] = None  # type: ignore
+            found = True
+            break
+    if found:
+        lines = [line for line in lines if line is not None]
+        new_file = "\n".join(lines)
+        if new_file != orig_file:
+            write_utf8(settings_file, new_file)
+
+
 def add_env_path(path: str) -> None:
     """Adds a path to the PATH environment variable."""
     # add path to os.environ['PATH'] if it does not exist
@@ -71,3 +81,26 @@ def add_env_path(path: str) -> None:
     new_file = "\n".join(lines)
     if new_file != orig_file:
         write_utf8(settings_file, new_file)
+
+
+def remove_env_path(path: str) -> None:
+    """Removes a path from the PATH environment variable."""
+    # remove path from os.environ['PATH'] if it does not exist
+    path_list = os.environ["PATH"].split(os.pathsep)
+    if path in path_list:
+        path_list.remove(path)
+        os.environ["PATH"] = os.pathsep.join(path_list)
+    settings_file = get_target()
+    orig_file = read_utf8(settings_file)
+    lines = orig_file.splitlines()
+    found = False
+    for i, line in enumerate(lines):
+        if line.startswith("export PATH=") and path in line:
+            lines[i] = None  # type: ignore
+            found = True
+            break
+    if found:
+        lines = [line for line in lines if line is not None]
+        new_file = "\n".join(lines)
+        if new_file != orig_file:
+            write_utf8(settings_file, new_file)

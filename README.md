@@ -8,6 +8,11 @@
 
 ```bash
 pip install setenvironment
+setenviroment_set foo bar
+setenviroment_unset foo
+setenviroment_addpath /my/path
+setenviroment_removepath /my/path
+
 ```
 
 ```python
@@ -20,8 +25,6 @@ Cross platform way to set the environment.
 
 Note that windows does not propagate settings to open terminals as the HWND_BROADCAST, WM_SETTINGCHANGE
 event is ignored.
-
-This lib is in alpha state and MacOS/Linux is not well supported at this time.
 
 # Release Notes
   * TODO

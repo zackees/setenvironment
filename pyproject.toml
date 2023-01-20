@@ -19,3 +19,7 @@ dependencies = [
 version = "0.0.2"
 
 [project.scripts]
+"setenviroment_set" = "setenvironment.cli:setenv"
+"setenviroment_unset" = "setenvironment.cli:unsetenv"
+"setenviroment_addpath" = "setenvironment.cli:addpath"
+"setenviroment_removepath" = "setenvironment.cli:removepath"
