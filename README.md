@@ -6,7 +6,7 @@
 
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
-Cross platform way to set environment variables and paths.
+Cross platform way to set system environment variables and paths that are persistant across reboots.
 
 ```bash
 > pip install setenvironment
