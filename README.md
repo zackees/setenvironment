@@ -32,4 +32,4 @@ When setting variables this tool will:
     * broadcasts the new value (cmd.exe ignores this though) to all available processes
 
 # Release Notes
-  * TODO
+  * 1.0.0: Initial release
