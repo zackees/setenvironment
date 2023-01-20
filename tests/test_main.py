@@ -50,7 +50,9 @@ class MainTester(unittest.TestCase):
         ]
         for cmd in cmds:
             help_cmd = f"{cmd} --help"
-            self.assertEqual(0, os.system(help_cmd), f"Error while executing {help_cmd}")
+            self.assertEqual(
+                0, os.system(help_cmd), f"Error while executing {help_cmd}"
+            )
 
     @unittest.skipIf(sys.platform != "win32", "Windows only tests")
     def test_env_set_win32(self) -> None:
@@ -61,6 +63,16 @@ class MainTester(unittest.TestCase):
         self.assertEqual(os.environ["SETENVIRONMENT_TEST"], "test")
         setenv_win32.unset_env_var("SETENVIRONMENT_TEST")
         self.assertNotIn("SETENVIRONMENT_TEST", os.environ)
+
+    @unittest.skipIf(sys.platform != "win32", "Windows only tests")
+    def test_env_set_paths_win32(self) -> None:
+        """Test setting an environment variable."""
+        from setenvironment import setenv_win32
+
+        setenv_win32.add_env_path("/my/path")
+        self.assertIn("/my/path", os.environ["PATH"])
+        setenv_win32.remove_env_path("/my/path")
+        self.assertNotIn("/my/path", os.environ["PATH"])
 
 
 if __name__ == "__main__":

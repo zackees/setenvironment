@@ -28,7 +28,9 @@ def unsetenv() -> int:
 
 def addpath() -> int:
     """Add a path to the PATH environment variable."""
-    parser = argparse.ArgumentParser(description="Add a path to the PATH environment variable")
+    parser = argparse.ArgumentParser(
+        description="Add a path to the PATH environment variable"
+    )
     parser.add_argument("path", help="The path to add")
     args = parser.parse_args()
     add_env_path(args.path)
@@ -37,7 +39,9 @@ def addpath() -> int:
 
 def removepath() -> int:
     """Remove a path from the PATH environment variable."""
-    parser = argparse.ArgumentParser(description="Remove a path from the PATH environment variable")
+    parser = argparse.ArgumentParser(
+        description="Remove a path from the PATH environment variable"
+    )
     parser.add_argument("path", help="The path to remove")
     args = parser.parse_args()
     remove_env_path(args.path)

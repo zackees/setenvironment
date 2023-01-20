@@ -60,9 +60,9 @@ def remove_env_path(path: Union[Path, str]):
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if sys.platform == "win32":
-        raise NotImplementedError(
-            "Removing paths from the PATH environment variable is not supported on Windows"
-        )
+        from .setenv_win32 import remove_env_path as win32_remove_env_path
+
+        win32_remove_env_path(path)
     else:
         from .setenv_unix import remove_env_path as unix_remove_env_path
 

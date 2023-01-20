@@ -153,6 +153,19 @@ def unset_env_var(var_name: str, verbose=True):
     os.environ.pop(var_name)
 
 
+def remove_env_path(path_to_remove: str, verbose=False):
+    path_str = get_reg_env_path()
+    if path_to_remove not in path_str:
+        if verbose:
+            print(f"{path_to_remove} not in PATH")
+        return
+    paths = parse_paths(path_str)
+    paths = [path for path in paths if path != path_to_remove]
+    sep = os.path.pathsep
+    new_path_str = sep.join(paths)
+    set_env_var_cmd("PATH", new_path_str)
+
+
 def main():
     set_env_var_cmd("FOO", "BAR")
     print(get_env_var("FOO"))
