@@ -11,6 +11,7 @@ Cross platform way to set system environment variables and paths that are persis
 ```bash
 > pip install setenvironment
 > setenviroment_set foo bar
+> setenvironment_get foo
 > setenviroment_unset foo
 > setenviroment_addpath /my/path
 > setenviroment_removepath /my/path
@@ -48,4 +49,5 @@ When setting variables this tool will:
     * paths like `/my/path` will be converted to `\\my\\path`
 
 # Release Notes
+  * 1.0.1: Adds setenvironment_get
   * 1.0.0: Initial release

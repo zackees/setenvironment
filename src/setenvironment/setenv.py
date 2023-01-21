@@ -18,9 +18,7 @@ def set_env_config_file(filepath: str = "~/.bashrc") -> None:
         unix_env_set_config_file(filepath)
 
 
-def set_env_var(
-    var_name: str, var_value: Union[str, Path, int, float], verbose=False
-) -> None:
+def set_env_var(var_name: str, var_value: Union[str, Path, int, float], verbose=False) -> None:
     """Sets an environment variable for the platform."""
     var_value = str(var_value)
     if verbose:
@@ -60,9 +58,10 @@ def unset_env_var(var_name: str, verbose=False) -> None:
     if verbose:
         print(f"$$$ Unsetting {var_name}")
     if sys.platform == "win32":
-        raise NotImplementedError(
-            "Unsetting environment variables is not supported on Windows"
-        )
+        from .setenv_win32 import unset_env_var as win32_unset_env_var
+
+        var_name = str(var_name)
+        win32_unset_env_var(var_name)
     else:
         from .setenv_unix import unset_env_var as unix_unset_env_var
 
