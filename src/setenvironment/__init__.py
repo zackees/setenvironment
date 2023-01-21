@@ -4,9 +4,10 @@ setenvironment
 
 
 from .setenv import (
-    set_env_var,
     add_env_path,
+    get_env_var,
     remove_env_path,
     set_env_config_file,
+    set_env_var,
     unset_env_var,
 )
