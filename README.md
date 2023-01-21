@@ -50,6 +50,7 @@ When setting variables this tool will:
     * paths like `/my/path` will be converted to `\\my\\path`
 
 # Release Notes
+  * 1.0.5: Another attempt to fix readme
   * 1.0.4: Another attempt to fix readme
   * 1.0.3: Fix relative links in badges to be absolute when uploaded to pypi
   * 1.0.2: Fix badges on pypi
