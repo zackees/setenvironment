@@ -30,3 +30,6 @@ jobs:
     - name: Run Test
       run: |
         pytest tests
+    - name: Run Post install
+      run: |
+        cd tests && python post_install.py

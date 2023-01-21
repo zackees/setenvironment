@@ -2,11 +2,11 @@
 This module provides functions for setting environment variables.
 """
 
-# pylint: disable=import-outside-toplevel,no-else-raise,no-else-return
+# pylint: disable=import-outside-toplevel,no-else-raise,no-else-return,too-many-function-args
 
 import sys
 from pathlib import Path
-from typing import Union, Optional
+from typing import Optional, Union
 
 
 def set_env_config_file(filepath: str = "~/.bashrc") -> None:
@@ -18,7 +18,9 @@ def set_env_config_file(filepath: str = "~/.bashrc") -> None:
         unix_env_set_config_file(filepath)
 
 
-def set_env_var(var_name: str, var_value: Union[str, Path, int, float], verbose=False) -> None:
+def set_env_var(
+    var_name: str, var_value: Union[str, Path, int, float], verbose=False
+) -> None:
     """Sets an environment variable for the platform."""
     var_value = str(var_value)
     if verbose:

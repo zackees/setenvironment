@@ -2,11 +2,12 @@
 Dummy
 """
 
-# pylint: disable=missing-function-docstring,import-outside-toplevel,invalid-name,unused-argument,protected-access,c-extension-no-member,consider-using-f-string,import-error
+# pylint: disable=missing-function-docstring,import-outside-toplevel,invalid-name,unused-argument,protected-access,c-extension-no-member,consider-using-f-string,import-error,too-many-function-args
 
 import os
 import re
 import subprocess
+import winreg  # type: ignore
 from typing import Optional
 
 import win32gui  # type: ignore
@@ -134,7 +135,29 @@ def add_env_path(new_path: str, verbose=False):
     os.environ["PATH"] = new_path + sep + os.environ["PATH"]
 
 
-def set_env_var(var_name: str, var_value: str, verbose=True):
+def set_env_var(path):
+    # Open the registry key for the system-wide environment variables
+    key = winreg.OpenKey(
+        winreg.HKEY_LOCAL_MACHINE,
+        r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+        0,
+        winreg.KEY_ALL_ACCESS | winreg.KEY_WOW64_64KEY,
+    )
+
+    # Get the current value of the PATH environment variable
+    current_path = winreg.QueryValueEx(key, "PATH")[0]
+
+    # Append the new path to the current value
+    new_path = current_path + ";" + path
+
+    # Set the new value for the PATH environment variable
+    winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
+
+    # Close the registry key
+    winreg.CloseKey(key)
+
+
+def set_env_var2(var_name: str, var_value: str, verbose=True):
     var_name = str(var_name)
     var_value = str(var_value)
     if verbose:
