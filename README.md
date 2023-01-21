@@ -6,7 +6,11 @@
 
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
-Cross platform way to set system environment variables and paths that are persistant across reboots.
+Finally, a cross platform way to set system environment variables and paths that are persistant across reboots.
+
+Works with Windows, MacOS and Linux.
+
+## Command Line API
 
 ```bash
 > pip install setenvironment
@@ -21,6 +25,8 @@ Cross platform way to set system environment variables and paths that are persis
 > export SETENVIRONMENT_CONFIG_FILE = ~/.bash_profile
 > setenviroment_set foo bar
 ```
+
+## Python API
 
 ```python
 from setenvironment import set_env_var, add_env_path, unset_env_var, remove_env_path, set_config_file
@@ -38,16 +44,22 @@ unset_env_var("FOO")
 remove_env_path("MYPATH")
 ```
 
+## Windows
 
-When setting variables this tool will:
-  * unix/macos
-    * export the variable (so you can source the script)
-    * set the os.environ to the proper value
-    * write the value to the .bashrc file (make sure it's chmod +w)
-  * win32
-    * writes to the registery
-    * broadcasts the new value (cmd.exe ignores this though) to all available processes
-    * paths like `/my/path` will be converted to `\\my\\path`
+Paths are set in the registery and the current os.environ
+
+  * writes to the registery
+  * broadcasts the new value (cmd.exe ignores this though) to all available processes
+  * paths like `/my/path` will be converted to `\\my\\path`
+
+## MacOS / Linux
+
+Paths are set in the `~/.bashrc` file or you can override it, see `set_config_file(...)` and the command line arguments if using the command line api.
+
+  * export the variable (so you can source the script)
+  * set the os.environ to the proper value
+  * write the value to the .bashrc file (make sure it's chmod +w)
+
 
 # Release Notes
   * 1.0.6: Fixes readme
