@@ -7,7 +7,6 @@ Dummy
 import os
 import re
 import subprocess
-import winreg  # type: ignore
 from typing import Optional
 
 import win32gui  # type: ignore
