@@ -6,10 +6,10 @@ This module provides functions for setting environment variables.
 
 import sys
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 
-def set_env_config_file(filepath: str = "~/.bashrc"):
+def set_env_config_file(filepath: str = "~/.bashrc") -> None:
     """Sets the config file for the platform."""
     # Only works for Unix/MacOS
     if sys.platform != "win32":
@@ -18,7 +18,9 @@ def set_env_config_file(filepath: str = "~/.bashrc"):
         unix_env_set_config_file(filepath)
 
 
-def set_env_var(var_name: str, var_value: Union[str, Path, int, float], verbose=False):
+def set_env_var(
+    var_name: str, var_value: Union[str, Path, int, float], verbose=False
+) -> None:
     """Sets an environment variable for the platform."""
     var_value = str(var_value)
     if verbose:
@@ -37,7 +39,7 @@ def set_env_var(var_name: str, var_value: Union[str, Path, int, float], verbose=
         unix_set_env_var(var_name, var_value)
 
 
-def get_env_var(var_name: str, verbose=False):
+def get_env_var(var_name: str, verbose=False) -> Optional[str]:
     """Gets an environment variable for the platform."""
     if verbose:
         print(f"$$$ Getting {var_name}")
@@ -53,12 +55,14 @@ def get_env_var(var_name: str, verbose=False):
         return unix_get_env_var(var_name)
 
 
-def unset_env_var(var_name: str, verbose=False):
+def unset_env_var(var_name: str, verbose=False) -> None:
     """Unsets an environment variable for the platform."""
     if verbose:
         print(f"$$$ Unsetting {var_name}")
     if sys.platform == "win32":
-        raise NotImplementedError("Unsetting environment variables is not supported on Windows")
+        raise NotImplementedError(
+            "Unsetting environment variables is not supported on Windows"
+        )
     else:
         from .setenv_unix import unset_env_var as unix_unset_env_var
 
@@ -66,7 +70,7 @@ def unset_env_var(var_name: str, verbose=False):
         unix_unset_env_var(var_name)
 
 
-def add_env_path(new_path: Union[Path, str]):
+def add_env_path(new_path: Union[Path, str]) -> None:
     """Adds a path to the front of the PATH environment variable."""
     new_path = str(new_path)
     if sys.platform == "win32":
@@ -79,7 +83,7 @@ def add_env_path(new_path: Union[Path, str]):
         unix_add_env_path(new_path)
 
 
-def remove_env_path(path: Union[Path, str]):
+def remove_env_path(path: Union[Path, str]) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if sys.platform == "win32":

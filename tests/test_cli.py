@@ -20,13 +20,14 @@ class MainTester(unittest.TestCase):
         """Test the help option."""
         cmds = [
             "setenvironment_set",
+            "setenvironment_get",
             "setenvironment_unset",
             "setenvironment_addpath",
             "setenvironment_removepath",
         ]
         for cmd in cmds:
             help_cmd = f"{cmd} --help"
-            self.assertEqual(0, os.system(help_cmd), f"Error while executing {help_cmd}")
+            subprocess.check_output(help_cmd, shell=True)
 
     def test_cli_set(self) -> None:
         """Test the set command."""
@@ -41,7 +42,10 @@ class MainTester(unittest.TestCase):
         )
         self.assertEqual(value, int(random_int))
         os.system(f"setenvironment_unset SETENVIRONMENT_TEST --config-file {BASHRC}")
-        assert "SETENVIRONMENT_TEST" not in os.environ
+        rtn = os.system(
+            f"setenvironment_get SETENVIRONMENT_TEST --config-file {BASHRC}"
+        )
+        self.assertNotEqual(0, rtn)
 
 
 if __name__ == "__main__":
