@@ -14,10 +14,22 @@ Cross platform way to set system environment variables and paths that are persis
 > setenviroment_unset foo
 > setenviroment_addpath /my/path
 > setenviroment_removepath /my/path
+# or use custom config file
+> setenvironment_set foo bar --config-file ~/.bash_profile
+# or set using an environment setting
+> export SETENVIRONMENT_CONFIG_FILE = ~/.bash_profile
+> setenviroment_set foo bar
 ```
 
 ```python
-from setenvironment import set_env_var, add_env_path, unset_env_var, remove_env_path
+from setenvironment import set_env_var, add_env_path, unset_env_var, remove_env_path, set_config_file
+# by default, ~/.bashrc is used
+set_env_var("FOO", "BAR")
+add_env_path("MYPATH")
+unset_env_var("FOO")
+remove_env_path("MYPATH")
+# use ~/.bash_profile instead (no op on Windows)
+set_config_file("~/.bash_profile")
 set_env_var("FOO", "BAR")
 add_env_path("MYPATH")
 unset_env_var("FOO")

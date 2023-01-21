@@ -3,19 +3,25 @@ Adds setenv for unix.
 """
 
 import os
-from functools import cache
 
 from .util import read_utf8, write_utf8
 
 
-@cache
 def get_target() -> str:
     """Returns the target file."""
+    if os.environ.get("SETENVIRONMENT_CONFIG_FILE"):
+        config_file = os.environ["SETENVIRONMENT_CONFIG_FILE"]
+        return os.path.expanduser(config_file)
     # Get the dictionary attached to
     bashrc = os.path.expanduser("~/.bashrc")
     if ".bash_profile" not in read_utf8(bashrc):
         return bashrc
     return os.path.expanduser("~/.bash_profile")
+
+
+def set_env_config_file(filepath: str) -> None:
+    """Sets the target file."""
+    os.environ["SETENVIRONMENT_CONFIG_FILE"] = filepath
 
 
 def set_env_var(name: str, value: str) -> None:
