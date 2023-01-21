@@ -16,7 +16,7 @@ dependencies = [
 ]
 # Change this with the version number bump.
 # Also make the change in zcmds/version.py
-version = "1.0.1"
+version = "1.0.2"
 
 [project.scripts]
 "setenvironment_set" = "setenvironment.cli:setenv"

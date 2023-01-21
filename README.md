@@ -50,5 +50,6 @@ When setting variables this tool will:
     * paths like `/my/path` will be converted to `\\my\\path`
 
 # Release Notes
+  * 1.0.2: Fix badges on pypi
   * 1.0.1: Adds setenvironment_get
   * 1.0.0: Initial release
