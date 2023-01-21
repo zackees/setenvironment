@@ -26,6 +26,7 @@ Cross platform way to set system environment variables and paths that are persis
 from setenvironment import set_env_var, add_env_path, unset_env_var, remove_env_path, set_config_file
 # by default, ~/.bashrc is used
 set_env_var("FOO", "BAR")
+get_env_var("FOO") # returns BAR
 add_env_path("MYPATH")
 unset_env_var("FOO")
 remove_env_path("MYPATH")
