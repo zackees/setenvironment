@@ -23,4 +23,9 @@ def get_readme() -> str:
 
 
 if __name__ == "__main__":
-    setuptools.setup(name="setenvironment", long_description=get_readme(), url=URL)
+    setuptools.setup(
+        name="setenvironment",
+        long_description=get_readme(),
+        long_description_content_type="text/markdown",
+        url=URL,
+    )
