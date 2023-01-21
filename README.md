@@ -1,10 +1,10 @@
 # setenvironment
 
-[![MacOS_Tests](https://github.com/zackees/setenvironment/actions/workflows/push_macos.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/push_macos.yml)
-[![Win_Tests](https://github.com/zackees/setenvironment/actions/workflows/push_win.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/push_win.yml)
-[![Ubuntu_Tests](https://github.com/zackees/setenvironment/actions/workflows/push_ubuntu.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/push_ubuntu.yml)
+[![Actions Status](../../workflows/MacOS_Tests/badge.svg)](../../actions/workflows/push_macos.yml)
+[![Actions Status](../../workflows/Win_Tests/badge.svg)](../../actions/workflows/push_win.yml)
+[![Actions Status](../../workflows/Ubuntu_Tests/badge.svg)](../../actions/workflows/push_ubuntu.yml)
 
-[![Linting](https://github.com/zackees/setenvironment/actions/workflows/lint.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/lint.yml)
+[![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
 Cross platform way to set system environment variables and paths that are persistant across reboots.
 
@@ -50,6 +50,7 @@ When setting variables this tool will:
     * paths like `/my/path` will be converted to `\\my\\path`
 
 # Release Notes
+  * 1.0.3: Fix relative links in badges to be absolute when uploaded to pypi
   * 1.0.2: Fix badges on pypi
   * 1.0.1: Adds setenvironment_get
   * 1.0.0: Initial release
