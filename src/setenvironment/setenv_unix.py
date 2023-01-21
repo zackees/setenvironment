@@ -3,6 +3,7 @@ Adds setenv for unix.
 """
 
 import os
+from typing import Optional
 
 from .util import read_utf8, write_utf8
 
@@ -44,6 +45,15 @@ def set_env_var(name: str, value: str) -> None:
     new_file = "\n".join(lines)
     if new_file != orig_file:
         write_utf8(settings_file, new_file)
+
+
+def get_env_var(name: str) -> Optional[str]:
+    """Gets an environment variable."""
+    filelines = read_utf8(get_target()).splitlines()
+    for line in filelines:
+        if line.startswith("export " + name + "="):
+            return line.split("=")[1].strip()
+    return None
 
 
 def unset_env_var(name: str) -> None:

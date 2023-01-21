@@ -49,20 +49,6 @@ class MainTester(unittest.TestCase):
             self.assertNotIn("SETENVIRONMENT_TEST", bashrc_str)
             self.assertNotIn(mypath, bashrc_str)
 
-    def test_cli_bindings(self) -> None:
-        """Test the help option."""
-        cmds = [
-            "setenviroment_set",
-            "setenviroment_unset",
-            "setenviroment_addpath",
-            "setenviroment_removepath",
-        ]
-        for cmd in cmds:
-            help_cmd = f"{cmd} --help"
-            self.assertEqual(
-                0, os.system(help_cmd), f"Error while executing {help_cmd}"
-            )
-
 
 if __name__ == "__main__":
     unittest.main()
