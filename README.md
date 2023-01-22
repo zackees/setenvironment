@@ -10,22 +10,6 @@ Finally, a cross platform way to set system environment variables and paths that
 
 Works with Windows, MacOS and Linux.
 
-## Command Line API
-
-```bash
-> pip install setenvironment
-> setenviroment_set foo bar
-> setenvironment_get foo
-> setenviroment_unset foo
-> setenviroment_addpath /my/path
-> setenviroment_removepath /my/path
-# or use custom config file
-> setenvironment_set foo bar --config-file ~/.bash_profile
-# or set using an environment setting
-> export SETENVIRONMENT_CONFIG_FILE = ~/.bash_profile
-> setenviroment_set foo bar
-```
-
 ## Python API
 
 ```python
@@ -43,6 +27,23 @@ add_env_path("MYPATH")
 unset_env_var("FOO")
 remove_env_path("MYPATH")
 ```
+
+## Command Line API
+
+```bash
+> pip install setenvironment
+> setenviroment_set foo bar
+> setenvironment_get foo
+> setenviroment_unset foo
+> setenviroment_addpath /my/path
+> setenviroment_removepath /my/path
+# or use custom config file
+> setenvironment_set foo bar --config-file ~/.bash_profile
+# or set using an environment setting
+> export SETENVIRONMENT_CONFIG_FILE = ~/.bash_profile
+> setenviroment_set foo bar
+```
+
 
 ## Windows
 
