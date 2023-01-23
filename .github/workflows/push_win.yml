@@ -27,9 +27,11 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install .
         python -m pip install pytest
-    - name: Run Test
-      run: |
-        pytest tests
+    - name: Run Setenv Test
+      run: pytest tests/test_setenv.py
+    - name: Run Addpath Test
+      run: pytest tests/test_setpath.py
+    - name: Run CLI Test
+      run: pytest tests/test_cli.py
     - name: Run Post install
-      run: |
-        cd tests && python post_install.py
+      run: python tests/post_install.py
