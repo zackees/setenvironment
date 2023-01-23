@@ -72,6 +72,7 @@ def set_env_var_cmd(name: str, value: str) -> None:
         _print(f"Error happened while setting {name}={value}")
         _print(_try_decode(completed_proc.stdout))
     assert value in get_env_var(name), f"Failed to set {name}={value}"  # type: ignore
+    broadcast_changes()
 
 
 def unset_env_var_cmd(name: str) -> None:
@@ -120,22 +121,6 @@ def parse_paths(path_str: str) -> list[str]:
     return paths
 
 
-def add_env_path2(new_path: str, verbose=False):
-    new_path = str(new_path)
-    new_path = new_path.replace("/", "\\")
-    if verbose:
-        print(f"&&& Adding {new_path} to Windows PATH")
-    prev_paths = parse_paths(get_reg_env_path())
-    if new_path in prev_paths:
-        print(f"{new_path} already in PATH")
-        return
-    sep = os.path.pathsep
-    prev_path_str = sep.join(prev_paths)
-    new_path_str = f"{str(new_path)}{sep}{prev_path_str}"
-    set_env_var_cmd("PATH", new_path_str)
-    os.environ["PATH"] = new_path + sep + os.environ["PATH"]
-
-
 def set_env_path_registry(new_path: str, verbose=False):
     if verbose:
         print(f"&&& Setting {new_path} to Windows PATH")
@@ -148,11 +133,12 @@ def set_env_path_registry(new_path: str, verbose=False):
         ) as key:
             # Set the new value of the Path key
             winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
+            broadcast_changes()
     except Exception:  # pylint: disable=broad-except
         print("Failed to add path to registry")
 
 
-def get_env_path_registry(verbose=True) -> str:
+def get_env_path_registry(verbose=False) -> str:
     if verbose:
         print("&&& Getting Windows PATH")
 
