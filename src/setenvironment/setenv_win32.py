@@ -153,7 +153,7 @@ def set_env_path2(new_path: str, verbose=False):
     os.environ["PATH"] = new_path + os.path.pathsep + os.environ["PATH"]
 
 
-def add_env_path(new_path: str, verbose=False):
+def add_env_path(new_path: str, verbose=True):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
     if verbose:
@@ -191,7 +191,7 @@ def remove_env_path(path_to_remove: str, verbose=True):
     path_str = get_reg_env_path()
     if path_to_remove not in path_str:
         if verbose:
-            print(f"{path_to_remove} not in PATH")
+            print(f"{path_to_remove} not in PATH which is\n{path_str}")
         return
     paths = parse_paths(path_str)
     paths = [path for path in paths if path != path_to_remove]
