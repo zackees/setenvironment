@@ -180,6 +180,7 @@ def add_env_path(new_path: str, verbose=True):
     current_path.insert(0, new_path)
     current_path_str = os.path.pathsep.join(current_path)
     set_env_path2(current_path_str, verbose=verbose)
+    os.environ["PATH"] = current_path_str
 
 
 def set_env_var(var_name: str, var_value: str, verbose=True):
