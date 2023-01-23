@@ -167,15 +167,7 @@ def get_env_path_registry(verbose=True) -> str:
         return path
 
 
-def check_duplicates(paths: list[str]):
-    found_paths: set(str) = set()
-    for path in paths:
-        if path in found_paths:
-            print(f"Duplicate path: {path}")
-        found_paths.add(path)
-
-
-def add_env_path(new_path: str, verbose=True):
+def add_env_path(new_path: str, verbose=False):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
     if verbose:
@@ -183,15 +175,14 @@ def add_env_path(new_path: str, verbose=True):
     current_path = parse_paths(get_env_path_registry())
     if verbose:
         print(f"Current PATH: {current_path}")
-    check_duplicates(current_path)
-    if new_path in current_path:
+    if verbose and new_path in current_path:
         print(f"{new_path} already in PATH")
     else:
         current_path.insert(0, new_path)
         current_path_str = os.path.pathsep.join(current_path)
-        set_env_path_registry(current_path_str, verbose=verbose)
+        set_env_path_registry(current_path_str, verbose=False)
     os_environ_paths = parse_paths(os.environ["PATH"])
-    if new_path in os_environ_paths:
+    if verbose and new_path in os_environ_paths:
         print(f"{new_path} already in os.environ['PATH']")
     else:
         os_environ_paths.insert(0, new_path)
@@ -199,7 +190,7 @@ def add_env_path(new_path: str, verbose=True):
         os.environ["PATH"] = new_env_path_str
 
 
-def set_env_var(var_name: str, var_value: str, verbose=True):
+def set_env_var(var_name: str, var_value: str, verbose=False):
     var_name = str(var_name)
     var_value = str(var_value)
     if verbose:
@@ -208,7 +199,7 @@ def set_env_var(var_name: str, var_value: str, verbose=True):
     os.environ[var_name] = var_value
 
 
-def unset_env_var(var_name: str, verbose=True):
+def unset_env_var(var_name: str, verbose=False):
     var_name = str(var_name)
     if verbose:
         print(f"$$$ Unsetting {var_name}")
@@ -218,7 +209,7 @@ def unset_env_var(var_name: str, verbose=True):
     os.environ.pop(var_name)
 
 
-def remove_env_path(path_to_remove: str, verbose=True):
+def remove_env_path(path_to_remove: str, verbose=False):
     # convert / to \\ for Windows
     path_to_remove = path_to_remove.replace("/", "\\")
     path_str = get_env_path_registry()
