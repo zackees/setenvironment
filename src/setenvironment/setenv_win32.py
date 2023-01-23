@@ -173,12 +173,13 @@ def add_env_path(new_path: str, verbose=True):
     new_path = new_path.replace("/", "\\")
     if verbose:
         print(f"&&& Adding {new_path} to Windows PATH")
-    prev_paths = parse_paths(get_env_path())
-    if new_path in prev_paths:
+    current_path = parse_paths(get_env_path())
+    if new_path in current_path:
         print(f"{new_path} already in PATH")
         return
-    path = new_path + os.path.pathsep + os.path.pathsep.join(prev_paths)
-    set_env_path2(path, verbose=verbose)
+    current_path.insert(0, new_path)
+    current_path_str = os.path.pathsep.join(current_path)
+    set_env_path2(current_path_str, verbose=verbose)
 
 
 def set_env_var(var_name: str, var_value: str, verbose=True):
