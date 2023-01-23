@@ -231,6 +231,10 @@ def remove_env_path(path_to_remove: str, verbose=True):
     sep = os.path.pathsep
     new_path_str = sep.join(paths)
     set_env_path_registry(new_path_str, verbose=verbose)
+    os_environ_paths = parse_paths(os.environ["PATH"])
+    os_environ_paths = [path for path in os_environ_paths if path != path_to_remove]
+    new_env_path_str = sep.join(os_environ_paths)
+    os.environ["PATH"] = new_env_path_str
 
 
 def main():
