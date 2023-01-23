@@ -147,7 +147,7 @@ def set_env_path2(new_path: str, verbose=False):
             winreg.KEY_ALL_ACCESS,
         ) as key:
             # Set the new value of the Path key
-            winreg.SetValueEx(key, "Path", 0, winreg.REG_EXPAND_SZ, new_path)
+            winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
     except Exception:  # pylint: disable=broad-except
         print("Failed to add path to registry")
     os.environ["PATH"] = new_path + os.path.pathsep + os.environ["PATH"]
