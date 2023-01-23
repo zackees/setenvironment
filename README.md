@@ -63,6 +63,7 @@ Paths are set in the `~/.bashrc` file or you can override it, see `set_config_fi
 
 
 # Release Notes
+  * 1.0.9: Win32: Improve expansion of keys, remove duplicates found in os.environ['PATH']
   * 1.0.8: Adds fix for windows expansion of keys
   * 1.0.7: Adds get_env_var
   * 1.0.6: Fixes readme
