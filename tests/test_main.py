@@ -4,10 +4,10 @@ Test the main module
 
 # pylint: disable=fixme,import-outside-toplevel
 
-import sys
 import os
-import unittest
 import random
+import sys
+import unittest
 
 from setenvironment.util import read_utf8
 
@@ -17,13 +17,13 @@ HERE = os.path.dirname(__file__)
 class MainTester(unittest.TestCase):
     """Tester for the main module."""
 
-    def test_set_env_unix_macos(self) -> None:
+    def test_setenv(self) -> None:
         """Test setting an environment variable."""
         from setenvironment import (
-            set_env_var,
             add_env_path,
-            set_env_config_file,
             remove_env_path,
+            set_env_config_file,
+            set_env_var,
             unset_env_var,
         )
 

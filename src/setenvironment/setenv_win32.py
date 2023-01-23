@@ -168,6 +168,14 @@ def get_env_path(verbose=True) -> str:
         return path
 
 
+def check_duplicates(paths: list[str]):
+    found_paths: set(str) = set()
+    for path in paths:
+        if path in found_paths:
+            print(f"Duplicate path: {path}")
+        found_paths.add(path)
+
+
 def add_env_path(new_path: str, verbose=True):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
@@ -176,6 +184,7 @@ def add_env_path(new_path: str, verbose=True):
     current_path = parse_paths(get_env_path())
     if verbose:
         print(f"Current PATH: {current_path}")
+    check_duplicates(current_path)
     if new_path in current_path:
         print(f"{new_path} already in PATH")
         return
