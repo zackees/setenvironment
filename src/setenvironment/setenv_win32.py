@@ -177,7 +177,7 @@ def add_env_path(new_path: str, verbose=True):
     if new_path in prev_paths:
         print(f"{new_path} already in PATH")
         return
-    path = new_path + os.path.pathsep + prev_paths
+    path = new_path + os.path.pathsep + os.path.pathsep.join(prev_paths)
     set_env_path2(path, verbose=verbose)
 
 
