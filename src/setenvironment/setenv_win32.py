@@ -136,7 +136,7 @@ def add_env_path2(new_path: str, verbose=False):
     os.environ["PATH"] = new_path + sep + os.environ["PATH"]
 
 
-def set_env_path2(new_path: str, verbose=False):
+def set_env_path(new_path: str, verbose=False):
     if verbose:
         print(f"&&& Setting {new_path} to Windows PATH")
     try:
@@ -172,15 +172,16 @@ def add_env_path(new_path: str, verbose=True):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
     if verbose:
-        print(f"&&& Adding {new_path} to Windows PATH")
+        print(f"&&& Adding {new_path} to Windows PATH:")
     current_path = parse_paths(get_env_path())
+    if verbose:
+        print(f"Current PATH: {current_path}")
     if new_path in current_path:
         print(f"{new_path} already in PATH")
         return
     current_path.insert(0, new_path)
     current_path_str = os.path.pathsep.join(current_path)
-    set_env_path2(current_path_str, verbose=verbose)
-    os.environ["PATH"] = current_path_str
+    set_env_path(current_path_str, verbose=verbose)
 
 
 def set_env_var(var_name: str, var_value: str, verbose=True):
@@ -214,7 +215,7 @@ def remove_env_path(path_to_remove: str, verbose=True):
     paths = [path for path in paths if path != path_to_remove]
     sep = os.path.pathsep
     new_path_str = sep.join(paths)
-    set_env_path2(new_path_str, verbose=verbose)
+    set_env_path(new_path_str, verbose=verbose)
 
 
 def main():
