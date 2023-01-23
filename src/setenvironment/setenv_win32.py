@@ -153,12 +153,27 @@ def set_env_path2(new_path: str, verbose=False):
     os.environ["PATH"] = new_path + os.path.pathsep + os.environ["PATH"]
 
 
+def get_env_path(verbose=True) -> str:
+    if verbose:
+        print("&&& Getting Windows PATH")
+
+    with winreg.OpenKey(
+        winreg.HKEY_LOCAL_MACHINE,
+        "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+        0,
+        winreg.KEY_READ,
+    ) as key:
+        # Get the value of the Path key
+        path = winreg.QueryValueEx(key, "PATH")[0]
+        return path
+
+
 def add_env_path(new_path: str, verbose=True):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
     if verbose:
         print(f"&&& Adding {new_path} to Windows PATH")
-    prev_paths = parse_paths(get_reg_env_path())
+    prev_paths = parse_paths(get_env_path())
     if new_path in prev_paths:
         print(f"{new_path} already in PATH")
         return
@@ -188,7 +203,7 @@ def unset_env_var(var_name: str, verbose=True):
 def remove_env_path(path_to_remove: str, verbose=True):
     # convert / to \\ for Windows
     path_to_remove = path_to_remove.replace("/", "\\")
-    path_str = get_reg_env_path()
+    path_str = get_env_path()
     if path_to_remove not in path_str:
         if verbose:
             print(f"{path_to_remove} not in PATH which is\n{path_str}")
