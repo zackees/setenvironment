@@ -5,15 +5,15 @@ Test the main module
 # pylint: disable=fixme,import-outside-toplevel
 
 import os
-import unittest
 import random
 import subprocess
+import unittest
 
 HERE = os.path.dirname(__file__)
 BASHRC = os.path.join(HERE, "unix.mybashrc")
 
 
-class MainTester(unittest.TestCase):
+class CliTester(unittest.TestCase):
     """Tester for the main module."""
 
     def test_cli_bindings(self) -> None:
@@ -42,9 +42,7 @@ class MainTester(unittest.TestCase):
         )
         self.assertEqual(value, int(random_int))
         os.system(f"setenvironment_unset SETENVIRONMENT_TEST --config-file {BASHRC}")
-        rtn = os.system(
-            f"setenvironment_get SETENVIRONMENT_TEST --config-file {BASHRC}"
-        )
+        rtn = os.system(f"setenvironment_get SETENVIRONMENT_TEST --config-file {BASHRC}")
         self.assertNotEqual(0, rtn)
 
 
