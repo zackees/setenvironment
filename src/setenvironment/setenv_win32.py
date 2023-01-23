@@ -3,13 +3,14 @@ Dummy
 """
 
 # pylint: disable=missing-function-docstring,import-outside-toplevel,invalid-name,unused-argument,protected-access,c-extension-no-member,consider-using-f-string,import-error,too-many-function-args
+# mypy: ignore-errors
 
 import os
 import re
 import subprocess
+import winreg  # type: ignore
 from typing import Optional
 
-import _winreg as winreg  # type: ignore
 import win32gui  # type: ignore
 
 _DEFAULT_PRINT = print
