@@ -136,6 +136,23 @@ def add_env_path2(new_path: str, verbose=False):
     os.environ["PATH"] = new_path + sep + os.environ["PATH"]
 
 
+def set_env_path2(new_path: str, verbose=False):
+    if verbose:
+        print(f"&&& Setting {new_path} to Windows PATH")
+    try:
+        with winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+            0,
+            winreg.KEY_ALL_ACCESS,
+        ) as key:
+            # Set the new value of the Path key
+            winreg.SetValueEx(key, "Path", 0, winreg.REG_EXPAND_SZ, new_path)
+    except Exception:  # pylint: disable=broad-except
+        print("Failed to add path to registry")
+    os.environ["PATH"] = new_path + os.path.pathsep + os.environ["PATH"]
+
+
 def add_env_path(new_path: str, verbose=False):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
@@ -145,22 +162,8 @@ def add_env_path(new_path: str, verbose=False):
     if new_path in prev_paths:
         print(f"{new_path} already in PATH")
         return
-    try:
-        with winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE,
-            "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
-            0,
-            winreg.KEY_ALL_ACCESS,
-        ) as key:
-            # Get the current value of the Path key
-            current_value = winreg.QueryValueEx(key, "path")[0]
-            # Append the new path to the current value
-            new_value = new_path + ";" + current_value + ";"
-            # Set the new value of the Path key
-            winreg.SetValueEx(key, "Path", 0, winreg.REG_EXPAND_SZ, new_value)
-    except Exception:  # pylint: disable=broad-except
-        print("Failed to add path to registry")
-    os.environ["PATH"] = new_path + os.path.pathsep + os.environ["PATH"]
+    path = new_path + os.path.pathsep + os.environ["PATH"]
+    set_env_path2(path, verbose=verbose)
 
 
 def set_env_var(var_name: str, var_value: str, verbose=True):
@@ -194,8 +197,7 @@ def remove_env_path(path_to_remove: str, verbose=False):
     paths = [path for path in paths if path != path_to_remove]
     sep = os.path.pathsep
     new_path_str = sep.join(paths)
-    os.environ["PATH"] = new_path_str
-    set_env_var_cmd("PATH", new_path_str)
+    set_env_path2(new_path_str, verbose=verbose)
 
 
 def main():
