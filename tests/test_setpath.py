@@ -27,6 +27,7 @@ class SetPathTester(unittest.TestCase):
             set_env_config_file(bashrc)
         mypath = os.path.join("my", "path")
         add_env_path(mypath)
+        print("path is now:\n", os.environ["PATH"].split(os.pathsep))
         self.assertIn(mypath, os.environ["PATH"])
         remove_env_path(mypath)
         self.assertNotIn(mypath, os.environ["PATH"])
