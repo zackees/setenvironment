@@ -9,6 +9,7 @@ import re
 import subprocess
 from typing import Optional
 
+import _winreg as winreg  # type: ignore
 import win32gui  # type: ignore
 
 _DEFAULT_PRINT = print
@@ -118,7 +119,7 @@ def parse_paths(path_str: str) -> list[str]:
     return paths
 
 
-def add_env_path(new_path: str, verbose=False):
+def add_env_path2(new_path: str, verbose=False):
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
     if verbose:
@@ -132,6 +133,33 @@ def add_env_path(new_path: str, verbose=False):
     new_path_str = f"{str(new_path)}{sep}{prev_path_str}"
     set_env_var_cmd("PATH", new_path_str)
     os.environ["PATH"] = new_path + sep + os.environ["PATH"]
+
+
+def add_env_path(new_path: str, verbose=False):
+    new_path = str(new_path)
+    new_path = new_path.replace("/", "\\")
+    if verbose:
+        print(f"&&& Adding {new_path} to Windows PATH")
+    prev_paths = parse_paths(get_reg_env_path())
+    if new_path in prev_paths:
+        print(f"{new_path} already in PATH")
+        return
+    try:
+        with winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+            0,
+            winreg.KEY_ALL_ACCESS,
+        ) as key:
+            # Get the current value of the Path key
+            current_value = winreg.QueryValueEx(key, "path")[0]
+            # Append the new path to the current value
+            new_value = new_path + ";" + current_value + ";"
+            # Set the new value of the Path key
+            winreg.SetValueEx(key, "Path", 0, winreg.REG_EXPAND_SZ, new_value)
+    except Exception:  # pylint: disable=broad-except
+        print("Failed to add path to registry")
+    os.environ["PATH"] = new_path + os.path.pathsep + os.environ["PATH"]
 
 
 def set_env_var(var_name: str, var_value: str, verbose=True):
