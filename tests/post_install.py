@@ -10,9 +10,9 @@ def main():
     """Main entry point for the script."""
     if not which("git"):
         print("git not found")
-        sys.exit(1)
-    sys.exit(0)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

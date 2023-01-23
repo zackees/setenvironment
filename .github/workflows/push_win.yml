@@ -28,5 +28,6 @@ jobs:
         python -m pip install .
         python -m pip install pytest
     - name: Run Tests
-      run: |
-        pytest tests
+      run: pytest tests
+    - name: Run System paths still working
+      run: python tests/post_install.py
