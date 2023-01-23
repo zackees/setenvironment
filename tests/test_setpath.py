@@ -30,6 +30,7 @@ class SetPathTester(unittest.TestCase):
         print("path is now:\n", os.environ["PATH"].split(os.pathsep))
         self.assertIn(mypath, os.environ["PATH"])
         remove_env_path(mypath)
+        print(f"path after removals of {mypath} is now:\n{os.environ['PATH']}")
         self.assertNotIn(mypath, os.environ["PATH"])
         if sys.platform != "win32":
             bashrc_str = read_utf8(bashrc)
