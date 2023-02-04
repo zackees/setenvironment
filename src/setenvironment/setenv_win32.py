@@ -129,13 +129,15 @@ def set_env_path_registry(new_path: str, verbose=False):
             winreg.HKEY_LOCAL_MACHINE,
             "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
             0,
-            winreg.KEY_ALL_ACCESS,
+            winreg.KEY_SET_VALUE,
         ) as key:
             # Set the new value of the Path key
             winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
+            winreg.CloseKey(key)
             broadcast_changes()
-    except Exception:  # pylint: disable=broad-except
-        print("Failed to add path to registry")
+    except Exception as exc:  # pylint: disable=broad-except
+        print(f"Failed to add path to registry because of {exc}")
+        raise
 
 
 def get_env_path_registry(verbose=False) -> str:
@@ -150,6 +152,7 @@ def get_env_path_registry(verbose=False) -> str:
     ) as key:
         # Get the value of the Path key
         path = winreg.QueryValueEx(key, "PATH")[0]
+        winreg.CloseKey(key)
         return path
 
 
