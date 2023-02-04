@@ -126,8 +126,8 @@ def set_env_path_registry(new_path: str, verbose=False):
         print(f"&&& Setting {new_path} to Windows PATH")
     try:
         with winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE,
-            "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+            winreg.HKEY_CURRENT_USER,
+            "Environment",
             0,
             winreg.KEY_SET_VALUE,
         ) as key:
@@ -145,8 +145,8 @@ def get_env_path_registry(verbose=False) -> str:
         print("&&& Getting Windows PATH")
 
     with winreg.OpenKey(
-        winreg.HKEY_LOCAL_MACHINE,
-        "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+        winreg.HKEY_CURRENT_USER,
+        "Environment",
         0,
         winreg.KEY_READ,
     ) as key:
