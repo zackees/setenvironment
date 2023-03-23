@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 
-def set_env_config_file(filepath: str = "~/.bashrc") -> None:
+def set_env_config_file(filepath: str = "~/.bash_aliases") -> None:
     """Sets the config file for the platform."""
     # Only works for Unix/MacOS
     if sys.platform != "win32":

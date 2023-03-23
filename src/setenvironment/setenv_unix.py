@@ -14,10 +14,14 @@ def get_target() -> str:
         config_file = os.environ["SETENVIRONMENT_CONFIG_FILE"]
         return os.path.expanduser(config_file)
     # Get the dictionary attached to
-    bashrc = os.path.expanduser("~/.bashrc")
-    if ".bash_profile" not in read_utf8(bashrc):
-        return bashrc
-    return os.path.expanduser("~/.bash_profile")
+
+    for srcs in ["~/.bash_aliases", "~/.bash_profile", "~/.bashrc"]:
+        src = os.path.expanduser(srcs)
+        if os.path.exists(src):
+            break
+    else:
+        raise FileNotFoundError("Could not find any bash config file")
+    return src
 
 
 def set_env_config_file(filepath: str) -> None:
