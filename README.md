@@ -55,7 +55,7 @@ Paths are set in the registery and the current os.environ
 
 ## MacOS / Linux
 
-Paths are set in the `~/.bashrc` file or you can override it, see `set_config_file(...)` and the command line arguments if using the command line api.
+Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` file or you can override it, see `set_config_file(...)` and the command line arguments if using the command line api.
 
   * export the variable (so you can source the script)
   * set the os.environ to the proper value
@@ -63,6 +63,7 @@ Paths are set in the `~/.bashrc` file or you can override it, see `set_config_fi
 
 
 # Release Notes
+  * 1.1.0: stashes settings in ~/.bash_aliases, ~/.bash_profile, ~/.bashrc
   * 1.0.10: Win32: path is now set in the user environment instead of the system environment (removes the need for admin rights)
   * 1.0.9: Win32: Improve expansion of keys, remove duplicates found in os.environ['PATH']
   * 1.0.8: Adds fix for windows expansion of keys
