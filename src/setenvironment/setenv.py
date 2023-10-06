@@ -4,6 +4,7 @@ This module provides functions for setting environment variables.
 
 # pylint: disable=import-outside-toplevel,no-else-raise,no-else-return,too-many-function-args
 # flake8: noqa: E501
+# pylint: disable=C0116
 
 import os
 import sys
