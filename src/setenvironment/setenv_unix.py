@@ -158,7 +158,9 @@ def add_template_path(env_var: str, new_path: str) -> None:
         set_env_var(env_var, new_var_path_str)
 
 
-def remove_template_path(env_var: str, path_to_remove: str) -> None:
+def remove_template_path(
+    env_var: str, path_to_remove: str, remove_if_empty: bool
+) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     var_paths = parse_paths(get_env_var(env_var) or "")
@@ -166,4 +168,7 @@ def remove_template_path(env_var: str, path_to_remove: str) -> None:
         return
     var_paths = [path for path in var_paths if path != path_to_remove]
     new_var_path_str = os.path.pathsep.join(var_paths)
+    if not new_var_path_str and remove_if_empty:
+        unset_env_var(env_var)
+        return
     set_env_var(env_var, new_var_path_str)

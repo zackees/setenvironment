@@ -117,17 +117,19 @@ def add_template_path(env_var: str, new_path: Union[Path, str]) -> None:
         unix_add_template_path(env_var, new_path)
 
 
-def remove_template_path(env_var: str, path: Union[Path, str]) -> None:
+def remove_template_path(
+    env_var: str, path: Union[Path, str], remove_if_empty=False
+) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if _IS_WINDOWS:
         from .setenv_win32 import remove_template_path as win32_remove_template_path
 
-        win32_remove_template_path(env_var, path)
+        win32_remove_template_path(env_var, path, remove_if_empty)
     else:
         from .setenv_unix import remove_template_path as unix_remove_template_path
 
-        unix_remove_template_path(env_var, path)
+        unix_remove_template_path(env_var, path, remove_if_empty)
 
 
 def remove_env_path(path: Union[Path, str]) -> None:
