@@ -138,13 +138,15 @@ def add_template_path(env_var: str, new_path: str) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     path_str = get_env_var("PATH")
+    tmp_env_var = f"${env_var}"
     if path_str:
         paths = parse_paths(path_str)
-        tmp_env_var = f"${env_var}"
         if tmp_env_var not in paths:
             paths.insert(0, tmp_env_var)
             new_path_str = os.path.pathsep.join(paths)
             set_env_var("PATH", new_path_str)
+    else:
+        add_env_path(tmp_env_var)
     env_paths = get_env_var(env_var)
     if env_paths is None:
         set_env_var(env_var, new_path)

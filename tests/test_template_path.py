@@ -13,6 +13,7 @@ from setenvironment.setenv import (
     get_env_var,
     get_paths,
     remove_template_path,
+    set_env_config_file
 )
 from setenvironment.util import read_utf8
 
@@ -29,6 +30,7 @@ class TemplatePathtester(unittest.TestCase):
             # write a blank file
             with open(bashrc, encoding="utf-8", mode="w") as file:
                 file.write("")
+            set_env_config_file(bashrc)
         key = "MYPATH"
         mypath = os.path.join("my", "path")
         add_template_path(key, mypath)
@@ -47,7 +49,8 @@ class TemplatePathtester(unittest.TestCase):
         finally:
             remove_template_path(key, mypath)
         print(f"path after removals of {mypath} is now:\n{os.environ['PATH']}")
-        self.assertNotIn(system_key, os.environ["PATH"])
+        paths = get_paths()
+        self.assertNotIn(system_key, paths)
         if sys.platform != "win32":
             bashrc_str = read_utf8(bashrc)
             self.assertNotIn(mypath, bashrc_str)
