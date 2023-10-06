@@ -50,7 +50,7 @@ class TemplatePathtester(unittest.TestCase):
             remove_template_path(key, mypath)
         print(f"path after removals of {mypath} is now:\n{os.environ['PATH']}")
         paths = get_paths()
-        self.assertNotIn(system_key, paths)
+        self.assertIn(system_key, paths)  # MYPATH should still be in path.
         if sys.platform != "win32":
             bashrc_str = read_utf8(bashrc)
             self.assertNotIn(mypath, bashrc_str)
