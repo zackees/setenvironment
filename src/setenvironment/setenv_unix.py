@@ -2,6 +2,9 @@
 Adds setenv for unix.
 """
 
+# pylint: disable=C0116
+# flake8: noqa R0801
+
 import os
 from typing import List, Optional
 
