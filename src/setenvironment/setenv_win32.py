@@ -4,6 +4,7 @@ Dummy
 
 # pylint: disable=missing-function-docstring,import-outside-toplevel,invalid-name,unused-argument,protected-access,c-extension-no-member,consider-using-f-string,import-error,too-many-function-args
 # mypy: ignore-errors
+# flake8: noqa: E501
 
 import os
 import re
@@ -215,6 +216,33 @@ def remove_env_path(path_to_remove: str, verbose=False):
     os_environ_paths = [path for path in os_environ_paths if path != path_to_remove]
     new_env_path_str = sep.join(os_environ_paths)
     os.environ["PATH"] = new_env_path_str
+
+
+def add_template_path(env_var: str, new_path: str) -> None:
+    assert "%" not in env_var, "env_var should not contain %"
+    assert "%" not in new_path, "new_path should not contain %"
+    paths = parse_paths(get_env_var("PATH") or "")
+    tmp_env_var = f"%{env_var}%"
+    if tmp_env_var not in paths:
+        paths.insert(0, tmp_env_var)
+        new_path_str = os.path.pathsep.join(paths)
+        set_env_path_registry(new_path_str)
+    var_paths = parse_paths(get_env_var(env_var) or "")
+    if new_path not in var_paths:
+        var_paths.insert(0, new_path)
+        new_var_path_str = os.path.pathsep.join(var_paths)
+        set_env_var(env_var, new_var_path_str)
+
+
+def remove_template_path(env_var: str, path_to_remove: str) -> None:
+    assert "%" not in env_var, "env_var should not contain %"
+    assert "%" not in path_to_remove, "path_to_remove should not contain %"
+    var_paths = parse_paths(get_env_var(env_var) or "")
+    if path_to_remove not in var_paths:
+        return
+    var_paths = [path for path in var_paths if path != path_to_remove]
+    new_var_path_str = os.path.pathsep.join(var_paths)
+    set_env_var(env_var, new_var_path_str)
 
 
 def main():

@@ -5,23 +5,23 @@ CLI interface for setenvironment
 import argparse
 import os
 import sys
-from .util import write_utf8
 
 from .setenv import (
-    set_env_var,
-    get_env_var,
     add_env_path,
-    unset_env_var,
+    get_env_var,
     remove_env_path,
     set_env_config_file,
+    set_env_var,
+    unset_env_var,
 )
+from .util import write_utf8
 
 
 def _init_config_file(args):
     """Initialize the path to the config file."""
     config = args.config_file
-    if config is not None:
-        set_env_config_file(config)
+    if config is not None and sys.platform != "win32":
+        set_env_config_file(config, ignore_error=True)
         if not os.path.exists(config):
             os.makedirs(os.path.dirname(config), exist_ok=True)
             write_utf8(config, "")

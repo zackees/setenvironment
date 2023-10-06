@@ -3,6 +3,7 @@ Test the main module
 """
 
 # pylint: disable=fixme,import-outside-toplevel
+# flake8: noqa: E501
 
 import os
 import random
@@ -42,7 +43,9 @@ class CliTester(unittest.TestCase):
         )
         self.assertEqual(value, int(random_int))
         os.system(f"setenvironment_unset SETENVIRONMENT_TEST --config-file {BASHRC}")
-        rtn = os.system(f"setenvironment_get SETENVIRONMENT_TEST --config-file {BASHRC}")
+        rtn = os.system(
+            f"setenvironment_get SETENVIRONMENT_TEST --config-file {BASHRC}"
+        )
         self.assertNotEqual(0, rtn)
 
 

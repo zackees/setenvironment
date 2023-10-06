@@ -3,7 +3,7 @@ Adds setenv for unix.
 """
 
 import os
-from typing import Optional
+from typing import List, Optional
 
 from .util import read_utf8, write_utf8
 
@@ -124,3 +124,44 @@ def remove_env_path(path: str) -> None:
         new_file = "\n".join(lines)
         if new_file != orig_file:
             write_utf8(settings_file, new_file)
+
+
+# unix implementation:
+
+
+def parse_paths(path_str: str) -> List[str]:
+    """Parses a path string into a list of paths."""
+    return path_str.split(os.path.pathsep)
+
+
+def add_template_path(env_var: str, new_path: str) -> None:
+    assert "$" not in env_var, "env_var should not contain $"
+    assert "$" not in new_path, "new_path should not contain $"
+    path_str = get_env_var("PATH")
+    if path_str:
+        paths = parse_paths(path_str)
+        tmp_env_var = f"${env_var}"
+        if tmp_env_var not in paths:
+            paths.insert(0, tmp_env_var)
+            new_path_str = os.path.pathsep.join(paths)
+            set_env_var("PATH", new_path_str)
+    env_paths = get_env_var(env_var)
+    if env_paths is None:
+        set_env_var(env_var, new_path)
+        return
+    var_paths = parse_paths(env_paths)
+    if new_path not in var_paths:
+        var_paths.insert(0, new_path)
+        new_var_path_str = os.path.pathsep.join(var_paths)
+        set_env_var(env_var, new_var_path_str)
+
+
+def remove_template_path(env_var: str, path_to_remove: str) -> None:
+    assert "$" not in env_var, "env_var should not contain $"
+    assert "$" not in path_to_remove, "path_to_remove should not contain $"
+    var_paths = parse_paths(get_env_var(env_var) or "")
+    if path_to_remove not in var_paths:
+        return
+    var_paths = [path for path in var_paths if path != path_to_remove]
+    new_var_path_str = os.path.pathsep.join(var_paths)
+    set_env_var(env_var, new_var_path_str)

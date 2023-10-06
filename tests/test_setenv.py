@@ -9,7 +9,7 @@ import random
 import sys
 import unittest
 
-from setenvironment import set_env_config_file, set_env_var, unset_env_var
+from setenvironment.setenv import set_env_config_file, set_env_var, unset_env_var
 from setenvironment.util import read_utf8
 
 HERE = os.path.dirname(__file__)

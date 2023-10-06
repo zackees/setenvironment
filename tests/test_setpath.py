@@ -8,7 +8,7 @@ import os
 import sys
 import unittest
 
-from setenvironment import add_env_path, remove_env_path, set_env_config_file
+from setenvironment.setenv import add_env_path, remove_env_path, set_env_config_file
 from setenvironment.util import read_utf8
 
 HERE = os.path.dirname(__file__)
