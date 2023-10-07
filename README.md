@@ -63,6 +63,7 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
 
 
 # Release Notes
+  * 1.1.1: Adds `add_template_path` and `remove_template_path`
   * 1.1.0: stashes settings in ~/.bash_aliases, ~/.bash_profile, ~/.bashrc
   * 1.0.10: Win32: path is now set in the user environment instead of the system environment (removes the need for admin rights)
   * 1.0.9: Win32: Improve expansion of keys, remove duplicates found in os.environ['PATH']
