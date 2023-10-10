@@ -8,6 +8,7 @@ Adds setenv for unix.
 import os
 from typing import List, Optional
 
+from .types import Environment
 from .util import read_utf8, write_utf8
 
 
@@ -83,11 +84,13 @@ def unset_env_var(name: str) -> None:
             write_utf8(settings_file, new_file)
 
 
-def add_env_path(path: str) -> None:
+def add_env_path(
+    path: str, verbose: bool = False, update_curr_environment: bool = True
+) -> None:
     """Adds a path to the PATH environment variable."""
     # add path to os.environ['PATH'] if it does not exist
     path_list = os.environ["PATH"].split(os.path.sep)
-    if path not in path_list:
+    if path not in path_list and update_curr_environment:
         os.environ["PATH"] = path + os.pathsep + os.environ["PATH"]
     settings_file = get_target()
     orig_file = read_utf8(settings_file)
@@ -106,13 +109,14 @@ def add_env_path(path: str) -> None:
         write_utf8(settings_file, new_file)
 
 
-def remove_env_path(path: str) -> None:
+def remove_env_path(path: str, update_curr_environment=True) -> None:
     """Removes a path from the PATH environment variable."""
     # remove path from os.environ['PATH'] if it does not exist
-    path_list = os.environ["PATH"].split(os.pathsep)
-    if path in path_list:
-        path_list.remove(path)
-        os.environ["PATH"] = os.pathsep.join(path_list)
+    if update_curr_environment:
+        path_list = os.environ["PATH"].split(os.pathsep)
+        if path in path_list:
+            path_list.remove(path)
+            os.environ["PATH"] = os.pathsep.join(path_list)
     settings_file = get_target()
     orig_file = read_utf8(settings_file)
     lines = orig_file.splitlines()
@@ -184,3 +188,10 @@ def remove_template_path(
 
 def reload_environment() -> None:
     raise NotImplementedError("win32_reload_environment is not implemented yet.")
+
+
+# Environment
+def get_env() -> Environment:
+    """Returns the environment."""
+    # return Environment()
+    raise NotImplementedError("get_env is not implemented yet.")

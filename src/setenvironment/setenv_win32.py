@@ -14,6 +14,8 @@ from typing import Optional
 
 import win32gui  # type: ignore
 
+from .types import Environment
+
 _DEFAULT_PRINT = print
 _REGISTERLY_VALUE_PATTERN = re.compile(r"    .+    (?P<type>.+)    (?P<value>.+)*")
 _ENCODINGS = ["utf-8", "cp949", "ansi"]
@@ -52,6 +54,22 @@ def get_env_var(name: str) -> Optional[str]:
     elif completed_process.returncode == 1:
         return None
     return current_path
+
+
+def get_all_env_vars() -> dict[str, Optional[str]]:
+    env_vars = {}
+    completed_process = _command(
+        ["reg", "query", "HKCU\\Environment"], capture_output=True
+    )
+    assert completed_process.returncode is 0, "Failed to get all env vars"
+    stdout = _try_decode(completed_process.stdout)
+    for line in stdout.splitlines():
+        # Assuming each line in the output is of the format 'name    REG_TYPE    value'
+        parts = [part.strip() for part in line.split(None, 2)]
+        if len(parts) == 3:
+            name, reg_type, value = parts
+            env_vars[name] = value
+    return env_vars
 
 
 def set_env_var_cmd(name: str, value: str) -> None:
@@ -122,7 +140,7 @@ def parse_paths(path_str: str) -> list[str]:
     return paths
 
 
-def set_env_path_registry(new_path: str, verbose=False):
+def set_env_path_registry(new_path: str, verbose=False, broad_cast_changes=True):
     if verbose:
         print(f"&&& Setting {new_path} to Windows PATH")
     try:
@@ -135,7 +153,8 @@ def set_env_path_registry(new_path: str, verbose=False):
             # Set the new value of the Path key
             winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
             winreg.CloseKey(key)
-            broadcast_changes()
+            if broad_cast_changes:
+                broadcast_changes()
     except Exception as exc:  # pylint: disable=broad-except
         print(f"Failed to add path to registry because of {exc}")
         raise
@@ -157,7 +176,9 @@ def get_env_path_registry(verbose=False) -> str:
         return path
 
 
-def add_env_path(new_path: str, verbose=False):
+def add_env_path(
+    new_path: str, verbose: bool = False, update_curr_environment: bool = True
+) -> None:
     new_path = str(new_path)
     new_path = new_path.replace("/", "\\")
     if verbose:
@@ -170,14 +191,17 @@ def add_env_path(new_path: str, verbose=False):
     else:
         current_path.insert(0, new_path)
         current_path_str = os.path.pathsep.join(current_path)
-        set_env_path_registry(current_path_str, verbose=False)
+        set_env_path_registry(
+            current_path_str, verbose=False, broad_cast_changes=update_curr_environment
+        )
     os_environ_paths = parse_paths(os.environ["PATH"])
     if verbose and new_path in os_environ_paths:
         print(f"{new_path} already in os.environ['PATH']")
     else:
         os_environ_paths.insert(0, new_path)
         new_env_path_str = os.path.pathsep.join(os_environ_paths)
-        os.environ["PATH"] = new_env_path_str
+        if update_curr_environment:
+            os.environ["PATH"] = new_env_path_str
 
 
 def set_env_var(var_name: str, var_value: str, verbose=False):
@@ -199,7 +223,7 @@ def unset_env_var(var_name: str, verbose=False):
     os.environ.pop(var_name)
 
 
-def remove_env_path(path_to_remove: str, verbose=False):
+def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=True):
     # convert / to \\ for Windows
     path_to_remove = path_to_remove.replace("/", "\\")
     path_str = get_env_path_registry()
@@ -211,7 +235,9 @@ def remove_env_path(path_to_remove: str, verbose=False):
     paths = [path for path in paths if path != path_to_remove]
     sep = os.path.pathsep
     new_path_str = sep.join(paths)
-    set_env_path_registry(new_path_str, verbose=verbose)
+    set_env_path_registry(
+        new_path_str, verbose=verbose, broad_cast_changes=update_curr_environment
+    )
     os_environ_paths = parse_paths(os.environ["PATH"])
     os_environ_paths = [path for path in os_environ_paths if path != path_to_remove]
     new_env_path_str = sep.join(os_environ_paths)
@@ -256,14 +282,13 @@ def remove_template_path(
 
 
 def reload_environment() -> None:
-    raise NotImplementedError("win32_reload_environment is not implemented yet.")
+    path_list = parse_paths(get_env_path_registry())
+    os.environ["PATH"] = os.path.pathsep.join(path_list)
 
 
-def main():
-    set_env_var_cmd("FOO", "BAR")
-    print(get_env_var("FOO"))
-    # print(get_env_var("ANDROID_HOME"))
-
-
-if __name__ == "__main__":
-    main()
+def get_env() -> Environment:
+    """Returns the environment."""
+    paths = parse_paths(get_env_path_registry())
+    vars = get_all_env_vars()
+    out = Environment(paths=paths, vars=vars)
+    return out

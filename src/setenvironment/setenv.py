@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Optional, Union
 
+from .types import Environment
+
 _IS_WINDOWS = sys.platform == "win32"
 
 
@@ -92,17 +94,19 @@ def unset_env_var(var_name: str, verbose=False) -> None:
         unix_unset_env_var(var_name)
 
 
-def add_env_path(new_path: Union[Path, str]) -> None:
+def add_env_path(
+    new_path: Union[Path, str], update_curr_environment: bool = True
+) -> None:
     """Adds a path to the front of the PATH environment variable."""
     new_path = str(new_path)
     if _IS_WINDOWS:
         from .setenv_win32 import add_env_path as win32_add_env_path
 
-        win32_add_env_path(new_path)
+        win32_add_env_path(new_path, update_curr_environment=update_curr_environment)
     else:
         from .setenv_unix import add_env_path as unix_add_env_path
 
-        unix_add_env_path(new_path)
+        unix_add_env_path(new_path, update_curr_environment=update_curr_environment)
 
 
 def add_template_path(env_var: str, new_path: Union[Path, str]) -> None:
@@ -133,17 +137,19 @@ def remove_template_path(
         unix_remove_template_path(env_var, path, remove_if_empty)
 
 
-def remove_env_path(path: Union[Path, str]) -> None:
+def remove_env_path(
+    path: Union[Path, str], update_curr_environment: bool = True
+) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if _IS_WINDOWS:
         from .setenv_win32 import remove_env_path as win32_remove_env_path
 
-        win32_remove_env_path(path)
+        win32_remove_env_path(path, update_curr_environment=update_curr_environment)
     else:
         from .setenv_unix import remove_env_path as unix_remove_env_path
 
-        unix_remove_env_path(path)
+        unix_remove_env_path(path, update_curr_environment=update_curr_environment)
 
 
 def reload_environment() -> None:
@@ -156,3 +162,15 @@ def reload_environment() -> None:
         from .setenv_unix import reload_environment as unix_reload_environment
 
     unix_reload_environment()
+
+
+def get_env() -> Environment:
+    """Gets the environment."""
+    if _IS_WINDOWS:
+        from .setenv_win32 import get_env as win32_get_env
+
+        return win32_get_env()
+    else:
+        from .setenv_unix import get_env as unix_get_env
+
+        return unix_get_env()
