@@ -180,3 +180,7 @@ def remove_template_path(
             set_env_var("PATH", new_path_str)
         return
     set_env_var(env_var, new_var_path_str)
+
+
+def reload_environment() -> None:
+    raise NotImplementedError("win32_reload_environment is not implemented yet.")

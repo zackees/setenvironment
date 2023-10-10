@@ -144,3 +144,15 @@ def remove_env_path(path: Union[Path, str]) -> None:
         from .setenv_unix import remove_env_path as unix_remove_env_path
 
         unix_remove_env_path(path)
+
+
+def reload_environment() -> None:
+    """Reloads the environment."""
+    if _IS_WINDOWS:
+        from .setenv_win32 import reload_environment as win32_reload_environment
+
+        win32_reload_environment()
+    else:
+        from .setenv_unix import reload_environment as unix_reload_environment
+
+    unix_reload_environment()

@@ -255,6 +255,10 @@ def remove_template_path(
     set_env_var(env_var, new_var_path_str)
 
 
+def reload_environment() -> None:
+    raise NotImplementedError("win32_reload_environment is not implemented yet.")
+
+
 def main():
     set_env_var_cmd("FOO", "BAR")
     print(get_env_var("FOO"))
