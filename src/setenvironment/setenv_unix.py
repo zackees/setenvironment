@@ -3,7 +3,7 @@ Adds setenv for unix.
 """
 
 # pylint: disable=C0116
-# flake8: noqa R0801
+# flake8: noqa: E501
 
 import os
 from typing import List, Optional
@@ -53,6 +53,19 @@ def set_env_var(name: str, value: str) -> None:
     new_file = "\n".join(lines)
     if new_file != orig_file:
         write_utf8(settings_file, new_file)
+
+
+def get_all_env_vars() -> dict[str, str]:
+    """Gets all environment variables."""
+    settings_file = get_target()
+    orig_file = read_utf8(settings_file)
+    lines = orig_file.splitlines()
+    env_vars: dict[str, str] = {}
+    for line in lines:
+        if line.startswith("export "):
+            name, value = line[7:].split("=", 1)
+            env_vars[name] = value
+    return env_vars
 
 
 def get_env_var(name: str) -> Optional[str]:
@@ -133,11 +146,11 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
             write_utf8(settings_file, new_file)
 
 
-# unix implementation:
-
-
 def parse_paths(path_str: str) -> List[str]:
     """Parses a path string into a list of paths."""
+    path_str = path_str.strip()
+    if not path_str:
+        return []
     return path_str.split(os.path.pathsep)
 
 
@@ -193,5 +206,12 @@ def reload_environment() -> None:
 # Environment
 def get_env() -> Environment:
     """Returns the environment."""
+
     # return Environment()
-    raise NotImplementedError("get_env is not implemented yet.")
+    # raise NotImplementedError("get_env is not implemented yet.")
+    vars = get_all_env_vars()
+    paths = parse_paths(vars.get("PATH", ""))
+    return Environment(
+        vars=vars,
+        paths=paths,
+    )

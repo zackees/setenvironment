@@ -15,12 +15,13 @@ from setenvironment import (
     set_env_var,
     unset_env_var,
 )
+from setenvironment.testing.basetest import BaseTest
 
 MY_PATH = os.path.join("setenvironment", "test", "path")
 MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
 
 
-class ReloadEnvironmentTest(unittest.TestCase):
+class ReloadEnvironmentTest(BaseTest):
     def tearDown(self) -> None:
         remove_env_path(MY_PATH, update_curr_environment=False)
         unset_env_var(MY_VAR[0], update_curr_environment=False)
