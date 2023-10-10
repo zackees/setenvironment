@@ -61,7 +61,7 @@ def get_all_env_vars() -> dict[str, Optional[str]]:
     completed_process = _command(
         ["reg", "query", "HKCU\\Environment"], capture_output=True
     )
-    assert completed_process.returncode is 0, "Failed to get all env vars"
+    assert completed_process.returncode == 0, "Failed to get all env vars"
     stdout = _try_decode(completed_process.stdout)
     for line in stdout.splitlines():
         # Assuming each line in the output is of the format 'name    REG_TYPE    value'
@@ -72,7 +72,7 @@ def get_all_env_vars() -> dict[str, Optional[str]]:
     return env_vars
 
 
-def set_env_var_cmd(name: str, value: str) -> None:
+def set_env_var_cmd(name: str, value: str, update_curr_environment=True) -> None:
     completed_proc: subprocess.CompletedProcess = _command(
         [
             "reg",
@@ -91,7 +91,8 @@ def set_env_var_cmd(name: str, value: str) -> None:
         _print(f"Error happened while setting {name}={value}")
         _print(_try_decode(completed_proc.stdout))
     assert value in get_env_var(name), f"Failed to set {name}={value}"  # type: ignore
-    broadcast_changes()
+    if update_curr_environment:
+        broadcast_changes()
 
 
 def unset_env_var_cmd(name: str) -> None:
@@ -204,12 +205,16 @@ def add_env_path(
             os.environ["PATH"] = new_env_path_str
 
 
-def set_env_var(var_name: str, var_value: str, verbose=False):
+def set_env_var(
+    var_name: str, var_value: str, verbose=False, update_curr_environment=True
+):
     var_name = str(var_name)
     var_value = str(var_value)
     if verbose:
         print(f"$$$ Setting {var_name} to {var_value}")
-    set_env_var_cmd(var_name, var_value)
+    set_env_var_cmd(
+        var_name, var_value, update_curr_environment=update_curr_environment
+    )
     os.environ[var_name] = var_value
 
 
@@ -282,8 +287,12 @@ def remove_template_path(
 
 
 def reload_environment() -> None:
-    path_list = parse_paths(get_env_path_registry())
+    env: Environment = get_env()
+    path_list = env.paths
+    env_vars = env.vars
     os.environ["PATH"] = os.path.pathsep.join(path_list)
+    for key, val in env_vars.items():
+        os.environ[key] = val
 
 
 def get_env() -> Environment:

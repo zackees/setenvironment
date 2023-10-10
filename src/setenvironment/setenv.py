@@ -31,7 +31,10 @@ def set_env_config_file(
 
 
 def set_env_var(
-    var_name: str, var_value: Union[str, Path, int, float], verbose=False
+    var_name: str,
+    var_value: Union[str, Path, int, float],
+    verbose=False,
+    update_curr_environment: bool = True,
 ) -> None:
     """Sets an environment variable for the platform."""
     var_value = str(var_value)
@@ -42,7 +45,9 @@ def set_env_var(
 
         var_name = str(var_name)
         var_value = str(var_value)
-        win32_set_env_var(var_name, var_value)
+        win32_set_env_var(
+            var_name, var_value, update_curr_environment=update_curr_environment
+        )
     else:
         from .setenv_unix import set_env_var as unix_set_env_var
 
@@ -78,7 +83,7 @@ def set_paths(paths: list[str]) -> None:
     set_env_var("PATH", new_path_str)
 
 
-def unset_env_var(var_name: str, verbose=False) -> None:
+def unset_env_var(var_name: str, verbose=False, update_curr_environment=True) -> None:
     """Unsets an environment variable for the platform."""
     if verbose:
         print(f"$$$ Unsetting {var_name}")

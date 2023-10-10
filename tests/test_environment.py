@@ -26,7 +26,7 @@ class ReloadEnvironmentTest(unittest.TestCase):
     def test(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
         add_env_path(MY_PATH, update_curr_environment=False)
-        set_env_var(MY_VAR[0], MY_VAR[1])
+        set_env_var(MY_VAR[0], MY_VAR[1], update_curr_environment=False)
         self.assertNotIn(MY_PATH, os.environ["PATH"])
         env: Environment = get_env()
         self.assertIn(MY_PATH, env.paths)
