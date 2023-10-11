@@ -198,7 +198,7 @@ def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: boo
 
 
 def reload_environment() -> None:
-    raise NotImplementedError("win32_reload_environment is not implemented yet.")
+    raise NotImplementedError("unix reload is not implemented yet.")
 
 
 # Environment
