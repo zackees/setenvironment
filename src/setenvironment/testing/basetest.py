@@ -7,7 +7,7 @@ from setenvironment import set_env_config_file
 HERE = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 TEST_DIR = os.path.join(PROJECT_ROOT, "tests")
-BASHRC = os.path.join(HERE, "unix.mybashrc")
+BASHRC = os.path.join(TEST_DIR, "unix.mybashrc")
 
 
 class BaseTest(unittest.TestCase):

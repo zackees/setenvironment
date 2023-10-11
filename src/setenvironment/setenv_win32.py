@@ -105,7 +105,7 @@ def unset_env_var_cmd(name: str) -> None:
     )
     if completed_proc.returncode != 0:
         _print(f"Error happened while unsetting {name}")
-        env = get_all_env_vars()
+        get_all_env_vars()
         if completed_proc.stdout:
             _print(_try_decode(completed_proc.stdout))
     assert get_env_var(name) is None, f"Failed to unset {name}"  # type: ignore

@@ -8,6 +8,7 @@ from .setenv import (
     add_template_path,
     get_env,
     get_env_var,
+    get_paths,
     reload_environment,
     remove_env_path,
     remove_template_path,
@@ -27,3 +28,4 @@ add_template_path = add_template_path
 remove_template_path = remove_template_path
 reload_environment = reload_environment
 get_env = get_env
+get_paths = get_paths

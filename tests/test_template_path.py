@@ -8,29 +8,23 @@ import os
 import sys
 import unittest
 
-from setenvironment.setenv import (
+from setenvironment import (
     add_template_path,
     get_env_var,
     get_paths,
     remove_template_path,
-    set_env_config_file,
 )
+from setenvironment.testing.basetest import BASHRC, BaseTest
 from setenvironment.util import read_utf8
 
 HERE = os.path.dirname(__file__)
 
 
-class TemplatePathtester(unittest.TestCase):
+class TemplatePathtester(BaseTest):
     """Tester for the main module."""
 
     def test_add_template_path(self) -> None:
         """Test setting an environment variable."""
-        if sys.platform != "win32":
-            bashrc = os.path.join(HERE, "unix.mybashrc")
-            # write a blank file
-            with open(bashrc, encoding="utf-8", mode="w") as file:
-                file.write("")
-            set_env_config_file(bashrc)
         key = "MYPATH"
         mypath = os.path.join("my", "path")
         add_template_path(key, mypath)
@@ -52,17 +46,11 @@ class TemplatePathtester(unittest.TestCase):
         paths = get_paths()
         self.assertIn(system_key, paths)  # MYPATH should still be in path.
         if sys.platform != "win32":
-            bashrc_str = read_utf8(bashrc)
+            bashrc_str = read_utf8(BASHRC)
             self.assertNotIn(mypath, bashrc_str)
 
     def test_add_template_path_if_empty(self) -> None:
         """Test setting an environment variable."""
-        if sys.platform != "win32":
-            bashrc = os.path.join(HERE, "unix.mybashrc")
-            # write a blank file
-            with open(bashrc, encoding="utf-8", mode="w") as file:
-                file.write("")
-            set_env_config_file(bashrc)
         key = "MYPATH"
         mypath = os.path.join("my", "path")
         add_template_path(key, mypath)
@@ -85,17 +73,11 @@ class TemplatePathtester(unittest.TestCase):
         # MYPATH only had one entry and should be removed.
         self.assertNotIn(system_key, paths)
         if sys.platform != "win32":
-            bashrc_str = read_utf8(bashrc)
+            bashrc_str = read_utf8(BASHRC)
             self.assertNotIn(mypath, bashrc_str)
 
     def test_add_template_path_if_empty_add_twice(self) -> None:
         """Test setting an environment variable."""
-        if sys.platform != "win32":
-            bashrc = os.path.join(HERE, "unix.mybashrc")
-            # write a blank file
-            with open(bashrc, encoding="utf-8", mode="w") as file:
-                file.write("")
-            set_env_config_file(bashrc)
         key = "MYPATH"
         mypath = os.path.join("my", "path")
         mypath2 = os.path.join("my", "path2")
@@ -122,7 +104,7 @@ class TemplatePathtester(unittest.TestCase):
         paths = get_paths()
         self.assertNotIn(system_key, paths)
         if sys.platform != "win32":
-            bashrc_str = read_utf8(bashrc)
+            bashrc_str = read_utf8(BASHRC)
             self.assertNotIn(mypath, bashrc_str)
 
 

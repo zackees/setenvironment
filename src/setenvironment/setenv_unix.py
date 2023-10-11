@@ -98,7 +98,9 @@ def unset_env_var(name: str) -> None:
             write_utf8(settings_file, new_file)
 
 
-def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
+def add_env_path(
+    path: str, verbose: bool = False, update_curr_environment: bool = True
+) -> None:
     """Adds a path to the PATH environment variable."""
     # add path to os.environ['PATH'] if it does not exist
     path_list = os.environ["PATH"].split(os.path.sep)
@@ -178,7 +180,9 @@ def add_template_path(env_var: str, new_path: str) -> None:
         set_env_var(env_var, new_var_path_str)
 
 
-def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
+def remove_template_path(
+    env_var: str, path_to_remove: str, remove_if_empty: bool
+) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     var_paths = parse_paths(get_env_var(env_var) or "")
@@ -198,7 +202,16 @@ def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: boo
 
 
 def reload_environment() -> None:
-    raise NotImplementedError("unix reload is not implemented yet.")
+    env: Environment = get_env()
+    os_paths = os.environ["PATH"].split(os.pathsep)
+    os_paths_set = set(os.environ["PATH"].split(os.pathsep))
+    for path in env.paths:
+        if path not in os_paths_set:
+            os_paths.insert(0, path)
+    new_path_str = os.path.pathsep.join(os_paths)
+    os.environ["PATH"] = new_path_str
+    for name, value in env.vars.items():
+        os.environ[name] = value
 
 
 # Environment
