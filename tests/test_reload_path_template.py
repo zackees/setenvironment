@@ -14,6 +14,7 @@ from setenvironment import (
     remove_env_path,
     set_env_var,
     unset_env_var,
+    get_env_var,
 )
 from setenvironment.testing.basetest import BaseTest
 
@@ -24,7 +25,8 @@ MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
 class ReloadPathTemplateTest(BaseTest):
     def tearDown(self) -> None:
         remove_env_path(MY_PATH, update_curr_environment=False)
-        unset_env_var(MY_VAR[0], update_curr_environment=False)
+        if get_env_var(MY_VAR[0]) is not None:
+            unset_env_var(MY_VAR[0], update_curr_environment=False)
 
     def test_paths(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
