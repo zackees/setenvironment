@@ -9,12 +9,17 @@ Dummy
 import os
 import re
 import subprocess
+import warnings
 import winreg  # type: ignore
 from typing import Optional
 
 import win32gui  # type: ignore
 
 from .types import Environment
+
+HERE = os.path.dirname(__file__)
+WIN_BIN_DIR = os.path.join(HERE, "win")
+
 
 _DEFAULT_PRINT = print
 _REGISTERLY_VALUE_PATTERN = re.compile(r"    .+    (?P<type>.+)    (?P<value>.+)*")
@@ -119,7 +124,9 @@ def get_reg_env_path() -> str:
 
 def broadcast_changes():
     print("Broadcasting changes")
-    os.system("refreshenv")
+    rtn = subprocess.call("refreshenv", cwd=WIN_BIN_DIR, shell=True)
+    if rtn != 0:
+        warnings.warn("Failed to invoke refreshenv")
 
     HWND_BROADCAST = 0xFFFF
     WM_SETTINGCHANGE = 0x001A
@@ -221,7 +228,8 @@ def set_env_var(
     set_env_var_cmd(
         var_name, var_value, update_curr_environment=update_curr_environment
     )
-    os.environ[var_name] = var_value
+    if update_curr_environment:
+        os.environ[var_name] = var_value
 
 
 def unset_env_var(var_name: str, verbose=False):
@@ -258,20 +266,27 @@ def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=
     os.environ["PATH"] = new_env_path_str
 
 
-def add_template_path(env_var: str, new_path: str) -> None:
+def add_template_path(
+    env_var: str, new_path: str, update_curr_environment=True
+) -> None:
     assert "%" not in env_var, "env_var should not contain %"
     assert "%" not in new_path, "new_path should not contain %"
     paths = parse_paths(get_env_var("PATH") or "")
     tmp_env_var = f"%{env_var}%"
+    something_changed = False
     if tmp_env_var not in paths:
         paths.insert(0, tmp_env_var)
         new_path_str = os.path.pathsep.join(paths)
-        set_env_path_registry(new_path_str)
+        set_env_path_registry(new_path_str, broad_cast_changes=False)
+        something_changed = True
     var_paths = parse_paths(get_env_var(env_var) or "")
     if new_path not in var_paths:
         var_paths.insert(0, new_path)
         new_var_path_str = os.path.pathsep.join(var_paths)
-        set_env_var(env_var, new_var_path_str)
+        set_env_var(env_var, new_var_path_str, update_curr_environment=False)
+        something_changed = True
+    if something_changed and update_curr_environment:
+        broadcast_changes()
 
 
 def remove_template_path(

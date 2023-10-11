@@ -10,38 +10,29 @@ import unittest
 
 from setenvironment import (
     add_env_path,
+    add_template_path,
     reload_environment,
-    remove_env_path,
-    set_env_var,
-    unset_env_var,
-    get_env_var,
+    remove_template_path,
 )
 from setenvironment.testing.basetest import BaseTest
 
+PATH_KEY = "TEST_RELOAD_PATH"
 MY_PATH = os.path.join("setenvironment", "test", "path")
 MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
 
 
 class ReloadPathTemplateTest(BaseTest):
     def tearDown(self) -> None:
-        remove_env_path(MY_PATH, update_curr_environment=False)
-        if get_env_var(MY_VAR[0]) is not None:
-            unset_env_var(MY_VAR[0], update_curr_environment=False)
+        remove_template_path(PATH_KEY, MY_PATH)
 
     def test_paths(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
-        add_env_path(MY_PATH, update_curr_environment=False)
-        self.assertNotIn(MY_PATH, os.environ["PATH"])
+        remove_template_path(PATH_KEY, MY_PATH, remove_if_empty=True)
+        self.assertNotIn(PATH_KEY, os.environ)
+        add_template_path(PATH_KEY, MY_PATH, update_curr_environment=False)
+        self.assertNotIn(PATH_KEY, os.environ)  # Should not be in os.environ yet.
         reload_environment()
-        self.assertIn(MY_PATH, os.environ["PATH"])
-
-    def test_env_vars(self) -> None:
-        """Tests that we can add an environmental variable and then reload it."""
-        set_env_var(MY_VAR[0], MY_VAR[1], update_curr_environment=False)
-        reload_environment()
-        val = os.environ.get(MY_VAR[0])
-        self.assertIsNotNone(val)
-        self.assertIn(MY_VAR[1], str(val))
+        self.assertIn(PATH_KEY, os.environ)  # Should now be in os.environ.
 
 
 if __name__ == "__main__":

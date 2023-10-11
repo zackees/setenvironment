@@ -116,13 +116,17 @@ def add_env_path(
         unix_add_env_path(new_path, update_curr_environment=update_curr_environment)
 
 
-def add_template_path(env_var: str, new_path: Union[Path, str]) -> None:
+def add_template_path(
+    env_var: str, new_path: Union[Path, str], update_curr_environment: bool = True
+) -> None:
     """Adds a path to the front of the PATH environment variable."""
     new_path = str(new_path)
     if _IS_WINDOWS:
         from .setenv_win32 import add_template_path as win32_add_template_path
 
-        win32_add_template_path(env_var, new_path)
+        win32_add_template_path(
+            env_var, new_path, update_curr_environment=update_curr_environment
+        )
     else:
         from .setenv_unix import add_template_path as unix_add_template_path
 
