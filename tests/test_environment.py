@@ -43,6 +43,7 @@ class ReloadEnvironmentTest(BaseTest):
         env = get_env()
         self.assertIn(MY_PATH, env.paths)
         self.assertIn(MY_VAR[0], env.vars.keys())
+        self.assertEqual(env.vars[MY_VAR[0]], MY_VAR[1])
 
 
 if __name__ == "__main__":
