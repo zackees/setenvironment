@@ -13,12 +13,13 @@ from setenvironment import (
     get_env,
     remove_env_path,
     set_env_var,
+    unset_env_var,
 )
 from setenvironment.testing.basetest import BaseTest
 
 HERE = os.path.dirname(__file__)
 
-MY_PATH = os.path.join("setenvironment", "test", "path")
+MY_PATH = os.path.join("setenvironment", "test", "path2")
 MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
 
 ORIG_OS_ENVIRON = os.environ.copy()
@@ -28,6 +29,7 @@ ORIG_PATHS = os.environ["PATH"].split(os.pathsep)
 class ReloadEnvironmentTest(BaseTest):
     def tearDown(self) -> None:
         remove_env_path(MY_PATH, update_curr_environment=False)
+        unset_env_var(MY_VAR[0], update_curr_environment=False)
 
     def test(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
