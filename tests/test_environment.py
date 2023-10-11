@@ -21,6 +21,9 @@ HERE = os.path.dirname(__file__)
 MY_PATH = os.path.join("setenvironment", "test", "path")
 MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
 
+ORIG_OS_ENVIRON = os.environ.copy()
+ORIG_PATHS = os.environ["PATH"].split(os.pathsep)
+
 
 class ReloadEnvironmentTest(BaseTest):
     def tearDown(self) -> None:
@@ -28,11 +31,15 @@ class ReloadEnvironmentTest(BaseTest):
 
     def test(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
-        remove_env_path(MY_PATH, update_curr_environment=False)
+        # Sanity check.
+        paths = os.environ["PATH"].split(os.pathsep)
+        self.assertNotIn(MY_PATH, paths)
         env: Environment = get_env()
         add_env_path(MY_PATH, update_curr_environment=False)
         set_env_var(MY_VAR[0], MY_VAR[1], update_curr_environment=False)
-        self.assertNotIn(MY_PATH, os.environ["PATH"])
+        env = get_env()
+        paths = os.environ["PATH"].split(os.pathsep)
+        self.assertNotIn(MY_PATH, paths)
         env = get_env()
         self.assertIn(MY_PATH, env.paths)
         self.assertIn(MY_VAR[0], env.vars.keys())

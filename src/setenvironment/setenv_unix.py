@@ -33,7 +33,7 @@ def set_env_config_file(filepath: str) -> None:
     os.environ["SETENVIRONMENT_CONFIG_FILE"] = filepath
 
 
-def set_env_var(name: str, value: str) -> None:
+def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     """Sets an environment variable."""
     os.environ[name] = str(value)
     settings_file = get_target()
@@ -49,7 +49,8 @@ def set_env_var(name: str, value: str) -> None:
             break
     if not found:
         lines.append(export_cmd)
-        os.system(export_cmd)
+        if update_curr_environment:
+            os.system(export_cmd)
     new_file = "\n".join(lines)
     if new_file != orig_file:
         write_utf8(settings_file, new_file)
@@ -97,9 +98,7 @@ def unset_env_var(name: str) -> None:
             write_utf8(settings_file, new_file)
 
 
-def add_env_path(
-    path: str, verbose: bool = False, update_curr_environment: bool = True
-) -> None:
+def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
     """Adds a path to the PATH environment variable."""
     # add path to os.environ['PATH'] if it does not exist
     path_list = os.environ["PATH"].split(os.path.sep)
@@ -115,7 +114,8 @@ def add_env_path(
             break
     if not found:
         export_cmd = f"export PATH=$PATH:{path}"
-        os.system(export_cmd)
+        if update_curr_environment:
+            os.system(export_cmd)
         lines.append(export_cmd)
     new_file = "\n".join(lines)
     if new_file != orig_file:
@@ -178,9 +178,7 @@ def add_template_path(env_var: str, new_path: str) -> None:
         set_env_var(env_var, new_var_path_str)
 
 
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
+def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     var_paths = parse_paths(get_env_var(env_var) or "")
