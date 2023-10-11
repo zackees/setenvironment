@@ -166,7 +166,7 @@ def reload_environment() -> None:
     else:
         from .setenv_unix import reload_environment as unix_reload_environment
 
-    unix_reload_environment()
+        unix_reload_environment()
 
 
 def get_env() -> Environment:

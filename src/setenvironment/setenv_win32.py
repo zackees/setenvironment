@@ -30,11 +30,15 @@ def _command(*args, **kwargs):
 
 
 def _try_decode(byte_string: bytes) -> str:
+    assert byte_string is not None, "byte_string should not be None"
     for encoding in _ENCODINGS:
         try:
-            return byte_string.decode(encoding)
+            out = byte_string.decode(encoding)
+            return out
         except UnicodeDecodeError:
             continue
+        except AttributeError:
+            raise
     return "Error happened"
 
 
@@ -101,7 +105,9 @@ def unset_env_var_cmd(name: str) -> None:
     )
     if completed_proc.returncode != 0:
         _print(f"Error happened while unsetting {name}")
-        _print(_try_decode(completed_proc.stdout))
+        env = get_all_env_vars()
+        if completed_proc.stdout:
+            _print(_try_decode(completed_proc.stdout))
     assert get_env_var(name) is None, f"Failed to unset {name}"  # type: ignore
 
 
@@ -225,7 +231,10 @@ def unset_env_var(var_name: str, verbose=False):
     if var_name == "PATH":
         raise ValueError("Cannot unset PATH")
     unset_env_var_cmd(var_name)
-    os.environ.pop(var_name)
+    try:
+        os.environ.pop(var_name)
+    except KeyError:
+        pass
 
 
 def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=True):
