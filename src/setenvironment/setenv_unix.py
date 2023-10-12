@@ -252,17 +252,21 @@ def remove_template_path(
     set_env_var(env_var, new_var_path_str)
 
 
-def reload_environment() -> None:
+def reload_environment(verbose: bool) -> None:
     env: Environment = get_env()
     os_paths = os.environ["PATH"].split(os.pathsep)
     os_paths_set = set(os.environ["PATH"].split(os.pathsep))
     for path in env.paths:
         if path not in os_paths_set:
             os_paths.insert(0, path)
+            if verbose:
+                print(f"$$$ Adding {path} to PATH")
     new_path_str = os.path.pathsep.join(os_paths)
     os.environ["PATH"] = new_path_str
     for name, value in env.vars.items():
         os.environ[name] = value
+        if verbose:
+            print(f"$$$ Setting {name}={value}")
 
 
 def get_env() -> Environment:

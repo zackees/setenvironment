@@ -30,7 +30,7 @@ class ReloadPathTemplateTest(BaseTest):
         self.assertNotIn(PATH_KEY, os.environ)
         add_template_path(PATH_KEY, MY_PATH, update_curr_environment=False)
         self.assertNotIn(PATH_KEY, os.environ)  # Should not be in os.environ yet.
-        reload_environment()
+        reload_environment(verbose=True)
         self.assertIn(PATH_KEY, os.environ)  # Should now be in os.environ.
         self.assertIn(MY_PATH, os.environ[PATH_KEY])
         if sys.platform == "win32":
@@ -38,7 +38,7 @@ class ReloadPathTemplateTest(BaseTest):
         else:
             system_key = f"${PATH_KEY}"
         paths = os.environ["PATH"].split(os.pathsep)
-        self.assertIn(system_key, paths)
+        self.assertIn(MY_PATH, paths)
 
     def test_two_path(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
@@ -48,7 +48,7 @@ class ReloadPathTemplateTest(BaseTest):
         add_template_path(PATH_KEY, MY_PATH, update_curr_environment=False)
         add_template_path(PATH_KEY, MY_PATH2, update_curr_environment=False)
         self.assertNotIn(PATH_KEY, os.environ)  # Should not be in os.environ yet.
-        reload_environment()
+        reload_environment(verbose=True)
         self.assertIn(PATH_KEY, os.environ)  # Should now be in os.environ.
         self.assertIn(MY_PATH, os.environ[PATH_KEY])
         self.assertIn(MY_PATH2, os.environ[PATH_KEY])
@@ -57,7 +57,8 @@ class ReloadPathTemplateTest(BaseTest):
         else:
             system_key = f"${PATH_KEY}"
         paths = os.environ["PATH"].split(os.pathsep)
-        self.assertIn(system_key, paths)
+        self.assertIn(MY_PATH, paths)
+        self.assertIn(MY_PATH2, paths)
 
 
 if __name__ == "__main__":

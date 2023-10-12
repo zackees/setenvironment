@@ -310,13 +310,43 @@ def remove_template_path(
     set_env_var(env_var, new_var_path_str)
 
 
-def reload_environment() -> None:
+def path_resolver(path: str) -> str:
+    """Resolves a path that contains win32 environment variables."""
+    # The regex pattern to search for %VAR_NAME% patterns
+    pattern = re.compile(r"%([^%]+)%")
+
+    def replace_env_var(match):
+        """Replace matched environment variable with its value."""
+        var_name = match.group(1)  # Extract the VAR_NAME from the match
+        out = os.environ.get(
+            var_name, match.group(0)
+        )  # Return environment variable value or the original string if not found
+        return out
+
+    return pattern.sub(replace_env_var, path)
+
+
+def reload_environment(verbose: bool) -> None:
     env: Environment = get_env()
     path_list = env.paths
     env_vars = env.vars
-    os.environ["PATH"] = os.path.pathsep.join(path_list)
+    # os_environ = os.environ.copy()
+    # os.environ["PATH"] = os.path.pathsep.join(path_list)
     for key, val in env_vars.items():
+        if key == "PATH":
+            continue
+        resolved_path = path_resolver(val)
+        if resolved_path is None:
+            warnings.warn(f"Could not resolve path {val}")
+            continue
+        if verbose:
+            print(f"Setting {key} to {resolved_path}")
         os.environ[key] = val
+    path_list = [path_resolver(path) for path in path_list]
+    path_list_str = os.path.pathsep.join(path_list)
+    os.environ["PATH"] = path_list_str
+    if verbose:
+        print(f"Setting PATH to {path_list_str}")
 
 
 def get_env() -> Environment:
