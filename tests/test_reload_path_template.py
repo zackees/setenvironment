@@ -6,14 +6,10 @@ Test the main module
 # flake8: noqa: E501
 
 import os
+import sys
 import unittest
 
-from setenvironment import (
-    add_env_path,
-    add_template_path,
-    reload_environment,
-    remove_template_path,
-)
+from setenvironment import add_template_path, reload_environment, remove_template_path
 from setenvironment.testing.basetest import BaseTest
 
 PATH_KEY = "TEST_RELOAD_PATH"
@@ -33,6 +29,12 @@ class ReloadPathTemplateTest(BaseTest):
         self.assertNotIn(PATH_KEY, os.environ)  # Should not be in os.environ yet.
         reload_environment()
         self.assertIn(PATH_KEY, os.environ)  # Should now be in os.environ.
+        if sys.platform == "win32":
+            system_key = f"%{PATH_KEY}%"
+        else:
+            system_key = f"${PATH_KEY}"
+        paths = os.environ["PATH"].split(os.pathsep)
+        self.assertIn(system_key, paths)
 
 
 if __name__ == "__main__":
