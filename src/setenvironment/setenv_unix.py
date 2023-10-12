@@ -255,6 +255,17 @@ def remove_template_group(env_var: str) -> None:
         paths = [path for path in paths if path != f"${env_var}"]
         new_path_str = os.path.pathsep.join(paths)
         set_env_var("PATH", new_path_str)
+    if not var_paths:
+        return
+    for path in var_paths:
+        remove_template_path(env_var, path, remove_if_empty=True)
+    system_var = f"${env_var}"
+    paths = parse_paths(get_env_var("PATH") or "")
+    if system_var in paths:
+        paths = [path for path in paths if path != system_var]
+        new_path_str = os.path.pathsep.join(paths)
+        set_env_var("PATH", new_path_str)
+        os.environ["PATH"] = new_path_str
 
 
 def reload_environment(verbose: bool) -> None:
