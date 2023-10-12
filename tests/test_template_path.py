@@ -16,6 +16,8 @@ from setenvironment import (
 )
 from setenvironment.testing.basetest import BASHRC, BaseTest
 from setenvironment.util import read_utf8
+from setenvironment.types import Environment
+from setenvironment.setenv import get_env
 
 HERE = os.path.dirname(__file__)
 
@@ -44,10 +46,12 @@ class TemplatePathtester(BaseTest):
             remove_template_path(key, mypath)
         print(f"path after removals of {mypath} is now:\n{os.environ['PATH']}")
         paths = get_paths()
-        self.assertIn(system_key, paths)  # MYPATH should still be in path.
+        self.assertEquals(system_key, paths[0])  # MYPATH should be the first entry.
         if sys.platform != "win32":
             bashrc_str = read_utf8(BASHRC)
             self.assertNotIn(mypath, bashrc_str)
+        environment: Environment = get_env()
+        self.assertEquals(environment.paths[0], system_key)
 
     def test_add_template_path_if_empty(self) -> None:
         """Test setting an environment variable."""
