@@ -130,7 +130,9 @@ def add_template_path(
     else:
         from .setenv_unix import add_template_path as unix_add_template_path
 
-        unix_add_template_path(env_var, new_path)
+        unix_add_template_path(
+            env_var, new_path, update_curr_environment=update_curr_environment
+        )
 
 
 def remove_template_path(

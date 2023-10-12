@@ -156,7 +156,9 @@ def parse_paths(path_str: str) -> List[str]:
     return path_str.split(os.path.pathsep)
 
 
-def add_template_path(env_var: str, new_path: str) -> None:
+def add_template_path(
+    env_var: str, new_path: str, update_curr_environment=True
+) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     path_str = get_env_var("PATH")
@@ -166,9 +168,13 @@ def add_template_path(env_var: str, new_path: str) -> None:
         if tmp_env_var not in paths:
             paths.insert(0, tmp_env_var)
             new_path_str = os.path.pathsep.join(paths)
-            set_env_var("PATH", new_path_str)
+            set_env_var(
+                "PATH",
+                new_path_str,
+                update_curr_environment=update_curr_environment,
+            )
     else:
-        add_env_path(tmp_env_var)
+        add_env_path(tmp_env_var, update_curr_environment=update_curr_environment)
     env_paths = get_env_var(env_var)
     if env_paths is None:
         set_env_var(env_var, new_path)
@@ -177,7 +183,11 @@ def add_template_path(env_var: str, new_path: str) -> None:
     if new_path not in var_paths:
         var_paths.insert(0, new_path)
         new_var_path_str = os.path.pathsep.join(var_paths)
-        set_env_var(env_var, new_var_path_str)
+        set_env_var(
+            env_var,
+            new_var_path_str,
+            update_curr_environment=update_curr_environment,
+        )
 
 
 def remove_template_path(
