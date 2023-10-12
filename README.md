@@ -26,8 +26,16 @@ set_env_var("FOO", "BAR")
 add_env_path("MYPATH")
 unset_env_var("FOO")
 remove_env_path("MYPATH")
+# These template functions keeps your os.environ["PATH"]
+# cleaner by grouping a bunch of paths into an expandable 
+# variable. This is particularly usefull to enable an
+# uninstall feature.
+# MYPATHKEY will show up in os.environ["PATHS"]
+# as $MYPATHKEY (linux) or %MYPATHKEY% (win).
+# The environmental variable MYPATHKEY will
+# point to the path value.
 add_template_path("MYPATHKEY", "/path/to/dir")
-remove_template_path("MYPATHKEY", "/path/to/dir")
+remove_template_path("MYPATHKEY", "/path/to/dir", remove_if_empty=True)
 ```
 
 ## Command Line API

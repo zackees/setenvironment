@@ -73,7 +73,7 @@ def get_target() -> str:
         return os.path.expanduser(config_file)
     # Get the dictionary attached to
 
-    for srcs in ["~/.bash_aliases", "~/.bash_profile", "~/.bashrc"]:
+    for srcs in ["~/.bashrc", "~/.profile"]:
         src = os.path.expanduser(srcs)
         if os.path.exists(src):
             break
