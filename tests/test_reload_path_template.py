@@ -34,9 +34,9 @@ class ReloadPathTemplateTest(BaseTest):
         self.assertIn(PATH_KEY, os.environ)  # Should now be in os.environ.
         self.assertIn(MY_PATH, os.environ[PATH_KEY])
         if sys.platform == "win32":
-            system_key = f"%{PATH_KEY}%"
+            pass
         else:
-            system_key = f"${PATH_KEY}"
+            pass
         paths = os.environ["PATH"].split(os.pathsep)
         self.assertIn(MY_PATH, paths)
 
@@ -53,9 +53,9 @@ class ReloadPathTemplateTest(BaseTest):
         self.assertIn(MY_PATH, os.environ[PATH_KEY])
         self.assertIn(MY_PATH2, os.environ[PATH_KEY])
         if sys.platform == "win32":
-            system_key = f"%{PATH_KEY}%"
+            pass
         else:
-            system_key = f"${PATH_KEY}"
+            pass
         paths = os.environ["PATH"].split(os.pathsep)
         self.assertIn(MY_PATH, paths)
         self.assertIn(MY_PATH2, paths)

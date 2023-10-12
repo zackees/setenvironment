@@ -327,6 +327,8 @@ def path_resolver(path: str) -> str:
 
 
 def reload_environment(verbose: bool) -> None:
+    """Reloads the environment."""
+    # This is nearly the same as unix version. Please keep them in same.
     env: Environment = get_env()
     path_list = env.paths
     env_vars = env.vars
