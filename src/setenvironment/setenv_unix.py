@@ -37,6 +37,24 @@ def read_bash_file_lines(filepath: str | None = None) -> list[str]:
     return lines[start_index:end_index]
 
 
+def add_bash_file_lines(new_lines: list[str], filepath: str | None = None) -> None:
+    """Adds new lines to the start of the bash file in the START_MARKER to END_MARKER section."""
+    filepath = filepath or get_target()
+    file_read = read_utf8(filepath)
+    if START_MARKER not in file_read:
+        file_read += "\n" + START_MARKER + "\n" + END_MARKER + "\n"
+        write_utf8(filepath, file_read)
+        file_read = read_utf8(filepath)  # read again
+    orig_lines = file_read.splitlines()
+    # read all lines from START_MARKER to END_MARKER
+    outlines = []
+    for line in orig_lines:
+        outlines.append(line)
+        if line.startswith(START_MARKER):
+            outlines.extend(new_lines)
+    write_utf8(filepath, "\n".join(outlines))
+
+
 def get_target() -> str:
     """Returns the target file."""
     if os.environ.get("SETENVIRONMENT_CONFIG_FILE"):
