@@ -65,6 +65,7 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
 
 
 # Release Notes
+  * 1.2.4: `reload_environment()` now supports template substitution.
   * 1.2.3: Unix/Macos: bashrc now uses a START / END markers to contain environment settings.
   * 1.1.1: Adds `add_template_path` and `remove_template_path`
   * 1.1.0: stashes settings in ~/.bash_aliases, ~/.bash_profile, ~/.bashrc
