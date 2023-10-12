@@ -13,8 +13,8 @@ BASHRC = os.path.join(TEST_DIR, "unix.mybashrc")
 
 
 class BaseTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
+    def clear_bash_rc(self) -> None:
+        """Write a new bashrc file."""
         assert os.path.exists(
             TEST_DIR
         ), f"TEST_DIR does not exist: {TEST_DIR}, make sure you install package with -e to enabling testing"
@@ -23,3 +23,6 @@ class BaseTest(unittest.TestCase):
             with open(BASHRC, encoding="utf-8", mode="w") as file:
                 file.write("")
             set_env_config_file(BASHRC)
+
+    def setUp(self) -> None:
+        self.clear_bash_rc()

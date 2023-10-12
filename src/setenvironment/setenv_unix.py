@@ -6,10 +6,35 @@ Adds setenv for unix.
 # flake8: noqa: E501
 
 import os
+import warnings
 from typing import List, Optional
 
 from .types import Environment
 from .util import read_utf8, write_utf8
+
+START_MARKER = "# START setenvironment"
+END_MARKER = "# END setenvironment"
+
+
+def read_bash_file_lines(filepath: str | None = None) -> list[str]:
+    """Reads a bash file."""
+    filepath = filepath or get_target()
+    with open(filepath, encoding="utf8", mode="r") as file:
+        lines = file.read().splitlines()
+    # read all lines from START_MARKER to END_MARKER
+    start_index = -1
+    end_index = -1
+    for i, line in enumerate(lines):
+        if line.startswith(START_MARKER):
+            start_index = i + 1
+        if line.startswith(END_MARKER):
+            end_index = i
+    if start_index == -1:
+        return []
+    if end_index == -1:
+        warnings.warn(f"Could not find {END_MARKER} in {filepath}")
+        return lines[start_index:]
+    return lines[start_index:end_index]
 
 
 def get_target() -> str:
@@ -98,7 +123,9 @@ def unset_env_var(name: str) -> None:
             write_utf8(settings_file, new_file)
 
 
-def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
+def add_env_path(
+    path: str, verbose: bool = False, update_curr_environment: bool = True
+) -> None:
     """Adds a path to the PATH environment variable."""
     # add path to os.environ['PATH'] if it does not exist
     path_list = os.environ["PATH"].split(os.path.sep)
@@ -154,7 +181,9 @@ def parse_paths(path_str: str) -> List[str]:
     return path_str.split(os.path.pathsep)
 
 
-def add_template_path(env_var: str, new_path: str, update_curr_environment=True) -> None:
+def add_template_path(
+    env_var: str, new_path: str, update_curr_environment=True
+) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     path_str = get_env_var("PATH")
@@ -186,7 +215,9 @@ def add_template_path(env_var: str, new_path: str, update_curr_environment=True)
         )
 
 
-def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
+def remove_template_path(
+    env_var: str, path_to_remove: str, remove_if_empty: bool
+) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     var_paths = parse_paths(get_env_var(env_var) or "")
