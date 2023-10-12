@@ -6,7 +6,6 @@ Test the main module
 # flake8: noqa: E501
 
 import os
-import sys
 import unittest
 
 from setenvironment import add_template_path, reload_environment, remove_template_path
