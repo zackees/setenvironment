@@ -45,7 +45,6 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     for i, line in enumerate(lines):
         if line.startswith("export " + name + "="):
             lines[i] = export_cmd
-            os.system(export_cmd)
             found = True
             break
     if not found:
@@ -75,7 +74,7 @@ def get_env_var(name: str) -> Optional[str]:
     filelines = read_utf8(get_target()).splitlines()
     for line in filelines:
         if line.startswith("export " + name + "="):
-            return line.split("=")[1].strip()
+            return line[7:].split("=")[1].strip()
     return None
 
 
@@ -219,12 +218,8 @@ def reload_environment() -> None:
         os.environ[name] = value
 
 
-# Environment
 def get_env() -> Environment:
     """Returns the environment."""
-
-    # return Environment()
-    # raise NotImplementedError("get_env is not implemented yet.")
     vars = get_all_env_vars()
     paths = parse_paths(vars.get("PATH", ""))
     return Environment(
