@@ -36,6 +36,8 @@ remove_env_path("MYPATH")
 # point to the path value.
 add_template_path("MYPATHKEY", "/path/to/dir")
 remove_template_path("MYPATHKEY", "/path/to/dir", remove_if_empty=True)
+# Or elese you can just remove ALL of the paths at once.
+remove_template_group("MYPATHKEY")
 ```
 
 ## Command Line API
@@ -73,6 +75,7 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
 
 
 # Release Notes
+  * 1.2.9: Adds `remove_template_group`
   * 1.2.8: Updated finding the bashrc file to better support github runners that use ~/.profile.
   * 1.2.6: Improved `reload_environment()` to preserve existing os paths.
   * 1.2.5: Fixes unix paths where the path would be appended instead of prepended.
