@@ -151,6 +151,7 @@ def parse_paths(path_str: str) -> list[str]:
         return path
 
     paths = [strip_trailing_slash(path) for path in paths]
+    paths = [path.strip() for path in paths if path.strip()]
     return paths
 
 
@@ -329,7 +330,10 @@ def reload_environment(verbose: bool) -> None:
             print(f"Setting {key} to {resolved_path}")
         os.environ[key] = val
     path_list = [os.path.expandvars(path) for path in path_list]
+    path_list = [path for path in path_list if path.strip()]
     path_list_str = os.path.pathsep.join(path_list)
+    if path_list_str.endswith(os.path.pathsep):
+        path_list_str = path_list_str[:-1]
     os.environ["PATH"] = path_list_str
     if verbose:
         print(f"Setting PATH to {path_list_str}")

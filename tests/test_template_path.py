@@ -14,10 +14,10 @@ from setenvironment import (
     get_paths,
     remove_template_path,
 )
-from setenvironment.testing.basetest import BASHRC, BaseTest
-from setenvironment.util import read_utf8
-from setenvironment.types import Environment
 from setenvironment.setenv import get_env
+from setenvironment.testing.basetest import BASHRC, BaseTest
+from setenvironment.types import Environment
+from setenvironment.util import read_utf8
 
 HERE = os.path.dirname(__file__)
 
