@@ -4,10 +4,14 @@ import unittest
 
 from setenvironment import set_env_config_file
 
-HERE = os.path.dirname(__file__)
+HERE = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 TEST_DIR = os.path.join(PROJECT_ROOT, "tests")
 BASHRC = os.path.join(TEST_DIR, "unix.mybashrc")
+
+# print(f"HERE: {HERE}")
+# print(f"PROJECT_ROOT: {PROJECT_ROOT}")
+# print(f"TEST_DIR: {TEST_DIR}")
 
 
 class BaseTest(unittest.TestCase):
