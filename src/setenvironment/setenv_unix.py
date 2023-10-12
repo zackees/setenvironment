@@ -37,7 +37,7 @@ def read_bash_file_lines(filepath: str | None = None) -> list[str]:
     return lines[start_index:end_index]
 
 
-def add_bash_file_lines(new_lines: list[str], filepath: str | None = None) -> None:
+def set_bash_file_lines(lines: list[str], filepath: str | None = None) -> None:
     """Adds new lines to the start of the bash file in the START_MARKER to END_MARKER section."""
     filepath = filepath or get_target()
     file_read = read_utf8(filepath)
@@ -48,10 +48,21 @@ def add_bash_file_lines(new_lines: list[str], filepath: str | None = None) -> No
     orig_lines = file_read.splitlines()
     # read all lines from START_MARKER to END_MARKER
     outlines = []
+    found_start_marker = False
+    found_end_marker = False
     for line in orig_lines:
-        outlines.append(line)
         if line.startswith(START_MARKER):
-            outlines.extend(new_lines)
+            outlines.append(line)
+            found_start_marker = True
+            outlines.extend(lines)
+            continue
+        if line.startswith(END_MARKER):
+            found_end_marker = True
+            outlines.append(line)
+            continue
+        if not found_start_marker or found_end_marker:
+            outlines.append(line)
+            continue
     write_utf8(filepath, "\n".join(outlines))
 
 
@@ -80,9 +91,8 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     """Sets an environment variable."""
     if update_curr_environment:
         os.environ[name] = str(value)
-    settings_file = get_target()
-    orig_file = read_utf8(settings_file)
-    lines = orig_file.splitlines()
+    settings_files = get_target()
+    lines = read_bash_file_lines(settings_files)
     found = False
     export_cmd = f"export {name}={value}"
     for i, line in enumerate(lines):
@@ -92,18 +102,15 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
             break
     if not found:
         lines.append(export_cmd)
-        if update_curr_environment:
-            os.system(export_cmd)
-    new_file = "\n".join(lines)
-    if new_file != orig_file:
-        write_utf8(settings_file, new_file)
+    if update_curr_environment:
+        os.system(export_cmd)
+    set_bash_file_lines(lines, settings_files)
 
 
 def get_all_env_vars() -> dict[str, str]:
     """Gets all environment variables."""
     settings_file = get_target()
-    orig_file = read_utf8(settings_file)
-    lines = orig_file.splitlines()
+    lines = read_bash_file_lines(settings_file)
     env_vars: dict[str, str] = {}
     for line in lines:
         if line.startswith("export "):
@@ -114,8 +121,9 @@ def get_all_env_vars() -> dict[str, str]:
 
 def get_env_var(name: str) -> Optional[str]:
     """Gets an environment variable."""
-    filelines = read_utf8(get_target()).splitlines()
-    for line in filelines:
+    settings_file = get_target()
+    lines = read_bash_file_lines(settings_file)
+    for line in lines:
         if line.startswith("export " + name + "="):
             return line[7:].split("=")[1].strip()
     return None
@@ -126,8 +134,7 @@ def unset_env_var(name: str) -> None:
     if name in os.environ:
         del os.environ[name]
     settings_file = get_target()
-    orig_file = read_utf8(settings_file)
-    lines = orig_file.splitlines()
+    lines = read_bash_file_lines(settings_file)
     found = False
     for i, line in enumerate(lines):
         if line.startswith("export " + name + "="):
@@ -136,22 +143,18 @@ def unset_env_var(name: str) -> None:
             break
     if found:
         lines = [line for line in lines if line is not None]
-        new_file = "\n".join(lines)
-        if new_file != orig_file:
-            write_utf8(settings_file, new_file)
+        set_bash_file_lines(lines, settings_file)
 
 
 def add_env_path(
     path: str, verbose: bool = False, update_curr_environment: bool = True
 ) -> None:
     """Adds a path to the PATH environment variable."""
-    # add path to os.environ['PATH'] if it does not exist
     path_list = os.environ["PATH"].split(os.path.sep)
     if path not in path_list and update_curr_environment:
         os.environ["PATH"] = path + os.pathsep + os.environ["PATH"]
     settings_file = get_target()
-    orig_file = read_utf8(settings_file)
-    lines = orig_file.splitlines()
+    lines = read_bash_file_lines(settings_file)
     found = False
     for line in lines:
         if line.startswith("export PATH=") and path in line:
@@ -162,9 +165,7 @@ def add_env_path(
         if update_curr_environment:
             os.system(export_cmd)
         lines.append(export_cmd)
-    new_file = "\n".join(lines)
-    if new_file != orig_file:
-        write_utf8(settings_file, new_file)
+        set_bash_file_lines(lines, settings_file)
 
 
 def remove_env_path(path: str, update_curr_environment=True) -> None:
@@ -176,8 +177,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
             path_list.remove(path)
             os.environ["PATH"] = os.pathsep.join(path_list)
     settings_file = get_target()
-    orig_file = read_utf8(settings_file)
-    lines = orig_file.splitlines()
+    lines = read_bash_file_lines(settings_file)
     found = False
     for i, line in enumerate(lines):
         if line.startswith("export PATH=") and path in line:
@@ -186,9 +186,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
             break
     if found:
         lines = [line for line in lines if line is not None]
-        new_file = "\n".join(lines)
-        if new_file != orig_file:
-            write_utf8(settings_file, new_file)
+        set_bash_file_lines(lines, settings_file)
 
 
 def parse_paths(path_str: str) -> List[str]:
@@ -269,9 +267,9 @@ def reload_environment() -> None:
 
 def get_env() -> Environment:
     """Returns the environment."""
-    vars = get_all_env_vars()
-    paths = parse_paths(vars.get("PATH", ""))
+    env_vars = get_all_env_vars()
+    paths = parse_paths(env_vars.get("PATH", ""))
     return Environment(
-        vars=vars,
+        vars=env_vars,
         paths=paths,
     )
