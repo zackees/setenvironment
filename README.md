@@ -26,6 +26,8 @@ set_env_var("FOO", "BAR")
 add_env_path("MYPATH")
 unset_env_var("FOO")
 remove_env_path("MYPATH")
+add_template_path("MYPATHKEY", "/path/to/dir")
+remove_template_path("MYPATHKEY", "/path/to/dir")
 ```
 
 ## Command Line API
