@@ -23,3 +23,17 @@ def parse_paths(path_str: str) -> list[str]:
     if not path_str:
         return []
     return path_str.split(os.path.pathsep)
+
+
+def remove_adjascent_duplicates(path_list: list[str]) -> list[str]:
+    """Removes adjascent duplicates."""
+    out = []
+    for i, path in enumerate(path_list):
+        if i < len(path_list) - 1:
+            a = path_list[i + 1]
+            b = path_list[i]
+            if a != b:
+                out.append(path)
+        else:
+            out.append(path)
+    return out

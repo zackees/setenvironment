@@ -16,6 +16,7 @@ from typing import Optional
 import win32gui  # type: ignore
 
 from .types import Environment
+from .util import remove_adjascent_duplicates
 
 HERE = os.path.dirname(__file__)
 WIN_BIN_DIR = os.path.join(HERE, "win")
@@ -337,6 +338,7 @@ def reload_environment(verbose: bool) -> None:
     path_list = [path.strip() for path in path_list if path.strip()]
     path_list = merge_os_paths(path_list, parse_paths_win32(os.environ["PATH"]))
     path_list = [path.strip() for path in path_list if path.strip()]
+    path_list = remove_adjascent_duplicates(path_list)
     path_list_str = os.path.pathsep.join(path_list)
     path_list_str = path_list_str.replace(";;", ";")
     if path_list_str.endswith(os.path.pathsep):

@@ -51,6 +51,19 @@ class ReloadEnvironmentTest(BaseTest):
         for path in original_os_paths:
             self.assertIn(path, new_os_paths)
 
+    def test_adjascent_duplicates(self) -> None:
+        """Tests that we can add an environmental variable and then reload it."""
+        add_env_path(MY_PATH, update_curr_environment=False)
+        add_env_path(MY_PATH, update_curr_environment=False)
+        self.assertNotIn(MY_PATH, os.environ["PATH"])
+        reload_environment()
+        items = os.environ["PATH"].split(os.path.pathsep)
+        for i, item in enumerate(items):
+            if item == MY_PATH and i < len(items) - 1:
+                a = items[i + 1]
+                b = items[i]
+                self.assertNotEqual(a, b)
+
 
 if __name__ == "__main__":
     unittest.main()

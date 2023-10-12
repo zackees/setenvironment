@@ -10,7 +10,7 @@ import warnings
 from typing import Optional
 
 from .types import Environment
-from .util import parse_paths, read_utf8, write_utf8
+from .util import parse_paths, read_utf8, remove_adjascent_duplicates, write_utf8
 
 START_MARKER = "# START setenvironment"
 END_MARKER = "# END setenvironment"
@@ -255,6 +255,7 @@ def reload_environment(verbose: bool) -> None:
             continue
         os.environ[key] = val
     path_list = [os.path.expandvars(path) for path in path_list]
+    path_list = remove_adjascent_duplicates(path_list)
     path_list_str = os.path.pathsep.join(path_list)
     path_list_str = path_list_str.replace(os.path.sep + os.path.sep, os.path.sep)
     if path_list_str.endswith(os.path.pathsep):
