@@ -1,10 +1,10 @@
 # setenvironment
 
-[![Actions Status](../../workflows/MacOS_Tests/badge.svg)](../../actions/workflows/push_macos.yml)
-[![Actions Status](../../workflows/Win_Tests/badge.svg)](../../actions/workflows/push_win.yml)
-[![Actions Status](../../workflows/Ubuntu_Tests/badge.svg)](../../actions/workflows/push_ubuntu.yml)
+[![MacOS_Tests](https://github.com/zackees/setenvironment/actions/workflows/push_macos.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/push_macos.yml)
+[![Win_Tests](https://github.com/zackees/setenvironment/actions/workflows/push_win.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/push_win.yml)
+[![Ubuntu_Tests](https://github.com/zackees/setenvironment/actions/workflows/push_ubuntu.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/push_ubuntu.yml)
 
-[![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
+[![Linting](https://github.com/zackees/setenvironment/actions/workflows/lint.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/lint.yml)
 
 Finally, a cross platform way to set system environment variables and paths that are persistant across reboots.
 
