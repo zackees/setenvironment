@@ -11,7 +11,7 @@ import warnings
 from typing import List, Optional
 
 from .types import Environment
-from .util import read_utf8, write_utf8
+from .util import parse_paths, read_utf8, write_utf8
 
 START_MARKER = "# START setenvironment"
 END_MARKER = "# END setenvironment"
@@ -190,14 +190,6 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         set_bash_file_lines(lines, settings_file)
 
 
-def parse_paths(path_str: str) -> List[str]:
-    """Parses a path string into a list of paths."""
-    path_str = path_str.strip()
-    if not path_str:
-        return []
-    return path_str.split(os.path.pathsep)
-
-
 def add_template_path(
     env_var: str, new_path: str, update_curr_environment=True
 ) -> None:
@@ -262,13 +254,6 @@ def reload_environment(verbose: bool) -> None:
     for key, val in env_vars.items():
         if key == "PATH":
             continue
-        resolved_path = os.path.expandvars(val)
-        if resolved_path is None:
-            warnings.warn(f"Could not resolve path {val}")
-            continue
-        if verbose:
-            print(f"Setting {key} to {resolved_path}")
-        os.environ[key] = val
     path_list = [os.path.expandvars(path) for path in path_list]
     path_list_str = os.path.pathsep.join(path_list)
     os.environ["PATH"] = path_list_str

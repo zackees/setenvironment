@@ -140,7 +140,7 @@ def broadcast_changes():
         print("result: %s, %s, from SendMessageTimeout" % (bool(res1), res2))
 
 
-def parse_paths(path_str: str) -> list[str]:
+def parse_paths_win32(path_str: str) -> list[str]:
     path_str = path_str.replace("/", "\\")
     paths = path_str.split(os.path.pathsep)
 
@@ -198,7 +198,7 @@ def add_env_path(
     new_path = new_path.replace("/", "\\")
     if verbose:
         print(f"&&& Adding {new_path} to Windows PATH:")
-    current_path = parse_paths(get_env_path_registry())
+    current_path = parse_paths_win32(get_env_path_registry())
     if verbose:
         print(f"Current PATH: {current_path}")
     if verbose and new_path in current_path:
@@ -209,7 +209,7 @@ def add_env_path(
         set_env_path_registry(
             current_path_str, verbose=False, broad_cast_changes=update_curr_environment
         )
-    os_environ_paths = parse_paths(os.environ["PATH"])
+    os_environ_paths = parse_paths_win32(os.environ["PATH"])
     if verbose and new_path in os_environ_paths:
         print(f"{new_path} already in os.environ['PATH']")
     else:
@@ -254,14 +254,14 @@ def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=
         if verbose:
             print(f"{path_to_remove} not in PATH which is\n{path_str}")
         return
-    paths = parse_paths(path_str)
+    paths = parse_paths_win32(path_str)
     paths = [path for path in paths if path != path_to_remove]
     sep = os.path.pathsep
     new_path_str = sep.join(paths)
     set_env_path_registry(
         new_path_str, verbose=verbose, broad_cast_changes=update_curr_environment
     )
-    os_environ_paths = parse_paths(os.environ["PATH"])
+    os_environ_paths = parse_paths_win32(os.environ["PATH"])
     os_environ_paths = [path for path in os_environ_paths if path != path_to_remove]
     new_env_path_str = sep.join(os_environ_paths)
     os.environ["PATH"] = new_env_path_str
@@ -272,7 +272,7 @@ def add_template_path(
 ) -> None:
     assert "%" not in env_var, "env_var should not contain %"
     assert "%" not in new_path, "new_path should not contain %"
-    paths = parse_paths(get_env_var("PATH") or "")
+    paths = parse_paths_win32(get_env_var("PATH") or "")
     tmp_env_var = f"%{env_var}%"
     something_changed = False
     if tmp_env_var not in paths:
@@ -280,7 +280,7 @@ def add_template_path(
         new_path_str = os.path.pathsep.join(paths)
         set_env_path_registry(new_path_str, broad_cast_changes=False)
         something_changed = True
-    var_paths = parse_paths(get_env_var(env_var) or "")
+    var_paths = parse_paths_win32(get_env_var(env_var) or "")
     if new_path not in var_paths:
         var_paths.insert(0, new_path)
         new_var_path_str = os.path.pathsep.join(var_paths)
@@ -295,20 +295,30 @@ def remove_template_path(
 ) -> None:
     assert "%" not in env_var, "env_var should not contain %"
     assert "%" not in path_to_remove, "path_to_remove should not contain %"
-    var_paths = parse_paths(get_env_var(env_var) or "")
+    var_paths = parse_paths_win32(get_env_var(env_var) or "")
     if path_to_remove not in var_paths:
         return
     var_paths = [path for path in var_paths if path != path_to_remove]
     new_var_path_str = os.path.pathsep.join(var_paths)
     if not new_var_path_str and remove_if_empty:
         unset_env_var(env_var)
-        paths = parse_paths(get_env_path_registry() or "")
+        paths = parse_paths_win32(get_env_path_registry() or "")
         if f"%{env_var}%" in paths:
             paths = [path for path in paths if path != f"%{env_var}%"]
             new_path_str = os.path.pathsep.join(paths)
             set_env_path_registry(new_path_str)
         return
     set_env_var(env_var, new_var_path_str)
+
+
+def merge_os_paths(path_list: list[str], os_env: list[str]) -> list[str]:
+    """Merges os paths."""
+    out = []
+    for path in path_list:
+        if path not in os_env:
+            out.append(path)
+    out.extend(os_env)
+    return out
 
 
 def reload_environment(verbose: bool) -> None:
@@ -322,16 +332,13 @@ def reload_environment(verbose: bool) -> None:
     for key, val in env_vars.items():
         if key == "PATH":
             continue
-        resolved_path = os.path.expandvars(val)
-        if resolved_path is None:
-            warnings.warn(f"Could not resolve path {val}")
-            continue
-        if verbose:
-            print(f"Setting {key} to {resolved_path}")
         os.environ[key] = val
     path_list = [os.path.expandvars(path) for path in path_list]
-    path_list = [path for path in path_list if path.strip()]
+    path_list = [path.strip() for path in path_list if path.strip()]
+    path_list = merge_os_paths(path_list, parse_paths_win32(os.environ["PATH"]))
+    path_list = [path.strip() for path in path_list if path.strip()]
     path_list_str = os.path.pathsep.join(path_list)
+    path_list_str = path_list_str.replace(";;", ";")
     if path_list_str.endswith(os.path.pathsep):
         path_list_str = path_list_str[:-1]
     os.environ["PATH"] = path_list_str
@@ -341,7 +348,7 @@ def reload_environment(verbose: bool) -> None:
 
 def get_env() -> Environment:
     """Returns the environment."""
-    paths = parse_paths(get_env_path_registry())
+    paths = parse_paths_win32(get_env_path_registry())
     vars = get_all_env_vars()
     out = Environment(paths=paths, vars=vars)
     return out
