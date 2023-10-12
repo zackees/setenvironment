@@ -35,7 +35,8 @@ def set_env_config_file(filepath: str) -> None:
 
 def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     """Sets an environment variable."""
-    os.environ[name] = str(value)
+    if update_curr_environment:
+        os.environ[name] = str(value)
     settings_file = get_target()
     orig_file = read_utf8(settings_file)
     lines = orig_file.splitlines()
@@ -98,9 +99,7 @@ def unset_env_var(name: str) -> None:
             write_utf8(settings_file, new_file)
 
 
-def add_env_path(
-    path: str, verbose: bool = False, update_curr_environment: bool = True
-) -> None:
+def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
     """Adds a path to the PATH environment variable."""
     # add path to os.environ['PATH'] if it does not exist
     path_list = os.environ["PATH"].split(os.path.sep)
@@ -156,9 +155,7 @@ def parse_paths(path_str: str) -> List[str]:
     return path_str.split(os.path.pathsep)
 
 
-def add_template_path(
-    env_var: str, new_path: str, update_curr_environment=True
-) -> None:
+def add_template_path(env_var: str, new_path: str, update_curr_environment=True) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     path_str = get_env_var("PATH")
@@ -177,7 +174,7 @@ def add_template_path(
         add_env_path(tmp_env_var, update_curr_environment=update_curr_environment)
     env_paths = get_env_var(env_var)
     if env_paths is None:
-        set_env_var(env_var, new_path)
+        set_env_var(env_var, new_path, update_curr_environment=update_curr_environment)
         return
     var_paths = parse_paths(env_paths)
     if new_path not in var_paths:
@@ -190,9 +187,7 @@ def add_template_path(
         )
 
 
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
+def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     var_paths = parse_paths(get_env_var(env_var) or "")
