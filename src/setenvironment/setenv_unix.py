@@ -162,7 +162,7 @@ def add_env_path(
             found = True
             break
     if not found:
-        export_cmd = f"export PATH=$PATH:{path}"
+        export_cmd = f"export PATH={path}:$PATH"
         if update_curr_environment:
             os.system(export_cmd)
         lines.append(export_cmd)
