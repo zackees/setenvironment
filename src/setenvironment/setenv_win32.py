@@ -310,6 +310,18 @@ def remove_template_path(
             set_env_path_registry(new_path_str)
         return
     set_env_var(env_var, new_var_path_str)
+    # if the path exists in the PATH, remove it
+    paths = parse_paths_win32(get_env_path_registry() or "")
+    if path_to_remove in paths:
+        paths = [path for path in paths if path != path_to_remove]
+        new_path_str = os.path.pathsep.join(paths)
+        set_env_path_registry(new_path_str)
+    # now also remove it from the os.environ paths
+    os_environ_paths = parse_paths_win32(os.environ["PATH"])
+    if path_to_remove in os_environ_paths:
+        os_environ_paths = [path for path in os_environ_paths if path != path_to_remove]
+        new_env_path_str = os.path.pathsep.join(os_environ_paths)
+        os.environ["PATH"] = new_env_path_str
 
 
 def merge_os_paths(path_list: list[str], os_env: list[str]) -> list[str]:
@@ -320,6 +332,25 @@ def merge_os_paths(path_list: list[str], os_env: list[str]) -> list[str]:
             out.append(path)
     out.extend(os_env)
     return out
+
+
+def remove_template_group(env_var: str) -> None:
+    assert "%" not in env_var, "env_var should not contain %"
+    var_paths = parse_paths_win32(get_env_var(env_var) or "")
+    # Now remove the env var
+    unset_env_var(env_var)
+    if not var_paths:
+        return
+    for path in var_paths:
+        remove_template_path(env_var, path, remove_if_empty=True)
+    # Remove from system paths
+    system_var = f"%{env_var}%"
+    paths = parse_paths_win32(get_env_path_registry() or "")
+    if system_var in paths:
+        paths = [path for path in paths if path != system_var]
+        new_path_str = os.path.pathsep.join(paths)
+        set_env_path_registry(new_path_str)
+        os.environ["PATH"] = new_path_str
 
 
 def reload_environment(verbose: bool) -> None:

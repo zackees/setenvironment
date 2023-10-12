@@ -244,6 +244,19 @@ def remove_template_path(
     set_env_var(env_var, new_var_path_str)
 
 
+def remove_template_group(env_var: str) -> None:
+    assert "$" not in env_var, "env_var should not contain $"
+    var_paths = parse_paths(get_env_var(env_var) or "")
+    if not var_paths:
+        return
+    unset_env_var(env_var)
+    paths = parse_paths(get_env_var("PATH") or "")
+    if f"${env_var}" in paths:
+        paths = [path for path in paths if path != f"${env_var}"]
+        new_path_str = os.path.pathsep.join(paths)
+        set_env_var("PATH", new_path_str)
+
+
 def reload_environment(verbose: bool) -> None:
     """Reloads the environment."""
     # This is nearly the same as win version. Please keep them in same.

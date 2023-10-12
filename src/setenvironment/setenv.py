@@ -150,6 +150,18 @@ def remove_template_path(
         unix_remove_template_path(env_var, path, remove_if_empty)
 
 
+def remove_template_group(env_var: str) -> None:
+    """Removes a path from the PATH environment variable."""
+    if _IS_WINDOWS:
+        from .setenv_win32 import remove_template_group as win32_remove_template_group
+
+        win32_remove_template_group(env_var)
+    else:
+        from .setenv_unix import remove_template_group as unix_remove_template_group
+
+        unix_remove_template_group(env_var)
+
+
 def remove_env_path(
     path: Union[Path, str], update_curr_environment: bool = True
 ) -> None:
