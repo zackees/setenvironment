@@ -73,6 +73,7 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
 
 
 # Release Notes
+  * 1.2.8: Updated finding the bashrc file to better support github runners that use ~/.profile.
   * 1.2.6: Improved `reload_environment()` to preserve existing os paths.
   * 1.2.5: Fixes unix paths where the path would be appended instead of prepended.
   * 1.2.4: `reload_environment()` now supports template substitution.

@@ -18,7 +18,7 @@ END_MARKER = "# END setenvironment"
 
 def read_bash_file_lines(filepath: str | None = None) -> list[str]:
     """Reads a bash file."""
-    filepath = filepath or get_target()
+    filepath = filepath or get_bashrc()
     with open(filepath, encoding="utf8", mode="r") as file:
         lines = file.read().splitlines()
     # read all lines from START_MARKER to END_MARKER
@@ -39,7 +39,7 @@ def read_bash_file_lines(filepath: str | None = None) -> list[str]:
 
 def set_bash_file_lines(lines: list[str], filepath: str | None = None) -> None:
     """Adds new lines to the start of the bash file in the START_MARKER to END_MARKER section."""
-    filepath = filepath or get_target()
+    filepath = filepath or get_bashrc()
     file_read = read_utf8(filepath)
     if START_MARKER not in file_read:
         file_read += "\n" + START_MARKER + "\n" + END_MARKER + "\n"
@@ -66,14 +66,14 @@ def set_bash_file_lines(lines: list[str], filepath: str | None = None) -> None:
     write_utf8(filepath, "\n".join(outlines))
 
 
-def get_target() -> str:
+def get_bashrc() -> str:
     """Returns the target file."""
     if os.environ.get("SETENVIRONMENT_CONFIG_FILE"):
         config_file = os.environ["SETENVIRONMENT_CONFIG_FILE"]
         return os.path.expanduser(config_file)
-    # Get the dictionary attached to
-
-    for srcs in ["~/.bashrc", "~/.profile"]:
+    # Note that non-interactive shells (like those on the github ubuntu runners)
+    # do not load ~/.bashrc, but load ~/.profile instead.
+    for srcs in ["~/.profile", "~/.bash_profile", "~/.bashrc"]:
         src = os.path.expanduser(srcs)
         if os.path.exists(src):
             break
@@ -91,7 +91,7 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     """Sets an environment variable."""
     if update_curr_environment:
         os.environ[name] = str(value)
-    settings_files = get_target()
+    settings_files = get_bashrc()
     lines = read_bash_file_lines(settings_files)
     found = False
     export_cmd = f"export {name}={value}"
@@ -109,7 +109,7 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
 
 def get_all_env_vars() -> dict[str, str]:
     """Gets all environment variables."""
-    settings_file = get_target()
+    settings_file = get_bashrc()
     lines = read_bash_file_lines(settings_file)
     env_vars: dict[str, str] = {}
     for line in lines:
@@ -121,7 +121,7 @@ def get_all_env_vars() -> dict[str, str]:
 
 def get_env_var(name: str) -> Optional[str]:
     """Gets an environment variable."""
-    settings_file = get_target()
+    settings_file = get_bashrc()
     lines = read_bash_file_lines(settings_file)
     for line in lines:
         if line.startswith("export " + name + "="):
@@ -133,7 +133,7 @@ def unset_env_var(name: str) -> None:
     """Unsets an environment variable."""
     if name in os.environ:
         del os.environ[name]
-    settings_file = get_target()
+    settings_file = get_bashrc()
     lines = read_bash_file_lines(settings_file)
     found = False
     for i, line in enumerate(lines):
@@ -153,7 +153,7 @@ def add_env_path(
     path_list = os.environ["PATH"].split(os.path.sep)
     if path not in path_list and update_curr_environment:
         os.environ["PATH"] = path + os.pathsep + os.environ["PATH"]
-    settings_file = get_target()
+    settings_file = get_bashrc()
     lines = read_bash_file_lines(settings_file)
     found = False
     for line in lines:
@@ -176,7 +176,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         if path in path_list:
             path_list.remove(path)
             os.environ["PATH"] = os.pathsep.join(path_list)
-    settings_file = get_target()
+    settings_file = get_bashrc()
     lines = read_bash_file_lines(settings_file)
     found = False
     for i, line in enumerate(lines):
