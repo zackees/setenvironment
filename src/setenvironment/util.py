@@ -22,7 +22,9 @@ def parse_paths(path_str: str) -> list[str]:
     path_str = path_str.strip()
     if not path_str:
         return []
-    return path_str.split(os.path.pathsep)
+    out = path_str.split(os.path.pathsep)
+    out = [path for path in out if path.strip()]
+    return out
 
 
 def remove_adjascent_duplicates(path_list: list[str]) -> list[str]:
