@@ -75,12 +75,13 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
 
 
 # Release Notes
-  * 1.2.9: Adds `remove_template_group`
-  * 1.2.8: Updated finding the bashrc file to better support github runners that use ~/.profile.
-  * 1.2.6: Improved `reload_environment()` to preserve existing os paths.
-  * 1.2.5: Fixes unix paths where the path would be appended instead of prepended.
-  * 1.2.4: `reload_environment()` now supports template substitution.
-  * 1.2.3: Unix/Macos: bashrc now uses a START / END markers to contain environment settings.
+  * 1.1.10: `reload_environment()` improvements on full environment reloading.
+  * 1.1.9: Adds `remove_template_group`
+  * 1.1.8: Updated finding the bashrc file to better support github runners that use ~/.profile.
+  * 1.1.6: Improved `reload_environment()` to preserve existing os paths.
+  * 1.1.5: Fixes unix paths where the path would be appended instead of prepended.
+  * 1.1.4: `reload_environment()` now supports template substitution.
+  * 1.1.3: Unix/Macos: bashrc now uses a START / END markers to contain environment settings.
   * 1.1.1: Adds `add_template_path` and `remove_template_path`
   * 1.1.0: stashes settings in ~/.bash_aliases, ~/.bash_profile, ~/.bashrc
   * 1.0.10: Win32: path is now set in the user environment instead of the system environment (removes the need for admin rights)
