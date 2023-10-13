@@ -10,9 +10,12 @@ from setenvironment import reload_environment
 
 def main():
     """Main entry point for the script."""
+    if not which("git"):
+        print("git not found before reload_environment()")
+        return 1
     reload_environment()
     if not which("git"):
-        print("git not found")
+        print("git not found after reload_environment()")
         return 1
     return 0
 
