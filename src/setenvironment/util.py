@@ -29,6 +29,8 @@ def remove_adjascent_duplicates(path_list: list[str]) -> list[str]:
     """Removes adjascent duplicates."""
     out = []
     for i, path in enumerate(path_list):
+        if path == "":  # also remove empty paths
+            continue
         if i < len(path_list) - 1:
             a = path_list[i + 1]
             b = path_list[i]
