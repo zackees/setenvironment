@@ -5,8 +5,11 @@ Adds setenv for unix.
 # pylint: disable=C0116
 # flake8: noqa: E501
 
+import json
 import os
+import subprocess
 import warnings
+from dataclasses import dataclass
 from typing import Optional
 
 from .types import Environment
@@ -107,16 +110,46 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     set_bash_file_lines(lines, settings_files)
 
 
+@dataclass
+class ShellEnv:
+    """A shell environment."""
+
+    env_vars: dict[str, str]
+    paths: list[str]
+
+
+def get_env_vars_from_shell(settings_file: str | None = None) -> ShellEnv:
+    # Source the provided bashrc_file, ~/.bashrc, and ~/.profile, then execute the command.
+    settings_file = settings_file or get_bashrc()
+    cmd = (
+        f"source ~/.bashrc; "
+        f"source ~/.profile; "
+        f"source {settings_file}; "
+        f"python -m setenvironment.os_env_json"
+    )
+    completed_process = subprocess.run(
+        ["bash", "-c", cmd], capture_output=True, universal_newlines=True, check=True
+    )
+    json_str = completed_process.stdout
+    json_data = json.loads(json_str)
+    out = ShellEnv(
+        env_vars=json_data["ENVIRONMENT"],
+        paths=json_data["PATH"],
+    )
+
+    return out
+
+
 def get_all_env_vars() -> dict[str, str]:
     """Gets all environment variables."""
     settings_file = get_bashrc()
-    lines = read_bash_file_lines(settings_file)
-    env_vars: dict[str, str] = {}
-    for line in lines:
-        if line.startswith("export "):
-            name, value = line[7:].split("=", 1)
-            env_vars[name] = value
-    return env_vars
+    shell_env: ShellEnv = get_env_vars_from_shell(settings_file)
+    # output to a os.environ style dict
+    out: dict[str, str] = {}
+    for key, value in shell_env.env_vars.items():
+        out[key] = value
+    out["PATH"] = os.path.pathsep.join(shell_env.paths)
+    return out
 
 
 def get_env_var(name: str) -> Optional[str]:
@@ -293,6 +326,7 @@ def get_env() -> Environment:
     """Returns the environment."""
     env_vars = get_all_env_vars()
     paths = parse_paths(env_vars.get("PATH", ""))
+    env_vars.pop("PATH")
     return Environment(
         vars=env_vars,
         paths=paths,

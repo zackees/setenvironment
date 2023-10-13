@@ -10,6 +10,7 @@ import unittest
 from setenvironment.setenv_unix import (
     END_MARKER,
     START_MARKER,
+    get_env_vars_from_shell,
     read_bash_file_lines,
     set_bash_file_lines,
 )
@@ -48,6 +49,12 @@ class UnixPathTester(BaseTest):
         self.assertEqual(2, len(lines))
         self.assertEqual("foo", lines[0])
         self.assertEqual("bar", lines[1])
+
+    @unittest.skipIf(sys.platform == "win32", "Windows does not support .bashrc")
+    def test_get_env_vars_from_shell(self) -> None:
+        out = get_env_vars_from_shell()
+        print(out)
+        print("done")
 
 
 if __name__ == "__main__":
