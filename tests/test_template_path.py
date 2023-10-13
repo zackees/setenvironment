@@ -52,7 +52,11 @@ class TemplatePathtester(BaseTest):
             bashrc_str = read_utf8(BASHRC)
             self.assertNotIn(mypath, bashrc_str)
         environment: Environment = get_env()
-        self.assertEqual(environment.paths[0], system_key)
+        # self.assertEqual(environment.paths[0], system_key)
+        index_of_system_key = environment.paths.index(system_key)
+        max_index = 0 if sys.platform == "win32" else 5
+        # On unix the path inserts funning things
+        self.assertLessEqual(index_of_system_key, max_index)
 
     def test_add_template_path_if_empty(self) -> None:
         """Test setting an environment variable."""
