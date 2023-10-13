@@ -15,8 +15,8 @@ from typing import Optional
 
 import win32gui  # type: ignore
 
-from .types import Environment
-from .util import remove_adjascent_duplicates
+from setenvironment.types import Environment
+from setenvironment.util import remove_adjascent_duplicates
 
 HERE = os.path.dirname(__file__)
 WIN_BIN_DIR = os.path.join(HERE, "win")

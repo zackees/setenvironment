@@ -8,12 +8,17 @@ Adds setenv for unix.
 import json
 import os
 import subprocess
+import sys
 import warnings
-from dataclasses import dataclass
 from typing import Optional
 
-from .types import Environment
-from .util import parse_paths, read_utf8, remove_adjascent_duplicates, write_utf8
+from setenvironment.types import Environment
+from setenvironment.util import (
+    parse_paths,
+    read_utf8,
+    remove_adjascent_duplicates,
+    write_utf8,
+)
 
 START_MARKER = "# START setenvironment"
 END_MARKER = "# END setenvironment"
@@ -110,46 +115,36 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     set_bash_file_lines(lines, settings_files)
 
 
-@dataclass
-class ShellEnv:
-    """A shell environment."""
-
-    env_vars: dict[str, str]
-    paths: list[str]
-
-
-def get_env_vars_from_shell(settings_file: str | None = None) -> ShellEnv:
+def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
     # Source the provided bashrc_file, ~/.bashrc, and ~/.profile, then execute the command.
     settings_file = settings_file or get_bashrc()
+    python_exe = sys.executable
     cmd = (
         f"source ~/.bashrc; "
         f"source ~/.profile; "
         f"source {settings_file}; "
-        f"python -m setenvironment.os_env_json"
+        f"{python_exe} -m setenvironment.os_env_json"
     )
     completed_process = subprocess.run(
-        ["bash", "-c", cmd], capture_output=True, universal_newlines=True, check=True
+        ["/bin/bash", "-c", cmd],
+        capture_output=True,
+        universal_newlines=True,
+        check=True,
     )
     json_str = completed_process.stdout
     json_data = json.loads(json_str)
-    out = ShellEnv(
-        env_vars=json_data["ENVIRONMENT"],
+    out = Environment(
+        vars=json_data["ENVIRONMENT"],
         paths=json_data["PATH"],
     )
-
     return out
 
 
-def get_all_env_vars() -> dict[str, str]:
+def get_all_env_vars() -> Environment:
     """Gets all environment variables."""
     settings_file = get_bashrc()
-    shell_env: ShellEnv = get_env_vars_from_shell(settings_file)
-    # output to a os.environ style dict
-    out: dict[str, str] = {}
-    for key, value in shell_env.env_vars.items():
-        out[key] = value
-    out["PATH"] = os.path.pathsep.join(shell_env.paths)
-    return out
+    shell_env: Environment = get_env_vars_from_shell(settings_file)
+    return shell_env
 
 
 def get_env_var(name: str) -> Optional[str]:
@@ -313,6 +308,7 @@ def reload_environment(verbose: bool) -> None:
         os.environ[key] = val
     path_list = [os.path.expandvars(path) for path in path_list]
     path_list = remove_adjascent_duplicates(path_list)
+    path_list = [path.strip() for path in path_list if path.strip()]
     path_list_str = os.path.pathsep.join(path_list)
     path_list_str = path_list_str.replace(os.path.sep + os.path.sep, os.path.sep)
     if path_list_str.endswith(os.path.pathsep):
@@ -324,10 +320,5 @@ def reload_environment(verbose: bool) -> None:
 
 def get_env() -> Environment:
     """Returns the environment."""
-    env_vars = get_all_env_vars()
-    paths = parse_paths(env_vars.get("PATH", ""))
-    env_vars.pop("PATH")
-    return Environment(
-        vars=env_vars,
-        paths=paths,
-    )
+    out = get_all_env_vars()
+    return out

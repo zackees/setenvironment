@@ -10,8 +10,11 @@ import unittest
 from setenvironment.setenv_unix import (
     END_MARKER,
     START_MARKER,
+    Environment,
+    add_env_path,
     get_env_vars_from_shell,
     read_bash_file_lines,
+    remove_env_path,
     set_bash_file_lines,
 )
 from setenvironment.testing.basetest import BASHRC, BaseTest
@@ -39,7 +42,7 @@ class UnixPathTester(BaseTest):
         self.assertEqual("foo", lines[0])
 
     @unittest.skipIf(sys.platform == "win32", "Windows does not support .bashrc")
-    def test_(self) -> None:
+    def test_setting_env_var(self) -> None:
         """Test setting an environment variable."""
         lines = read_bash_file_lines(BASHRC)
         self.assertEqual(0, len(lines))  # Should be empty at this point.
@@ -52,9 +55,16 @@ class UnixPathTester(BaseTest):
 
     @unittest.skipIf(sys.platform == "win32", "Windows does not support .bashrc")
     def test_get_env_vars_from_shell(self) -> None:
-        out = get_env_vars_from_shell()
-        print(out)
-        print("done")
+        """Test setting an env variable and then reloading it fromn the shell."""
+        my_path = "/my/test/path"
+        add_env_path(my_path, update_curr_environment=False)
+        try:
+            out: Environment = get_env_vars_from_shell(BASHRC)
+            self.assertIn(my_path, out.paths)
+            print(out)
+            print("done")
+        finally:
+            remove_env_path(my_path, update_curr_environment=True)
 
 
 if __name__ == "__main__":

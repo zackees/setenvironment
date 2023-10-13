@@ -35,7 +35,6 @@ class ReloadPathTemplateTest(BaseTest):
         paths = os.environ["PATH"].split(os.pathsep)
         self.assertIn(MY_PATH, paths)
 
-    @unittest.skip("disabled for now")
     def test_two_path(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
         remove_template_path(PATH_KEY, MY_PATH, remove_if_empty=True)

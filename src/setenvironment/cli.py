@@ -6,7 +6,7 @@ import argparse
 import os
 import sys
 
-from .setenv import (
+from setenvironment.setenv import (
     add_env_path,
     get_env_var,
     remove_env_path,
@@ -14,7 +14,7 @@ from .setenv import (
     set_env_var,
     unset_env_var,
 )
-from .util import write_utf8
+from setenvironment.util import write_utf8
 
 
 def _init_config_file(args):

@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from typing import Optional, Union
 
-from .types import Environment
+from setenvironment.types import Environment
 
 _IS_WINDOWS = sys.platform == "win32"
 
