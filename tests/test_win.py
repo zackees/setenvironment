@@ -7,7 +7,6 @@ Test the main module
 import sys
 import unittest
 
-from setenvironment.setenv_win32 import get_env_path_system_registry, parse_paths_win32
 from setenvironment.testing.basetest import BaseTest
 
 
@@ -17,6 +16,11 @@ class WinPathTester(BaseTest):
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_get_env_path_system_registry(self) -> None:
         """Test setting an environment variable."""
+        from setenvironment.setenv_win32 import (
+            get_env_path_system_registry,
+            parse_paths_win32,
+        )
+
         path_str = get_env_path_system_registry()
         paths = parse_paths_win32(path_str)
         for path in paths:
