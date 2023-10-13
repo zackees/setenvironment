@@ -17,7 +17,7 @@ from setenvironment.testing.basetest import BASHRC, BaseTest
 from setenvironment.util import write_utf8
 
 
-class SetPathTester(BaseTest):
+class UnixPathTester(BaseTest):
     """Tester for the main module."""
 
     @unittest.skipIf(sys.platform == "win32", "Windows does not support .bashrc")

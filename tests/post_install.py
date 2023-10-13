@@ -8,6 +8,7 @@ from shutil import which
 
 from setenvironment import reload_environment
 
+
 def print_env() -> None:
     """Prints the environment."""
     os_env = os.environ.copy()
@@ -18,7 +19,6 @@ def print_env() -> None:
     print("PATH:")
     for path in paths.split(os.path.pathsep):
         print(f"  {path}")
-    
 
 
 def main():

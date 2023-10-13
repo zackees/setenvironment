@@ -192,6 +192,22 @@ def get_env_path_registry(verbose=False) -> str:
         return path
 
 
+def get_env_path_system_registry(verbose=False) -> str:
+    if verbose:
+        print("&&& Getting Windows System PATH")
+
+    with winreg.OpenKey(
+        winreg.HKEY_LOCAL_MACHINE,
+        "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+        0,
+        winreg.KEY_READ,
+    ) as key:
+        # Get the value of the Path key
+        path = winreg.QueryValueEx(key, "Path")[0]
+        winreg.CloseKey(key)
+        return path
+
+
 def add_env_path(
     new_path: str, verbose: bool = False, update_curr_environment: bool = True
 ) -> None:
@@ -199,14 +215,14 @@ def add_env_path(
     new_path = new_path.replace("/", "\\")
     if verbose:
         print(f"&&& Adding {new_path} to Windows PATH:")
-    current_path = parse_paths_win32(get_env_path_registry())
+    current_paths = parse_paths_win32(get_env_path_registry())
     if verbose:
-        print(f"Current PATH: {current_path}")
-    if verbose and new_path in current_path:
+        print(f"Current PATH: {current_paths}")
+    if verbose and new_path in current_paths:
         print(f"{new_path} already in PATH")
     else:
-        current_path.insert(0, new_path)
-        current_path_str = os.path.pathsep.join(current_path)
+        current_paths.insert(0, new_path)
+        current_path_str = os.path.pathsep.join(current_paths)
         set_env_path_registry(
             current_path_str, verbose=False, broad_cast_changes=update_curr_environment
         )
@@ -381,7 +397,9 @@ def reload_environment(verbose: bool) -> None:
 
 def get_env() -> Environment:
     """Returns the environment."""
-    paths = parse_paths_win32(get_env_path_registry())
+    paths = parse_paths_win32(get_env_path_registry()) + parse_paths_win32(
+        get_env_path_system_registry()
+    )
     vars = get_all_env_vars()
     out = Environment(paths=paths, vars=vars)
     return out
