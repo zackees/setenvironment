@@ -73,6 +73,17 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
   * set the os.environ to the proper value
   * write the value to the .bashrc file (make sure it's chmod +w)
 
+## Github runnier - linux
+
+To force the ubuntu runner to use the ~/bashrc file, use the following:
+
+```
+name: Ubuntu_Fullinstall
+on: [push]
+defaults:
+    run:
+      shell: bash -ieo pipefail {0}
+```
 
 # Release Notes
   * 1.1.10: `reload_environment()` improvements on full environment reloading.

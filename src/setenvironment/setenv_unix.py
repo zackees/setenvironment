@@ -179,7 +179,9 @@ def unset_env_var(name: str) -> None:
         set_bash_file_lines(lines, settings_file)
 
 
-def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
+def add_env_path(
+    path: str, verbose: bool = False, update_curr_environment: bool = True
+) -> None:
     """Adds a path to the PATH environment variable."""
     path_list = os.environ["PATH"].split(os.path.sep)
     if path not in path_list and update_curr_environment:
@@ -220,7 +222,9 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         set_bash_file_lines(lines, settings_file)
 
 
-def add_template_path(env_var: str, new_path: str, update_curr_environment=True) -> None:
+def add_template_path(
+    env_var: str, new_path: str, update_curr_environment=True
+) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     path_str = get_env_var("PATH")
@@ -252,7 +256,9 @@ def add_template_path(env_var: str, new_path: str, update_curr_environment=True)
         )
 
 
-def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
+def remove_template_path(
+    env_var: str, path_to_remove: str, remove_if_empty: bool
+) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     var_paths = parse_paths(get_env_var(env_var) or "")
