@@ -16,7 +16,9 @@ from setenvironment.types import Environment
 _IS_WINDOWS = sys.platform == "win32"
 
 
-def set_env_config_file(filepath: str = "~/.bash_aliases", ignore_error: bool = False) -> None:
+def set_env_config_file(
+    filepath: str = "~/.bash_aliases", ignore_error: bool = False
+) -> None:
     """Sets the config file for the platform."""
     # Only works for Unix/MacOS
     if not _IS_WINDOWS:
@@ -43,13 +45,17 @@ def set_env_var(
 
         var_name = str(var_name)
         var_value = str(var_value)
-        win32_set_env_var(var_name, var_value, update_curr_environment=update_curr_environment)
+        win32_set_env_var(
+            var_name, var_value, update_curr_environment=update_curr_environment
+        )
     else:
         from .setenv_unix import set_env_var as unix_set_env_var
 
         var_name = str(var_name)
         var_value = str(var_value)
-        unix_set_env_var(var_name, var_value, update_curr_environment=update_curr_environment)
+        unix_set_env_var(
+            var_name, var_value, update_curr_environment=update_curr_environment
+        )
 
 
 def get_env_var(var_name: str, verbose=False) -> Optional[str]:
@@ -104,7 +110,9 @@ def unset_env_var(var_name: str, verbose=False, update_curr_environment=True) ->
         unix_unset_env_var(var_name)
 
 
-def add_env_path(new_path: Union[Path, str], update_curr_environment: bool = True) -> None:
+def add_env_path(
+    new_path: Union[Path, str], update_curr_environment: bool = True
+) -> None:
     """Adds a path to the front of the PATH environment variable."""
     new_path = str(new_path)
     if _IS_WINDOWS:
@@ -125,14 +133,20 @@ def add_template_path(
     if _IS_WINDOWS:
         from .setenv_win32 import add_template_path as win32_add_template_path
 
-        win32_add_template_path(env_var, new_path, update_curr_environment=update_curr_environment)
+        win32_add_template_path(
+            env_var, new_path, update_curr_environment=update_curr_environment
+        )
     else:
         from .setenv_unix import add_template_path as unix_add_template_path
 
-        unix_add_template_path(env_var, new_path, update_curr_environment=update_curr_environment)
+        unix_add_template_path(
+            env_var, new_path, update_curr_environment=update_curr_environment
+        )
 
 
-def remove_template_path(env_var: str, path: Union[Path, str], remove_if_empty=False) -> None:
+def remove_template_path(
+    env_var: str, path: Union[Path, str], remove_if_empty=False
+) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if _IS_WINDOWS:
@@ -157,7 +171,9 @@ def remove_template_group(env_var: str) -> None:
         unix_remove_template_group(env_var)
 
 
-def remove_env_path(path: Union[Path, str], update_curr_environment: bool = True) -> None:
+def remove_env_path(
+    path: Union[Path, str], update_curr_environment: bool = True
+) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if _IS_WINDOWS:
