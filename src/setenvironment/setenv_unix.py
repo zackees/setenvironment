@@ -13,12 +13,12 @@ import sys
 from setenvironment.bash_parser import bash_make_environment, bash_rc_file, bash_save
 from setenvironment.types import Environment
 from setenvironment.util import parse_paths, remove_adjascent_duplicates
-
+from setenvironment.os_env import os_update_variable, os_remove_variable, OsEnvironment, os_env_make_environment
 
 def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     """Sets an environment variable."""
     if update_curr_environment:
-        os.environ[name] = str(value)
+        os_update_variable(name, value)
     env: Environment = bash_make_environment()
     env.vars[name] = str(value)
     bash_save(env)
@@ -57,8 +57,7 @@ def unset_env_var(name: str) -> None:
     """Unsets an environment variable."""
     assert "$" not in name, "name should not contain $"
     assert name.lower() != "path", "Use remove_env_path to remove from PATH"
-    if name in os.environ:
-        del os.environ[name]
+    os_remove_variable(name)
     env: Environment = bash_make_environment()
     if name in env.vars:
         del env.vars[name]
@@ -70,7 +69,9 @@ def add_env_path(
 ) -> None:
     """Adds a path to the PATH environment variable."""
     if update_curr_environment:
-        os.environ["PATH"] = path + os.pathsep + os.environ["PATH"]
+        os_env: OsEnvironment = os_env_make_environment()
+        os_env.paths.insert(0, path)
+        os_env.store()
     env: Environment = bash_make_environment()
     env.paths.append(path)
     bash_save(env)
@@ -80,10 +81,10 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
     """Removes a path from the PATH environment variable."""
     # remove path from os.environ['PATH'] if it does not exist
     if update_curr_environment:
-        path_list = os.environ["PATH"].split(os.pathsep)
-        if path in path_list:
-            path_list.remove(path)
-            os.environ["PATH"] = os.pathsep.join(path_list)
+        os_env: OsEnvironment = os_env_make_environment()
+        while path in os_env.paths:
+            os_env.paths.remove(path)
+        os_env.store()
     env: Environment = bash_make_environment()
     needs_save = False
     while path in env.paths:
@@ -99,8 +100,9 @@ def add_template_path(
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     if update_curr_environment:
-        os.environ[env_var] = new_path + os.pathsep + os.environ[env_var]
-        os.environ["PATH"] = f"${new_path}" + os.pathsep + os.environ["PATH"]
+        os_env: OsEnvironment = os_env_make_environment()
+        os_env.paths.insert(0, new_path)
+        os_env.store()
     env: Environment = bash_make_environment()
     if env_var not in env.vars:
         env.vars[env_var] = ""

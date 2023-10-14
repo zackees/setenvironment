@@ -8,6 +8,7 @@ Dummy
 
 import os
 import re
+import json
 import subprocess
 import sys
 import warnings
@@ -406,8 +407,6 @@ def get_env_from_shell() -> Environment:
     stdout = subprocess.check_output(
         cmd, cwd=WIN_BIN_DIR, shell=True, universal_newlines=True
     )
-    import json
-
     json_data = json.loads(stdout)
     env = json_data["ENVIRONMENT"]
     path = json_data["PATH"]
