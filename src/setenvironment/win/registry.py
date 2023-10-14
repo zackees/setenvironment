@@ -87,41 +87,6 @@ def get_env_from_shell() -> Environment:
     return out
 
 
-def win32_registry_set_env_var_cmd_user(
-    name: str, value: str, update_curr_environment=True
-) -> None:
-    completed_proc: subprocess.CompletedProcess = _command(
-        [
-            "reg",
-            "add",
-            "HKCU\\Environment",
-            "/t",
-            "REG_EXPAND_SZ",
-            "/v",
-            name,
-            "/d",
-            value,
-            "/f",
-        ]
-    )
-    if completed_proc.returncode != 0:
-        _print(f"Error happened while setting {name}={value}")
-        _print(_try_decode(completed_proc.stdout))
-    if update_curr_environment:
-        win32_registry_broadcast_changes()
-
-
-def win32_registry_unset_env_var_cmd_user(name: str) -> None:
-    completed_proc: subprocess.CompletedProcess = _command(
-        ["reg", "delete", "HKCU\\Environment", "/v", name, "/f"]
-    )
-    if completed_proc.returncode != 0:
-        _print(f"Error happened while unsetting {name}")
-        _print(get_all_user_vars())
-        if completed_proc.stdout:
-            _print(_try_decode(completed_proc.stdout))
-
-
 def win32_registry_broadcast_changes() -> None:
     if not ENABLE_BROADCAST_CHANGES:
         return
@@ -195,40 +160,28 @@ def win32_registry_set_all_env_vars_user(
         win32_registry_broadcast_changes()
 
 
-def win32_registry_get_env_path_user(verbose=False) -> str:
-    env: RegistryEnvironment = win32_registry_make_environment()
-    path_str = os.pathsep.join(env.user.paths)
-    return path_str
+def win32_registry_delete_env_vars_user(
+    to_delete: set[str], verbose=False, broad_cast_changes=True
+) -> None:
+    """Deletes specific environment variables in the Windows registry for the current user based on provided keys."""
+    try:
+        with winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER, "Environment", 0, winreg.KEY_ALL_ACCESS
+        ) as key:
+            # Delete the environment variables provided in to_delete set
+            for name in to_delete:
+                try:
+                    if verbose:
+                        print(f"&&& Deleting {name}")
+                    winreg.DeleteValue(key, name)
+                except FileNotFoundError:
+                    # If the key doesn't exist, just skip it.
+                    pass
+                except Exception as exc:
+                    warnings.warn(f"Failed to delete {name} because of {exc}")
 
+    except Exception as exc:  # pylint: disable=broad-except
+        warnings.warn(f"An error occurred: {exc}")
 
-def win32_registry_get_env_path_system(verbose=False) -> str:
-    env: RegistryEnvironment = win32_registry_make_environment()
-    path_str = os.pathsep.join(env.system.paths)
-    return path_str
-
-
-def win32_registry_make_environment() -> RegistryEnvironment:
-    user_env = get_all_user_vars()
-    system_env = get_all_system_vars()
-    user_path = user_env.pop("PATH", "")
-    system_path = system_env.pop("PATH", "")
-    user_path_list = user_path.split(os.pathsep)
-    system_path_list = system_path.split(os.pathsep)
-    # clear out empty strings
-    user_path_list = [path for path in user_path_list if path]
-    system_path_list = [path for path in system_path_list if path]
-    user: Environment = Environment(vars=user_env, paths=user_path_list)
-    system: Environment = Environment(vars=system_env, paths=system_path_list)
-    out = RegistryEnvironment(user=user, system=system)
-    return out
-
-
-def win32_registry_save(user_environment: Environment) -> None:
-    """Saves the user environment. Note that system environment can't be saved."""
-    user_env = user_environment.vars.copy()
-    user_path = user_environment.paths
-    user_path_str = os.pathsep.join(user_path)
-    user_env["PATH"] = user_path_str
-    win32_registry_set_all_env_vars_user(
-        user_env, broad_cast_changes=False, remove_missing_keys=True)
-    win32_registry_broadcast_changes()
+    if broad_cast_changes:
+        win32_registry_broadcast_changes()

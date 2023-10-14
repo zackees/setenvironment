@@ -17,20 +17,20 @@ class WinPathTester(BaseTest):
     # teardown
     def tearDown(self) -> None:
         """Remove the environment variable."""
-        from setenvironment.setenv_win32 import win32_registry_get_env_path_user
+        from setenvironment.setenv_win32 import (
+            RegistryEnvironment,
+            query_registry_environment,
+        )
 
-        path = win32_registry_get_env_path_user()
-        self.assertNotIn("value not set", path)
+        env: RegistryEnvironment = query_registry_environment()
+        self.assertNotIn("value not set", env.user.paths)
 
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_get_env_path_system_registry(self) -> None:
         """Test setting an environment variable."""
-        from setenvironment.setenv_win32 import (
-            parse_paths_win32,
-            win32_registry_get_env_path_system,
-        )
+        from setenvironment.setenv_win32 import get_env_path_system, parse_paths_win32
 
-        path_str = win32_registry_get_env_path_system()
+        path_str = get_env_path_system()
         paths = parse_paths_win32(path_str)
         print("done")
         self.assertIn("C:\\Windows", paths)
@@ -48,30 +48,30 @@ class WinPathTester(BaseTest):
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_registry_environment(self) -> None:
         """Test setting an environment variable."""
-        from setenvironment.win.registry import (
+        from setenvironment.setenv_win32 import (
             RegistryEnvironment,
-            win32_registry_make_environment,
+            query_registry_environment,
         )
 
-        env: RegistryEnvironment = win32_registry_make_environment()
+        env: RegistryEnvironment = query_registry_environment()
         print(env)
         print("done")
 
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_registry_manipulation(self) -> None:
         """Test setting an environment variable."""
-        from setenvironment.win.registry import (
+        from setenvironment.setenv_win32 import (
             RegistryEnvironment,
-            win32_registry_make_environment,
+            query_registry_environment,
             win32_registry_save,
         )
 
-        env: RegistryEnvironment = win32_registry_make_environment()
+        env: RegistryEnvironment = query_registry_environment()
         env.user.vars["BAR"] = "FOO"
         env.user.paths.append("C:\\foo")
         win32_registry_save(env.user)
         try:
-            env2 = win32_registry_make_environment()
+            env2 = query_registry_environment()
             self.assertIn("BAR", env2.user.vars)
             self.assertIn("C:\\foo", env2.user.paths)
             self.assertEqual("FOO", env2.user.vars["BAR"])
@@ -80,7 +80,7 @@ class WinPathTester(BaseTest):
             if "C:\\foo" in env.user.paths:
                 env.user.paths.remove("C:\\foo")
             win32_registry_save(env.user)
-        env3 = win32_registry_make_environment()
+        env3 = query_registry_environment()
         self.assertNotIn("BAR", env3.user.vars)
         self.assertNotIn("C:\\foo", env3.user.paths)
 
