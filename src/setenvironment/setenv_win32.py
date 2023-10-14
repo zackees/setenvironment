@@ -23,7 +23,7 @@ from setenvironment.win.refresh_env import REFRESH_ENV
 
 HERE = os.path.dirname(__file__)
 WIN_BIN_DIR = os.path.join(HERE, "win")
-ENABLE_BROADCAST_CHANGES = True
+ENABLE_BROADCAST_CHANGES = False
 
 
 _DEFAULT_PRINT = print
