@@ -86,6 +86,7 @@ defaults:
 ```
 
 # Release Notes
+  * 1.2.0: Win32 now resolves paths with variables in it since this wasn't being done before.
   * 1.1.10: `reload_environment()` improvements on full environment reloading.
   * 1.1.9: Adds `remove_template_group`
   * 1.1.8: Updated finding the bashrc file to better support github runners that use ~/.profile.
