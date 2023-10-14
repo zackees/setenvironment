@@ -151,6 +151,7 @@ def bash_make_environment() -> BashEnvironment:
             value = value.strip()
             if name == "PATH":
                 paths = value.split(":")
+                paths = [p for p in paths if p.lower() != "$path"]
             else:
                 vars[name] = value
     return BashEnvironment(vars, paths)
@@ -161,5 +162,5 @@ def bash_save(environment: Environment) -> None:
     lines = []
     for name, value in environment.vars.items():
         lines.append(f"export {name}={value}")
-    lines.append(f"export PATH={':'.join(environment.paths)}")
+    lines.append(f"export PATH={':'.join(environment.paths)}:$PATH")
     bash_write_lines(lines)

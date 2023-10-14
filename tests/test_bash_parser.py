@@ -13,6 +13,7 @@ from setenvironment.bash_parser import (
     bash_make_environment,
     bash_rc_set_file,
     bash_save,
+    bash_read_lines,
 )
 from setenvironment.testing.basetest import BaseTest
 
@@ -46,6 +47,18 @@ class BashParserTester(BaseTest):
         self.assertEqual(2, len(env2.paths))
         self.assertIn("/my/path", env2.paths)
         self.assertIn("/my/path2", env2.paths)
+
+    def test_path_is_recursive(self) -> None:
+        """Path should self reference."""
+        env: BashEnvironment = bash_make_environment()
+        env.paths.append("/my/path")
+        bash_save(env)
+        try:
+            lines = bash_read_lines()
+            self.assertEqual(1, len(lines))
+            self.assertEqual(lines[0], "export PATH=/my/path:$PATH")
+        finally:
+            env.paths.remove("/my/path")
 
 
 if __name__ == "__main__":
