@@ -10,11 +10,12 @@ import subprocess
 import sys
 import warnings
 import winreg  # type: ignore
+from dataclasses import dataclass
 from typing import Optional
 
 import win32gui  # type: ignore
 
-from setenvironment.types import Environment
+from setenvironment.types import Environment, RegistryEnvironment
 from setenvironment.win.refresh_env import REFRESH_ENV
 
 HERE = os.path.dirname(__file__)
@@ -72,7 +73,7 @@ def _try_decode(byte_string: bytes) -> str:
     return "Error happened"
 
 
-def query_user_env(name: str) -> Optional[str]:
+def win32_registry_query_user_env(name: str) -> Optional[str]:
     current_path = None
     completed_process = _command(
         ["reg", "query", "HKCU\\Environment", "/v", name], capture_output=True
@@ -90,7 +91,7 @@ def query_user_env(name: str) -> Optional[str]:
     return current_path
 
 
-def query_system_env(name: str) -> Optional[str]:
+def win32_registry_query_system_env(name: str) -> Optional[str]:
     current_path = None
     completed_process = _command(
         [
@@ -130,7 +131,9 @@ def get_env_from_shell() -> Environment:
     return out
 
 
-def set_env_var_cmd(name: str, value: str, update_curr_environment=True) -> None:
+def win32_registry_set_env_var_cmd_user(
+    name: str, value: str, update_curr_environment=True
+) -> None:
     completed_proc: subprocess.CompletedProcess = _command(
         [
             "reg",
@@ -149,10 +152,10 @@ def set_env_var_cmd(name: str, value: str, update_curr_environment=True) -> None
         _print(f"Error happened while setting {name}={value}")
         _print(_try_decode(completed_proc.stdout))
     if update_curr_environment:
-        broadcast_changes()
+        win32_registry_broadcast_changes()
 
 
-def unset_env_var_cmd(name: str) -> None:
+def win32_registry_unset_env_var_cmd_user(name: str) -> None:
     completed_proc: subprocess.CompletedProcess = _command(
         ["reg", "delete", "HKCU\\Environment", "/v", name, "/f"]
     )
@@ -163,7 +166,7 @@ def unset_env_var_cmd(name: str) -> None:
             _print(_try_decode(completed_proc.stdout))
 
 
-def broadcast_changes() -> None:
+def win32_registry_broadcast_changes() -> None:
     if not ENABLE_BROADCAST_CHANGES:
         return
     print("Broadcasting changes")
@@ -183,7 +186,9 @@ def broadcast_changes() -> None:
         print("result: %s, %s, from SendMessageTimeout" % (bool(res1), res2))
 
 
-def set_env_path_registry(new_path: str, verbose=False, broad_cast_changes=True):
+def win32_registry_set_env_path_user(
+    new_path: str, verbose=False, broad_cast_changes=True
+):
     if verbose:
         print(f"&&& Setting {new_path} to Windows PATH")
     try:
@@ -197,13 +202,13 @@ def set_env_path_registry(new_path: str, verbose=False, broad_cast_changes=True)
             winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
             winreg.CloseKey(key)
             if broad_cast_changes:
-                broadcast_changes()
+                win32_registry_broadcast_changes()
     except Exception as exc:  # pylint: disable=broad-except
         print(f"Failed to add path to registry because of {exc}")
         raise
 
 
-def get_env_path_registry(verbose=False) -> str:
+def win32_registry_get_env_path_user(verbose=False) -> str:
     if verbose:
         print("&&& Getting Windows PATH")
 
@@ -219,7 +224,7 @@ def get_env_path_registry(verbose=False) -> str:
         return path
 
 
-def get_env_path_system_registry(verbose=False) -> str:
+def win32_registry_get_env_path_system(verbose=False) -> str:
     if verbose:
         print("&&& Getting Windows System PATH")
 
@@ -233,3 +238,14 @@ def get_env_path_system_registry(verbose=False) -> str:
         path = winreg.QueryValueEx(key, "Path")[0]
         winreg.CloseKey(key)
         return path
+
+
+def win32_registry_make_environment() -> RegistryEnvironment:
+    user_env = get_all_user_vars()
+    system_env = get_all_system_vars()
+    user_paths = user_env.pop("PATH", "")
+    system_paths = system_env.pop("PATH", "")
+    user: Environment = Environment(vars=user_env, paths=user_paths)
+    system: Environment = Environment(vars=system_env, paths=system_paths)
+    out = RegistryEnvironment(user=user, system=system)
+    return out

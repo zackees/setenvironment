@@ -10,14 +10,14 @@ from typing import Optional
 from setenvironment.types import Environment
 from setenvironment.util import remove_adjascent_duplicates
 from setenvironment.win.registry import (
-    broadcast_changes,
     get_all_user_vars,
-    get_env_path_registry,
-    get_env_path_system_registry,
-    query_user_env,
-    set_env_path_registry,
-    set_env_var_cmd,
-    unset_env_var_cmd,
+    win32_registry_broadcast_changes,
+    win32_registry_get_env_path_system,
+    win32_registry_get_env_path_user,
+    win32_registry_query_user_env,
+    win32_registry_set_env_path_user,
+    win32_registry_set_env_var_cmd_user,
+    win32_registry_unset_env_var_cmd_user,
 )
 
 
@@ -49,7 +49,7 @@ def add_env_path(
     new_path = new_path.replace("/", "\\")
     if verbose:
         print(f"&&& Adding {new_path} to Windows PATH:")
-    current_paths = parse_paths_win32(get_env_path_registry())
+    current_paths = parse_paths_win32(win32_registry_get_env_path_user())
     if verbose:
         print(f"Current PATH: {current_paths}")
     if verbose and new_path in current_paths:
@@ -57,7 +57,7 @@ def add_env_path(
     else:
         current_paths.insert(0, new_path)
         current_path_str = os.path.pathsep.join(current_paths)
-        set_env_path_registry(
+        win32_registry_set_env_path_user(
             current_path_str, verbose=False, broad_cast_changes=update_curr_environment
         )
     os_environ_paths = parse_paths_win32(os.environ["PATH"])
@@ -77,7 +77,7 @@ def set_env_var(
     var_value = str(var_value)
     if verbose:
         print(f"$$$ Setting {var_name} to {var_value}")
-    set_env_var_cmd(
+    win32_registry_set_env_var_cmd_user(
         var_name, var_value, update_curr_environment=update_curr_environment
     )
     if update_curr_environment:
@@ -90,7 +90,7 @@ def unset_env_var(var_name: str, verbose=False):
         print(f"$$$ Unsetting {var_name}")
     if var_name == "PATH":
         raise ValueError("Cannot unset PATH")
-    unset_env_var_cmd(var_name)
+    win32_registry_unset_env_var_cmd_user(var_name)
     try:
         os.environ.pop(var_name)
     except KeyError:
@@ -100,7 +100,7 @@ def unset_env_var(var_name: str, verbose=False):
 def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=True):
     # convert / to \\ for Windows
     path_to_remove = path_to_remove.replace("/", "\\")
-    path_str = get_env_path_registry()
+    path_str = win32_registry_get_env_path_user()
     if path_to_remove not in path_str:
         if verbose:
             print(f"{path_to_remove} not in PATH which is\n{path_str}")
@@ -109,7 +109,7 @@ def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=
     paths = [path for path in paths if path != path_to_remove]
     sep = os.path.pathsep
     new_path_str = sep.join(paths)
-    set_env_path_registry(
+    win32_registry_set_env_path_user(
         new_path_str, verbose=verbose, broad_cast_changes=update_curr_environment
     )
     os_environ_paths = parse_paths_win32(os.environ["PATH"])
@@ -129,7 +129,7 @@ def add_template_path(
     if tmp_env_var not in paths:
         paths.insert(0, tmp_env_var)
         new_path_str = os.path.pathsep.join(paths)
-        set_env_path_registry(new_path_str, broad_cast_changes=False)
+        win32_registry_set_env_path_user(new_path_str, broad_cast_changes=False)
         something_changed = True
     var_paths = parse_paths_win32(get_env_var(env_var) or "")
     if new_path not in var_paths:
@@ -138,7 +138,7 @@ def add_template_path(
         set_env_var(env_var, new_var_path_str, update_curr_environment=False)
         something_changed = True
     if something_changed and update_curr_environment:
-        broadcast_changes()
+        win32_registry_broadcast_changes()
 
 
 def remove_template_path(
@@ -153,19 +153,19 @@ def remove_template_path(
     new_var_path_str = os.path.pathsep.join(var_paths)
     if not new_var_path_str and remove_if_empty:
         unset_env_var(env_var)
-        paths = parse_paths_win32(get_env_path_registry() or "")
+        paths = parse_paths_win32(win32_registry_get_env_path_user() or "")
         if f"%{env_var}%" in paths:
             paths = [path for path in paths if path != f"%{env_var}%"]
             new_path_str = os.path.pathsep.join(paths)
-            set_env_path_registry(new_path_str)
+            win32_registry_set_env_path_user(new_path_str)
         return
     set_env_var(env_var, new_var_path_str)
     # if the path exists in the PATH, remove it
-    paths = parse_paths_win32(get_env_path_registry() or "")
+    paths = parse_paths_win32(win32_registry_get_env_path_user() or "")
     if path_to_remove in paths:
         paths = [path for path in paths if path != path_to_remove]
         new_path_str = os.path.pathsep.join(paths)
-        set_env_path_registry(new_path_str)
+        win32_registry_set_env_path_user(new_path_str)
     # now also remove it from the os.environ paths
     os_environ_paths = parse_paths_win32(os.environ["PATH"])
     if path_to_remove in os_environ_paths:
@@ -195,11 +195,11 @@ def remove_template_group(env_var: str) -> None:
         remove_template_path(env_var, path, remove_if_empty=True)
     # Remove from system paths
     system_var = f"%{env_var}%"
-    paths = parse_paths_win32(get_env_path_registry() or "")
+    paths = parse_paths_win32(win32_registry_get_env_path_user() or "")
     if system_var in paths:
         paths = [path for path in paths if path != system_var]
         new_path_str = os.path.pathsep.join(paths)
-        set_env_path_registry(new_path_str)
+        win32_registry_set_env_path_user(new_path_str)
         os.environ["PATH"] = new_path_str
 
 
@@ -259,7 +259,7 @@ def resolve_path(path: str) -> str:
 
 
 def get_env_var(name: str, resolve=True) -> Optional[str]:
-    current_path = query_user_env(name)
+    current_path = win32_registry_query_user_env(name)
     if current_path is None:
         return None
     if resolve and "%" in current_path:
@@ -269,8 +269,8 @@ def get_env_var(name: str, resolve=True) -> Optional[str]:
 
 def get_env(resolve=False) -> Environment:
     """Returns the environment."""
-    system_paths = parse_paths_win32(get_env_path_system_registry())
-    user_paths = parse_paths_win32(get_env_path_registry())
+    system_paths = parse_paths_win32(win32_registry_get_env_path_system())
+    user_paths = parse_paths_win32(win32_registry_get_env_path_user())
     paths = user_paths + system_paths
     vars = get_all_user_vars()
     vars.pop("PATH", None)

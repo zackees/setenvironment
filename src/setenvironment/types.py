@@ -45,3 +45,9 @@ class OsEnvironment(Environment):
         from setenvironment.os_env import os_env_store
 
         os_env_store(self)
+
+
+@dataclass
+class RegistryEnvironment:
+    user: Environment
+    system: Environment

@@ -3,6 +3,7 @@ Test the main module
 """
 
 # pylint: disable=fixme,import-outside-toplevel
+# flake8: noqa: E501
 
 import sys
 import unittest
@@ -16,20 +17,20 @@ class WinPathTester(BaseTest):
     # teardown
     def tearDown(self) -> None:
         """Remove the environment variable."""
-        from setenvironment.setenv_win32 import get_env_path_registry
+        from setenvironment.setenv_win32 import win32_registry_get_env_path_user
 
-        path = get_env_path_registry()
+        path = win32_registry_get_env_path_user()
         self.assertNotIn("value not set", path)
 
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_get_env_path_system_registry(self) -> None:
         """Test setting an environment variable."""
         from setenvironment.setenv_win32 import (
-            get_env_path_system_registry,
             parse_paths_win32,
+            win32_registry_get_env_path_system,
         )
 
-        path_str = get_env_path_system_registry()
+        path_str = win32_registry_get_env_path_system()
         paths = parse_paths_win32(path_str)
         print("done")
         self.assertIn("C:\\Windows", paths)
@@ -42,6 +43,18 @@ class WinPathTester(BaseTest):
         temp_dir = get_env_var("TEMP", resolve=True)
         self.assertIsNotNone(temp_dir)
         self.assertNotIn("%", str(temp_dir))
+        print("done")
+
+    @unittest.skipIf(sys.platform != "win32", "Windows only test")
+    def test_registry_environment(self) -> None:
+        """Test setting an environment variable."""
+        from setenvironment.win.registry import (
+            RegistryEnvironment,
+            win32_registry_make_environment,
+        )
+
+        env: RegistryEnvironment = win32_registry_make_environment()
+        print(env)
         print("done")
 
 
