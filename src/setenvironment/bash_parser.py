@@ -48,6 +48,10 @@ def bash_rc_set_file(filepath: str) -> None:
 def set_bash_file_lines(input_lines: list[str], shell_file: str) -> None:
     """Adds new lines to the start of the bash file in the START_MARKER
     to END_MARKER section."""
+    if os.path.exists(shell_file) is False:
+        # Create the file.
+        with open(shell_file, encoding="utf8", mode="w") as file:
+            file.write("")
     file_read = read_utf8(shell_file)
     if START_MARKER not in file_read:
         # Append markers onto this.
@@ -77,6 +81,8 @@ def set_bash_file_lines(input_lines: list[str], shell_file: str) -> None:
 
 def read_bash_file_lines(filepath: str) -> list[str]:
     """Reads a bash file."""
+    if os.path.exists(filepath) is False:
+        return []
     filepath = filepath
     with open(filepath, encoding="utf8", mode="r") as file:
         lines = file.read().splitlines()
@@ -128,7 +134,6 @@ def bash_read_variable(name: str) -> str | None:
             out = line[7:].split("=")[1].strip()
             return out
     return None
-
 
 def bash_make_environment() -> Environment:
     """Makes an environment from the bash file."""

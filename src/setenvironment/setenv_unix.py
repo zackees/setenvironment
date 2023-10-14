@@ -20,6 +20,7 @@ from setenvironment.bash_parser import (
     bash_write_lines,
     read_bash_file_lines,
     set_bash_file_lines,
+    bash_make_environment,
 )
 from setenvironment.types import Environment
 from setenvironment.util import parse_paths, remove_adjascent_duplicates
@@ -75,13 +76,6 @@ def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
         paths=paths,
     )
     return out
-
-
-def get_all_env_vars() -> Environment:
-    """Gets all environment variables."""
-    settings_file = bash_rc_file()
-    shell_env: Environment = get_env_vars_from_shell(settings_file)
-    return shell_env
 
 
 def unset_env_var(name: str) -> None:
@@ -185,7 +179,7 @@ def remove_template_path(
 def remove_template_group(env_var: str) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     var_paths = parse_paths(bash_read_variable(env_var) or "")
-    if not var_paths:
+    if var_paths is None:
         return
     unset_env_var(env_var)
     paths = parse_paths(bash_read_variable("PATH") or "")
@@ -230,8 +224,22 @@ def reload_environment(verbose: bool, resolve: bool) -> None:
     if verbose:
         print(f"Setting PATH to {path_list_str}")
 
+def combine_environments(parent: Environment, child: Environment) -> Environment:
+    """Combines two environments."""
+    vars = parent.vars.copy()
+    vars.update(child.vars)
+    paths = parent.paths.copy()
+    paths.extend(child.paths)
+    paths = remove_adjascent_duplicates(paths)
+    out = Environment(
+        vars=vars,
+        paths=paths,
+    )
+    return out
 
 def get_env() -> Environment:
     """Returns the environment."""
-    out = get_all_env_vars()
-    return out
+    settings_file = bash_rc_file()
+    shell_env: Environment = get_env_vars_from_shell(settings_file)
+    bash_env: Environment = bash_make_environment()
+    return combine_environments(parent=shell_env, child=bash_env)
