@@ -128,6 +128,7 @@ def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: boo
     var_paths = parse_paths(env.vars[env_var])
     while path_to_remove in var_paths:
         var_paths.remove(path_to_remove)
+    env.vars[env_var] = os.path.pathsep.join(var_paths)
     bash_save(env)
     if remove_if_empty and not var_paths:
         remove_template_group(env_var)

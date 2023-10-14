@@ -38,7 +38,7 @@ class TemplatePathtester(BaseTest):
         else:
             system_key = f"%{key}%"
         try:
-            self.assertIn(mypath, new_paths)
+            self.assertIn(system_key, new_paths)
             self.assertIn(mypath, get_env_var(key) or "")
         except Exception as exc:
             print(exc)
