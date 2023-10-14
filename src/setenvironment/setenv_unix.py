@@ -70,9 +70,7 @@ def unset_env_var(name: str) -> None:
         bash_save(env)
 
 
-def add_env_path(
-    path: str, verbose: bool = False, update_curr_environment: bool = True
-) -> None:
+def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
     """Adds a path to the PATH environment variable."""
     if update_curr_environment:
         os_env: OsEnvironment = os_env_make_environment()
@@ -100,27 +98,28 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         bash_save(env)
 
 
-def add_template_path(
-    env_var: str, new_path: str, update_curr_environment=True
-) -> None:
-    assert "$" not in env_var, "env_var should not contain $"
+def add_template_path(group_name: str, new_path: str, update_curr_environment=True) -> None:
+    assert "$" not in group_name, "group_name should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     if update_curr_environment:
         os_env: OsEnvironment = os_env_make_environment()
         os_env.paths.insert(0, new_path)
         os_env.store()
     env: BashEnvironment = bash_make_environment()
-    if env_var not in env.vars:
-        env.vars[env_var] = ""
-    var_paths = parse_paths(env.vars[env_var])
-    var_paths.append(new_path)
-    env.vars[env_var] = os.path.pathsep.join(var_paths)
+    if group_name not in env.vars:
+        env.vars[group_name] = ""
+    var_paths = parse_paths(env.vars[group_name])
+    # var_paths.append(new_path)
+    var_paths.insert(0, new_path)
+    env.vars[group_name] = os.path.pathsep.join(var_paths)
+    key = f"${group_name}"
+    if key in env.paths:
+        env.paths.remove(key)
+    env.paths.insert(0, key)
     bash_save(env)
 
 
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
+def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     env: BashEnvironment = bash_make_environment()
