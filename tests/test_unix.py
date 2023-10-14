@@ -19,7 +19,7 @@ from setenvironment.setenv_unix import (
     remove_env_path,
 )
 from setenvironment.testing.basetest import BASHRC, BaseTest
-from setenvironment.types import BaseEnvironment
+from setenvironment.types import Environment
 from setenvironment.util import write_utf8
 
 
@@ -61,7 +61,7 @@ class UnixPathTester(BaseTest):
         my_path = "/my/test/path"
         add_env_path(my_path, update_curr_environment=False)
         try:
-            out: BaseEnvironment = get_env_vars_from_shell(BASHRC)
+            out: Environment = get_env_vars_from_shell(BASHRC)
             self.assertIn(my_path, out.paths)
             print(out)
             print("done")

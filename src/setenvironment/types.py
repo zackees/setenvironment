@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class BaseEnvironment:
+class Environment:
     vars: dict[str, str]
     paths: list[str]
 
@@ -14,7 +14,7 @@ class BaseEnvironment:
 
 
 @dataclass
-class BashEnvironment(BaseEnvironment):
+class BashEnvironment(Environment):
     def save(self) -> None:
         """Saves the environment."""
         if sys.platform == "win32":
@@ -37,7 +37,7 @@ class BashEnvironment(BaseEnvironment):
 
 
 @dataclass
-class OsEnvironment(BaseEnvironment):
+class OsEnvironment(Environment):
     """Represents the OS environment."""
 
     def store(self) -> None:

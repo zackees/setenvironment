@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from typing import Optional, Union
 
-from setenvironment.types import BaseEnvironment
+from setenvironment.types import Environment
 
 _IS_WINDOWS = sys.platform == "win32"
 
@@ -185,7 +185,7 @@ def reload_environment(verbose=False, resolve=False) -> None:
         unix_reload_environment(verbose=verbose, resolve=resolve)
 
 
-def get_env() -> BaseEnvironment:
+def get_env() -> Environment:
     """Gets the environment."""
     if _IS_WINDOWS:
         from .setenv_win32 import get_env as win32_get_env

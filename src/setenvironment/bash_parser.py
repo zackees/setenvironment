@@ -2,7 +2,7 @@ import os
 import sys
 import warnings
 
-from setenvironment.types import BaseEnvironment, BashEnvironment
+from setenvironment.types import BashEnvironment, Environment
 from setenvironment.util import read_utf8, write_utf8
 
 START_MARKER = "# START setenvironment"
@@ -156,7 +156,7 @@ def bash_make_environment() -> BashEnvironment:
     return BashEnvironment(vars, paths)
 
 
-def bash_save(environment: BaseEnvironment) -> None:
+def bash_save(environment: Environment) -> None:
     """Saves the environment to the bash file."""
     lines = []
     for name, value in environment.vars.items():

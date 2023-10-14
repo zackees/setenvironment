@@ -17,7 +17,7 @@ from typing import Optional
 
 import win32gui  # type: ignore
 
-from setenvironment.types import BaseEnvironment
+from setenvironment.types import Environment
 from setenvironment.util import remove_adjascent_duplicates
 from setenvironment.win.refresh_env import REFRESH_ENV
 
@@ -380,7 +380,7 @@ def remove_template_group(env_var: str) -> None:
 def reload_environment(verbose: bool) -> None:
     """Reloads the environment."""
     # This is nearly the same as unix version. Please keep them in same.
-    env: BaseEnvironment = get_env(resolve=True)
+    env: Environment = get_env(resolve=True)
     path_list = env.paths
     env_vars = env.vars
     os.environ["PATH"] = os.path.pathsep.join(path_list)
@@ -402,7 +402,7 @@ def reload_environment(verbose: bool) -> None:
         print(f"Setting PATH to {path_list_str}")
 
 
-def get_env_from_shell() -> BaseEnvironment:
+def get_env_from_shell() -> Environment:
     python_exe = sys.executable
     cmd = (
         f'cmd /c "{REFRESH_ENV}" > nul && "{python_exe}" -m setenvironment.os_env_json'
@@ -447,7 +447,7 @@ def resolve_path(path: str) -> str:
     return out
 
 
-def get_env(resolve=False) -> BaseEnvironment:
+def get_env(resolve=False) -> Environment:
     """Returns the environment."""
     system_paths = parse_paths_win32(get_env_path_system_registry())
     user_paths = parse_paths_win32(get_env_path_registry())
@@ -459,5 +459,5 @@ def get_env(resolve=False) -> BaseEnvironment:
             vars[key] = resolve_path(val)
         for i, path in enumerate(paths):
             paths[i] = resolve_path(path)
-    out = BaseEnvironment(paths=paths, vars=vars)
+    out = Environment(paths=paths, vars=vars)
     return out
