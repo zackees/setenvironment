@@ -1,7 +1,6 @@
 # flake8: noqa: E501
 
 import os
-import sys
 import unittest
 
 from setenvironment.bash_parser import bash_rc_set_file

@@ -2,8 +2,6 @@
 Dummy
 """
 
-# pylint: disable=missing-function-docstring,import-outside-toplevel,invalid-name,unused-argument,protected-access,c-extension-no-member,consider-using-f-string,import-error,too-many-function-args,duplicate-code
-# mypy: ignore-errors
 # flake8: noqa: E501
 
 import os

@@ -1,3 +1,7 @@
+# pylint: disable=missing-function-docstring,import-outside-toplevel,invalid-name,unused-argument,protected-access,c-extension-no-member,consider-using-f-string,import-error,too-many-function-args,duplicate-code
+# mypy: ignore-errors
+# flake8: noqa: E501
+
 # flake8: noqa: E501
 import json
 import os
@@ -26,8 +30,8 @@ def _print(message):
     _DEFAULT_PRINT(f"** {message}", flush=True)
 
 
-def get_all_env_vars() -> dict[str, Optional[str]]:
-    env_vars: dict[str, Optional[str]] = {}
+def get_all_env_vars() -> dict[str, str]:
+    env_vars: dict[str, str] = {}
     completed_process = _command(
         ["reg", "query", "HKCU\\Environment"], capture_output=True
     )
@@ -38,7 +42,8 @@ def get_all_env_vars() -> dict[str, Optional[str]]:
         parts = [part.strip() for part in line.split(None, 2)]
         if len(parts) == 3:
             name, reg_type, value = parts
-            env_vars[name] = value
+            if value is not None:
+                env_vars[name] = value
     return env_vars
 
 
