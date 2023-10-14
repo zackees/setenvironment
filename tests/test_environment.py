@@ -8,7 +8,7 @@ import os
 import unittest
 
 from setenvironment import (
-    Environment,
+    BaseEnvironment,
     add_env_path,
     get_env,
     remove_env_path,
@@ -36,7 +36,7 @@ class ReloadEnvironmentTest(BaseTest):
         # Sanity check.
         paths = os.environ["PATH"].split(os.pathsep)
         self.assertNotIn(MY_PATH, paths)
-        env: Environment = get_env()
+        env: BaseEnvironment = get_env()
         add_env_path(MY_PATH, update_curr_environment=False)
         set_env_var(MY_VAR[0], MY_VAR[1], update_curr_environment=False)
         env = get_env()

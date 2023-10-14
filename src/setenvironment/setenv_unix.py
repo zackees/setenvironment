@@ -17,7 +17,7 @@ from setenvironment.os_env import (
     os_remove_variable,
     os_update_variable,
 )
-from setenvironment.types import Environment
+from setenvironment.types import BaseEnvironment, BashEnvironment
 from setenvironment.util import parse_paths, remove_adjascent_duplicates
 
 
@@ -25,12 +25,12 @@ def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     """Sets an environment variable."""
     if update_curr_environment:
         os_update_variable(name, value)
-    env: Environment = bash_make_environment()
+    env: BashEnvironment = bash_make_environment()
     env.vars[name] = str(value)
     bash_save(env)
 
 
-def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
+def get_env_vars_from_shell(settings_file: str | None = None) -> BaseEnvironment:
     # Source the provided bashrc_file, ~/.bashrc, and ~/.profile, then execute the command.
     delim = "-------- BEGIN setenviorment.os_env_json --------"
     settings_file = settings_file or bash_rc_file()
@@ -52,7 +52,7 @@ def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
     paths = json_data["PATH"]
     # remove adjascent duplicates
     paths = remove_adjascent_duplicates(paths)
-    out = Environment(
+    out = BaseEnvironment(
         vars=json_data["ENVIRONMENT"],
         paths=paths,
     )
@@ -64,7 +64,7 @@ def unset_env_var(name: str) -> None:
     assert "$" not in name, "name should not contain $"
     assert name.lower() != "path", "Use remove_env_path to remove from PATH"
     os_remove_variable(name)
-    env: Environment = bash_make_environment()
+    env: BashEnvironment = bash_make_environment()
     if name in env.vars:
         del env.vars[name]
         bash_save(env)
@@ -78,7 +78,7 @@ def add_env_path(
         os_env: OsEnvironment = os_env_make_environment()
         os_env.paths.insert(0, path)
         os_env.store()
-    env: Environment = bash_make_environment()
+    env: BashEnvironment = bash_make_environment()
     env.paths.append(path)
     bash_save(env)
 
@@ -91,7 +91,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         while path in os_env.paths:
             os_env.paths.remove(path)
         os_env.store()
-    env: Environment = bash_make_environment()
+    env: BashEnvironment = bash_make_environment()
     needs_save = False
     while path in env.paths:
         env.paths.remove(path)
@@ -109,7 +109,7 @@ def add_template_path(
         os_env: OsEnvironment = os_env_make_environment()
         os_env.paths.insert(0, new_path)
         os_env.store()
-    env: Environment = bash_make_environment()
+    env: BashEnvironment = bash_make_environment()
     if env_var not in env.vars:
         env.vars[env_var] = ""
     var_paths = parse_paths(env.vars[env_var])
@@ -123,7 +123,7 @@ def remove_template_path(
 ) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
-    env: Environment = bash_make_environment()
+    env: BashEnvironment = bash_make_environment()
     if env_var not in env.vars:
         return
     var_paths = parse_paths(env.vars[env_var])
@@ -136,7 +136,7 @@ def remove_template_path(
 
 def remove_template_group(env_var: str) -> None:
     assert "$" not in env_var, "env_var should not contain $"
-    env: Environment = bash_make_environment()
+    env: BaseEnvironment = bash_make_environment()
     env.vars.pop(env_var, None)
     # remove env_var from path
     path_list = os.environ["PATH"].split(os.pathsep)
@@ -148,7 +148,7 @@ def remove_template_group(env_var: str) -> None:
 
 def reload_environment(verbose: bool, resolve: bool) -> None:
     """Reloads the environment."""
-    env: Environment = get_env()
+    env: BaseEnvironment = get_env()
     path_list = env.paths
     env_vars = env.vars
     os_env: OsEnvironment = os_env_make_environment()
@@ -166,23 +166,25 @@ def reload_environment(verbose: bool, resolve: bool) -> None:
     os_env.store()
 
 
-def combine_environments(parent: Environment, child: Environment) -> Environment:
+def combine_environments(
+    parent: BaseEnvironment, child: BaseEnvironment
+) -> BaseEnvironment:
     """Combines two environments."""
     vars = parent.vars.copy()
     vars.update(child.vars)
     paths = parent.paths.copy()
     paths.extend(child.paths)
     paths = remove_adjascent_duplicates(paths)
-    out = Environment(
+    out = BaseEnvironment(
         vars=vars,
         paths=paths,
     )
     return out
 
 
-def get_env() -> Environment:
+def get_env() -> BaseEnvironment:
     """Returns the environment."""
     settings_file = bash_rc_file()
-    shell_env: Environment = get_env_vars_from_shell(settings_file)
-    bash_env: Environment = bash_make_environment()
+    shell_env: BaseEnvironment = get_env_vars_from_shell(settings_file)
+    bash_env: BaseEnvironment = bash_make_environment()
     return combine_environments(parent=shell_env, child=bash_env)

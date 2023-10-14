@@ -14,7 +14,7 @@ class BaseEnvironment:
 
 
 @dataclass
-class Environment(BaseEnvironment):
+class BashEnvironment(BaseEnvironment):
     def save(self) -> None:
         """Saves the environment."""
         if sys.platform == "win32":

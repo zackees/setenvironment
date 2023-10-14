@@ -3,7 +3,7 @@ setenvironment
 """
 
 from .setenv import (
-    Environment,
+    BaseEnvironment,
     add_env_path,
     add_template_path,
     get_env,
@@ -17,7 +17,7 @@ from .setenv import (
     unset_env_var,
 )
 
-Environment = Environment
+BaseEnvironment = BaseEnvironment
 add_env_path = add_env_path
 get_env_var = get_env_var
 remove_env_path = remove_env_path

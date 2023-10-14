@@ -17,7 +17,7 @@ from setenvironment import (
 )
 from setenvironment.setenv import get_env
 from setenvironment.testing.basetest import BASHRC, BaseTest
-from setenvironment.types import Environment
+from setenvironment.types import BaseEnvironment
 from setenvironment.util import read_utf8
 
 HERE = os.path.dirname(__file__)
@@ -51,7 +51,7 @@ class TemplatePathtester(BaseTest):
         if sys.platform != "win32":
             bashrc_str = read_utf8(BASHRC)
             self.assertNotIn(mypath, bashrc_str)
-        environment: Environment = get_env()
+        environment: BaseEnvironment = get_env()
         # self.assertEqual(environment.paths[0], system_key)
         index_of_system_key = environment.paths.index(system_key)
         max_index = 0 if sys.platform == "win32" else 5

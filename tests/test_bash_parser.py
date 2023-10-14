@@ -9,7 +9,7 @@ import os
 import unittest
 
 from setenvironment.bash_parser import (
-    Environment,
+    BashEnvironment,
     bash_make_environment,
     bash_rc_set_file,
     bash_save,
@@ -27,21 +27,21 @@ class BashParserTester(BaseTest):
 
     def test_bash_env(self) -> None:
         # Should we just interact with an Environment object?
-        env: Environment = bash_make_environment()
+        env: BashEnvironment = bash_make_environment()
         print(env)
         env.vars["FOO"] = "bar"
         env.paths.append("/my/path")
         bash_save(env)
-        env2: Environment = bash_make_environment()
+        env2: BashEnvironment = bash_make_environment()
         print(env2)
 
     def test_bash_two_paths(self) -> None:
         """Tests the behavior of adding two paths and how they are parsed back."""
-        env: Environment = bash_make_environment()
+        env: BashEnvironment = bash_make_environment()
         env.paths.append("/my/path")
         env.paths.append("/my/path2")
         bash_save(env)
-        env2: Environment = bash_make_environment()
+        env2: BashEnvironment = bash_make_environment()
         print(env2)
         self.assertEqual(2, len(env2.paths))
         self.assertIn("/my/path", env2.paths)
