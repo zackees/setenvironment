@@ -2,6 +2,8 @@
 CLI interface for setenvironment
 """
 
+# flake8: noqa: E501
+
 import argparse
 import os
 import sys
@@ -66,7 +68,9 @@ def unsetenv() -> None:
 
 def addpath() -> None:
     """Add a path to the PATH environment variable."""
-    parser = argparse.ArgumentParser(description="Add a path to the PATH environment variable")
+    parser = argparse.ArgumentParser(
+        description="Add a path to the PATH environment variable"
+    )
     parser.add_argument("path", help="The path to add")
     parser.add_argument("--config-file", help="The config file to use")
     args = parser.parse_args()
@@ -77,7 +81,9 @@ def addpath() -> None:
 
 def removepath() -> None:
     """Remove a path from the PATH environment variable."""
-    parser = argparse.ArgumentParser(description="Remove a path from the PATH environment variable")
+    parser = argparse.ArgumentParser(
+        description="Remove a path from the PATH environment variable"
+    )
     parser.add_argument("path", help="The path to remove")
     parser.add_argument("--config-file", help="The config file to use")
     args = parser.parse_args()

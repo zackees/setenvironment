@@ -12,8 +12,8 @@ from setenvironment.bash_parser import (
     BashEnvironment,
     bash_make_environment,
     bash_rc_set_file,
-    bash_save,
     bash_read_lines,
+    bash_save,
 )
 from setenvironment.testing.basetest import BaseTest
 
