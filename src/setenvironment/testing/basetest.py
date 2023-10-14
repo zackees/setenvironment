@@ -4,7 +4,7 @@ import os
 import sys
 import unittest
 
-from setenvironment import set_env_config_file
+from setenvironment import bash_rc_set_file
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 BASHRC = os.path.join(HERE, "unix.mybashrc")
@@ -17,7 +17,7 @@ class BaseTest(unittest.TestCase):
             # write a blank file
             with open(BASHRC, encoding="utf-8", mode="w") as file:
                 file.write("")
-            set_env_config_file(BASHRC)
+            bash_rc_set_file(BASHRC)
 
     def setUp(self) -> None:
         self.clear_bash_rc()

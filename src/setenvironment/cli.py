@@ -8,9 +8,9 @@ import sys
 
 from setenvironment.setenv import (
     add_env_path,
+    bash_rc_set_file,
     get_env_var,
     remove_env_path,
-    set_env_config_file,
     set_env_var,
     unset_env_var,
 )
@@ -21,7 +21,7 @@ def _init_config_file(args):
     """Initialize the path to the config file."""
     config = args.config_file
     if config is not None and sys.platform != "win32":
-        set_env_config_file(config, ignore_error=True)
+        bash_rc_set_file(config, ignore_error=True)
         if not os.path.exists(config):
             os.makedirs(os.path.dirname(config), exist_ok=True)
             write_utf8(config, "")
