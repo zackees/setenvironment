@@ -1,22 +1,6 @@
 import os
-from dataclasses import dataclass
 
-
-@dataclass
-class OsEnvironment:
-    """Represents the OS environment."""
-
-    vars: dict[str, str]
-    paths: list[str]
-
-    def store(self) -> None:
-        """Stores the environment to the OS environment."""
-        os_env_store(self)
-
-    # override [] operator
-    def __getitem__(self, key: str) -> str:
-        assert "path" != key.lower(), "Use paths attribute instead."
-        return self.vars[key]
+from setenvironment.types import OsEnvironment
 
 
 def os_env_make_environment() -> OsEnvironment:
