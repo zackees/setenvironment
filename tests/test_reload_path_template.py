@@ -9,8 +9,8 @@ import os
 import unittest
 
 from setenvironment import add_template_path, reload_environment, remove_template_path
+from setenvironment.os_env import OsEnvironment, os_env_make_environment
 from setenvironment.testing.basetest import BaseTest
-from setenvironment.os_env import os_env_make_environment, OsEnvironment
 
 PATH_KEY = "TEST_RELOAD_PATH"
 MY_PATH = os.path.join("setenvironment", "test", "path")

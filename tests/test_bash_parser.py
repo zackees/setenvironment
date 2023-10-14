@@ -6,19 +6,13 @@ Test the main module
 # flake8: noqa: E501
 
 import os
-import random
-import subprocess
 import unittest
 
 from setenvironment.bash_parser import (
     Environment,
-    bash_append_lines,
     bash_make_environment,
-    bash_prepend_lines,
     bash_rc_set_file,
-    bash_read_variable,
     bash_save,
-    bash_write_lines,
 )
 
 HERE = os.path.dirname(__file__)

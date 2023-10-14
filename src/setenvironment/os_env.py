@@ -13,6 +13,11 @@ class OsEnvironment:
         """Stores the environment to the OS environment."""
         os_env_store(self)
 
+    # override [] operator
+    def __getitem__(self, key: str) -> str:
+        assert "path" not in key.lower(), "Use paths attribute instead."
+        return self.vars[key]
+
 
 def os_env_make_environment() -> OsEnvironment:
     """Makes an environment from the OS environment."""
@@ -24,8 +29,17 @@ def os_env_make_environment() -> OsEnvironment:
 
 def os_env_store(environment: OsEnvironment) -> None:
     """Stores the environment obj to the OS environment."""
+    # os.environ = environment.vars.copy()
+    # find keys that don't exist and delete them
+    env_keys = environment.vars.keys()
+    for key in os.environ.keys():
+        if "path" in key.lower():
+            continue
+        if key not in env_keys:
+            os.environ.pop(key, None)
+    # now update the rest of the keys.
+    os.environ.update(environment.vars)
     path_str = os.pathsep.join(environment.paths)
-    os.environ = environment.vars.copy()
     os.environ["PATH"] = path_str
 
 

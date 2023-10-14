@@ -6,9 +6,9 @@ Dummy
 # mypy: ignore-errors
 # flake8: noqa: E501
 
+import json
 import os
 import re
-import json
 import subprocess
 import sys
 import warnings

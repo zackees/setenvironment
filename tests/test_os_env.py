@@ -4,8 +4,8 @@ Test the main module
 
 # pylint: disable=fixme,import-outside-toplevel
 
+import os
 import unittest
-
 
 from setenvironment.os_env import OsEnvironment, os_env_make_environment
 
@@ -26,6 +26,8 @@ class OsEnvironmentTester(unittest.TestCase):
         os_env.paths.append("my_path")
         os_env.store()
         os_env2: OsEnvironment = os_env_make_environment()
+        self.assertIn("FOO", os_env2.vars)
+        self.assertIn("my_path", os_env2.paths)
         self.assertEqual(os_env.vars, os_env2.vars)
         self.assertEqual(os_env.paths, os_env2.paths)
         # now remove foo and my path
@@ -38,6 +40,8 @@ class OsEnvironmentTester(unittest.TestCase):
         self.assertEqual(set(), key_diff)
         # asser list lengths are the same
         self.assertListEqual(os_env.paths, os_env3.paths)
+        # assert FOO has been removed from the system environment
+        self.assertNotIn("FOO", os.environ)
 
 
 if __name__ == "__main__":
