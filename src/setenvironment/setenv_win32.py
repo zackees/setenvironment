@@ -115,7 +115,7 @@ def unset_env_var_cmd(name: str) -> None:
     )
     if completed_proc.returncode != 0:
         _print(f"Error happened while unsetting {name}")
-        get_all_env_vars()
+        _print(get_all_env_vars())
         if completed_proc.stdout:
             _print(_try_decode(completed_proc.stdout))
     assert get_env_var(name) is None, f"Failed to unset {name}"  # type: ignore
@@ -450,7 +450,7 @@ def get_env(resolve=False) -> Environment:
     """Returns the environment."""
     system_paths = parse_paths_win32(get_env_path_system_registry())
     user_paths = parse_paths_win32(get_env_path_registry())
-    paths = system_paths + user_paths
+    paths = user_paths + system_paths
     vars = get_all_env_vars()
     vars.pop("PATH", None)
     if resolve:

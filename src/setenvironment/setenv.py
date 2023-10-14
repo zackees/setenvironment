@@ -22,7 +22,8 @@ def set_env_config_file(
     """Sets the config file for the platform."""
     # Only works for Unix/MacOS
     if not _IS_WINDOWS:
-        from .setenv_unix import set_env_config_file as unix_env_set_config_file
+        # from .setenv_unix import set_env_config_file as unix_env_set_config_file
+        from .bash_parser import set_env_config_file as unix_env_set_config_file
 
         unix_env_set_config_file(filepath)
         return

@@ -7,9 +7,8 @@ Test the main module
 import sys
 import unittest
 
+from setenvironment.bash_parser import END_MARKER, START_MARKER
 from setenvironment.setenv_unix import (
-    END_MARKER,
-    START_MARKER,
     Environment,
     add_env_path,
     get_env_vars_from_shell,
