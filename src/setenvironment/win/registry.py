@@ -10,7 +10,6 @@ import subprocess
 import sys
 import warnings
 import winreg  # type: ignore
-from dataclasses import dataclass
 from typing import Optional
 
 import win32gui  # type: ignore
@@ -209,43 +208,28 @@ def win32_registry_set_env_path_user(
 
 
 def win32_registry_get_env_path_user(verbose=False) -> str:
-    if verbose:
-        print("&&& Getting Windows PATH")
-
-    with winreg.OpenKey(
-        winreg.HKEY_CURRENT_USER,
-        "Environment",
-        0,
-        winreg.KEY_READ,
-    ) as key:
-        # Get the value of the Path key
-        path = winreg.QueryValueEx(key, "PATH")[0]
-        winreg.CloseKey(key)
-        return path
+    env: RegistryEnvironment = win32_registry_make_environment()
+    path_str = os.pathsep.join(env.user.paths)
+    return path_str
 
 
 def win32_registry_get_env_path_system(verbose=False) -> str:
-    if verbose:
-        print("&&& Getting Windows System PATH")
-
-    with winreg.OpenKey(
-        winreg.HKEY_LOCAL_MACHINE,
-        "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
-        0,
-        winreg.KEY_READ,
-    ) as key:
-        # Get the value of the Path key
-        path = winreg.QueryValueEx(key, "Path")[0]
-        winreg.CloseKey(key)
-        return path
+    env: RegistryEnvironment = win32_registry_make_environment()
+    path_str = os.pathsep.join(env.system.paths)
+    return path_str
 
 
 def win32_registry_make_environment() -> RegistryEnvironment:
     user_env = get_all_user_vars()
     system_env = get_all_system_vars()
-    user_paths = user_env.pop("PATH", "")
-    system_paths = system_env.pop("PATH", "")
-    user: Environment = Environment(vars=user_env, paths=user_paths)
-    system: Environment = Environment(vars=system_env, paths=system_paths)
+    user_path = user_env.pop("PATH", "")
+    system_path = system_env.pop("PATH", "")
+    user_path_list = user_path.split(os.pathsep)
+    system_path_list = system_path.split(os.pathsep)
+    # clear out empty strings
+    user_path_list = [path for path in user_path_list if path]
+    system_path_list = [path for path in system_path_list if path]
+    user: Environment = Environment(vars=user_env, paths=user_path_list)
+    system: Environment = Environment(vars=system_env, paths=system_path_list)
     out = RegistryEnvironment(user=user, system=system)
     return out
