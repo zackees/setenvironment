@@ -7,7 +7,7 @@ Test the main module
 import os
 import unittest
 
-from setenvironment.os_env import OsEnvironment, os_env_make_environment
+from setenvironment.os_env import OsEnvironment
 
 
 class OsEnvironmentTester(unittest.TestCase):
@@ -15,17 +15,17 @@ class OsEnvironmentTester(unittest.TestCase):
 
     def test_os_make_environment(self) -> None:
         """Test setting an environment variable."""
-        os_env: OsEnvironment = os_env_make_environment()
+        os_env: OsEnvironment = OsEnvironment()
         self.assertTrue(os_env.vars)
         self.assertTrue(os_env.paths)
 
     def test_os_env_save_works(self) -> None:
         """Test that making and saving an os environment works."""
-        os_env: OsEnvironment = os_env_make_environment()
+        os_env: OsEnvironment = OsEnvironment()
         os_env.vars["FOO"] = "bar"
         os_env.paths.append("my_path")
         os_env.store()
-        os_env2: OsEnvironment = os_env_make_environment()
+        os_env2: OsEnvironment = OsEnvironment()
         self.assertIn("FOO", os_env2.vars)
         self.assertIn("my_path", os_env2.paths)
         self.assertEqual(os_env.vars, os_env2.vars)
@@ -35,7 +35,7 @@ class OsEnvironmentTester(unittest.TestCase):
         os_env.paths.remove("my_path")
         os_env.store()
         # now confirm they are gone
-        os_env3: OsEnvironment = os_env_make_environment()
+        os_env3: OsEnvironment = OsEnvironment()
         key_diff = set(os_env3.vars.keys()).difference(os_env.vars.keys())
         self.assertEqual(set(), key_diff)
         # asser list lengths are the same

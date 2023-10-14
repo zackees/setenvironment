@@ -11,14 +11,19 @@ import subprocess
 import sys
 
 from setenvironment.bash_parser import bash_make_environment, bash_rc_file, bash_save
-from setenvironment.os_env import (
-    OsEnvironment,
-    os_env_make_environment,
-    os_remove_variable,
-    os_update_variable,
-)
-from setenvironment.types import BashEnvironment, Environment
+from setenvironment.os_env import OsEnvironment
+from setenvironment.types import BashEnvironment, Environment, OsEnvironment
 from setenvironment.util import parse_paths, remove_adjascent_duplicates
+
+
+def os_update_variable(name: str, value: str) -> None:
+    """Updates a variable in the OS environment."""
+    os.environ[name] = value
+
+
+def os_remove_variable(name: str) -> None:
+    """Removes a variable from the OS environment."""
+    os.environ.pop(name, None)
 
 
 def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
@@ -75,7 +80,7 @@ def add_env_path(
 ) -> None:
     """Adds a path to the PATH environment variable."""
     if update_curr_environment:
-        os_env: OsEnvironment = os_env_make_environment()
+        os_env: OsEnvironment = OsEnvironment()
         os_env.paths.insert(0, path)
         os_env.store()
     env: BashEnvironment = bash_make_environment()
@@ -87,7 +92,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
     """Removes a path from the PATH environment variable."""
     # remove path from os.environ['PATH'] if it does not exist
     if update_curr_environment:
-        os_env: OsEnvironment = os_env_make_environment()
+        os_env: OsEnvironment = OsEnvironment()
         while path in os_env.paths:
             os_env.paths.remove(path)
         os_env.store()
@@ -106,7 +111,7 @@ def add_template_path(
     assert "$" not in group_name, "group_name should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     if update_curr_environment:
-        os_env: OsEnvironment = os_env_make_environment()
+        os_env: OsEnvironment = OsEnvironment()
         os_env.paths.insert(0, new_path)
         os_env.store()
     env: BashEnvironment = bash_make_environment()
@@ -157,12 +162,10 @@ def reload_environment(verbose: bool, resolve: bool) -> None:
     env: Environment = get_env()
     path_list = env.paths
     env_vars = env.vars
-    os_env: OsEnvironment = os_env_make_environment()
+    os_env: OsEnvironment = OsEnvironment()
     for key, val in env_vars.items():
         if key == "PATH":
             continue
-        if resolve:
-            val = os.path.expandvars(val)
         os_env.vars[key] = val
     if resolve:
         path_list = [os.path.expandvars(path) for path in path_list]

@@ -7,7 +7,8 @@ Dummy
 import os
 from typing import Optional
 
-from setenvironment.types import Environment
+from setenvironment.os_env import os_env_make_environment
+from setenvironment.types import Environment, OsEnvironment
 from setenvironment.util import remove_adjascent_duplicates
 from setenvironment.win.registry import (
     RegistryEnvironment,
@@ -110,7 +111,7 @@ def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=
     os.environ["PATH"] = new_env_path_str
 
 
-def add_template_path(
+def add_template_path2(
     env_var: str, new_path: str, update_curr_environment=True
 ) -> None:
     assert "%" not in env_var, "env_var should not contain %"
@@ -133,37 +134,28 @@ def add_template_path(
         win32_registry_broadcast_changes()
 
 
+def add_template_path(
+    group_name: str, new_path: str, update_curr_environment=True
+) -> None:
+    # Query the current environment from the registry
+    env: RegistryEnvironment = query_registry_environment()
+    os_env: OsEnvironment = os_env_make_environment()
+    env.user.add_template_path(group_name, new_path)
+    os_env.add_template_path(group_name, new_path)
+    # now save
+    env.save()
+    os_env.store()
+
+
 def remove_template_path(
     env_var: str, path_to_remove: str, remove_if_empty: bool
 ) -> None:
-    assert "%" not in env_var, "env_var should not contain %"
-    assert "%" not in path_to_remove, "path_to_remove should not contain %"
-    var_paths = parse_paths_win32(get_env_var(env_var) or "")
-    if path_to_remove not in var_paths:
-        return
-    var_paths = [path for path in var_paths if path != path_to_remove]
-    new_var_path_str = os.path.pathsep.join(var_paths)
-    if not new_var_path_str and remove_if_empty:
-        unset_env_var(env_var)
-        paths = parse_paths_win32(get_env_path_user() or "")
-        if f"%{env_var}%" in paths:
-            paths = [path for path in paths if path != f"%{env_var}%"]
-            new_path_str = os.path.pathsep.join(paths)
-            win32_registry_set_env_path_user(new_path_str)
-        return
-    set_env_var(env_var, new_var_path_str)
-    # if the path exists in the PATH, remove it
-    paths = parse_paths_win32(get_env_path_user() or "")
-    if path_to_remove in paths:
-        paths = [path for path in paths if path != path_to_remove]
-        new_path_str = os.path.pathsep.join(paths)
-        win32_registry_set_env_path_user(new_path_str)
-    # now also remove it from the os.environ paths
-    os_environ_paths = parse_paths_win32(os.environ["PATH"])
-    if path_to_remove in os_environ_paths:
-        os_environ_paths = [path for path in os_environ_paths if path != path_to_remove]
-        new_env_path_str = os.path.pathsep.join(os_environ_paths)
-        os.environ["PATH"] = new_env_path_str
+    env: RegistryEnvironment = query_registry_environment()
+    os_env: OsEnvironment = os_env_make_environment()
+    env.user.remove_template_path(env_var, path_to_remove)
+    os_env.remove_template_path(env_var, path_to_remove)
+    env.save()
+    os_env.store()
 
 
 def merge_os_paths(path_list: list[str], os_env: list[str]) -> list[str]:
@@ -177,22 +169,12 @@ def merge_os_paths(path_list: list[str], os_env: list[str]) -> list[str]:
 
 
 def remove_template_group(env_var: str) -> None:
-    assert "%" not in env_var, "env_var should not contain %"
-    var_paths = parse_paths_win32(get_env_var(env_var) or "")
-    # Now remove the env var
-    unset_env_var(env_var)
-    if not var_paths:
-        return
-    for path in var_paths:
-        remove_template_path(env_var, path, remove_if_empty=True)
-    # Remove from system paths
-    system_var = f"%{env_var}%"
-    paths = parse_paths_win32(get_env_path_user() or "")
-    if system_var in paths:
-        paths = [path for path in paths if path != system_var]
-        new_path_str = os.path.pathsep.join(paths)
-        win32_registry_set_env_path_user(new_path_str)
-        os.environ["PATH"] = new_path_str
+    env: RegistryEnvironment = query_registry_environment()
+    os_env: OsEnvironment = os_env_make_environment()
+    env.user.remove_template_group(env_var)
+    os_env.remove_template_group(env_var)
+    env.save()
+    os_env.store()
 
 
 def path_list_to_str(path_list: list[str]) -> str:
@@ -326,3 +308,36 @@ def win32_registry_save(user_environment: Environment) -> None:
         user_env, broad_cast_changes=False, remove_missing_keys=True
     )
     win32_registry_broadcast_changes()
+
+
+def add_to_path_group(group_name: str, new_path: str) -> None:
+    """Templates are hard and not well supported by the OS.
+    Add the path and then add it to the group_name as well so
+    we can remove it easily"""
+    assert group_name != "PATH"
+    env: RegistryEnvironment = query_registry_environment()
+    os_env: OsEnvironment = os_env_make_environment()
+    env.user.add_to_path_group(group_name, new_path)
+    os_env.add_to_path_group(group_name, new_path)
+    os_env.store()
+    win32_registry_save(env.user)
+
+
+def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
+    assert group_name != "PATH"
+    env: RegistryEnvironment = query_registry_environment()
+    os_env: OsEnvironment = os_env_make_environment()
+    env.user.remove_from_path_group(group_name, path_to_remove)
+    os_env.remove_from_path_group(group_name, path_to_remove)
+    os_env.store()
+    win32_registry_save(env.user)
+
+
+def remove_path_group(group_name: str) -> None:
+    assert group_name != "PATH"
+    env: RegistryEnvironment = query_registry_environment()
+    os_env: OsEnvironment = os_env_make_environment()
+    env.user.remove_path_group(group_name)
+    os_env.remove_path_group(group_name)
+    os_env.store()
+    win32_registry_save(env.user)
