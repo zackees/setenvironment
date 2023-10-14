@@ -7,14 +7,17 @@ Test the main module
 import sys
 import unittest
 
-from setenvironment.bash_parser import END_MARKER, START_MARKER
+from setenvironment.bash_parser import (
+    END_MARKER,
+    START_MARKER,
+    read_bash_file_lines,
+    set_bash_file_lines,
+)
 from setenvironment.setenv_unix import (
     Environment,
     add_env_path,
     get_env_vars_from_shell,
-    read_bash_file_lines,
     remove_env_path,
-    set_bash_file_lines,
 )
 from setenvironment.testing.basetest import BASHRC, BaseTest
 from setenvironment.util import write_utf8

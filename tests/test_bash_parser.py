@@ -12,16 +12,14 @@ import unittest
 
 from setenvironment.bash_parser import (
     Environment,
-    bash_rc_set_file,
     bash_append_lines,
-    bash_prepend_lines,
-    bash_read_variable,
-    bash_write_lines,
     bash_make_environment,
-    bash_save
+    bash_prepend_lines,
+    bash_rc_set_file,
+    bash_read_variable,
+    bash_save,
+    bash_write_lines,
 )
-
-
 
 HERE = os.path.dirname(__file__)
 BASHRC = os.path.join(HERE, "bash_parser.mybashrc")
@@ -31,7 +29,7 @@ bash_rc_set_file(BASHRC)
 
 class BashParserTester(unittest.TestCase):
     """Tester for the main module."""
-    
+
     def test_bash_env(self) -> None:
         # Should we just interact with an Environment object?
         env: Environment = bash_make_environment()
@@ -41,7 +39,6 @@ class BashParserTester(unittest.TestCase):
         bash_save(env)
         env2: Environment = bash_make_environment()
         print(env2)
-
 
 
 if __name__ == "__main__":

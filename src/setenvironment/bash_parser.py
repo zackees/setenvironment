@@ -135,6 +135,7 @@ def bash_read_variable(name: str) -> str | None:
             return out
     return None
 
+
 def bash_make_environment() -> Environment:
     """Makes an environment from the bash file."""
     lines = bash_read_lines()
