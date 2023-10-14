@@ -9,6 +9,7 @@ Dummy
 import os
 import re
 import subprocess
+import sys
 import warnings
 import winreg  # type: ignore
 from typing import Optional
@@ -17,6 +18,7 @@ import win32gui  # type: ignore
 
 from setenvironment.types import Environment
 from setenvironment.util import remove_adjascent_duplicates
+from setenvironment.win.refresh_env import REFRESH_ENV
 
 HERE = os.path.dirname(__file__)
 WIN_BIN_DIR = os.path.join(HERE, "win")
@@ -48,7 +50,7 @@ def _try_decode(byte_string: bytes) -> str:
     return "Error happened"
 
 
-def get_env_var(name: str) -> Optional[str]:
+def get_env_var(name: str, resolve=True) -> Optional[str]:
     current_path = None
     completed_process = _command(
         ["reg", "query", "HKCU\\Environment", "/v", name], capture_output=True
@@ -63,6 +65,8 @@ def get_env_var(name: str) -> Optional[str]:
 
     elif completed_process.returncode == 1:
         return None
+    if resolve and "%" in current_path:
+        current_path = resolve_path(current_path)
     return current_path
 
 
@@ -372,17 +376,16 @@ def remove_template_group(env_var: str) -> None:
 def reload_environment(verbose: bool) -> None:
     """Reloads the environment."""
     # This is nearly the same as unix version. Please keep them in same.
-    env: Environment = get_env()
+    env: Environment = get_env(resolve=True)
     path_list = env.paths
     env_vars = env.vars
-    # os_environ = os.environ.copy()
-    # os.environ["PATH"] = os.path.pathsep.join(path_list)
+    os.environ["PATH"] = os.path.pathsep.join(path_list)
     for key, val in env_vars.items():
         if key == "PATH":
             continue
         os.environ[key] = val
-    path_list = [os.path.expandvars(path) for path in path_list]
-    path_list = [path.strip() for path in path_list if path.strip()]
+    # path_list = [os.path.expandvars(path) for path in path_list]
+    # path_list = [path.strip() for path in path_list if path.strip()]
     path_list = merge_os_paths(path_list, parse_paths_win32(os.environ["PATH"]))
     path_list = [path.strip() for path in path_list if path.strip()]
     path_list = remove_adjascent_duplicates(path_list)
@@ -395,11 +398,65 @@ def reload_environment(verbose: bool) -> None:
         print(f"Setting PATH to {path_list_str}")
 
 
-def get_env() -> Environment:
-    """Returns the environment."""
-    paths = parse_paths_win32(get_env_path_registry()) + parse_paths_win32(
-        get_env_path_system_registry()
+def get_env_from_shell() -> Environment:
+    python_exe = sys.executable
+    cmd = (
+        f'cmd /c "{REFRESH_ENV}" > nul && "{python_exe}" -m setenvironment.os_env_json'
     )
+    stdout = subprocess.check_output(
+        cmd, cwd=WIN_BIN_DIR, shell=True, universal_newlines=True
+    )
+    import json
+
+    json_data = json.loads(stdout)
+    env = json_data["ENVIRONMENT"]
+    path = json_data["PATH"]
+    out = Environment(paths=path, vars=env)
+    return out
+
+
+def resolve_path(path: str) -> str:
+    """Resolves a path."""
+    if "%" not in path:
+        return path
+    orig_path = path
+    path_list = parse_paths_win32(path)
+    resolve_path_list = []
+    for path in path_list:
+        if "%" not in path:
+            resolve_path_list.append(path)
+            continue
+        path_parts = path.split(os.sep)
+        for i, part in enumerate(path_parts):
+            if "%" not in part:
+                continue
+            part_symbol = part.strip("%")
+            resolved_part = get_env_var(part_symbol, resolve=False)
+            if resolved_part is None:
+                # Hack, we should expand the vars from the full state. This get's
+                # us past the issue with %USERPROFILE% not being substituted.
+                resolved_part = os.path.expandvars(part)
+            path_parts[i] = resolved_part
+        resolved_path = os.sep.join(path_parts)
+        resolve_path_list.append(resolved_path)
+
+    out = os.path.pathsep.join(resolve_path_list)
+    if out.endswith(os.path.pathsep):
+        out = out[:-1]
+    return out
+
+
+def get_env(resolve=False) -> Environment:
+    """Returns the environment."""
+    user_paths = parse_paths_win32(get_env_path_registry())
+    system_paths = parse_paths_win32(get_env_path_system_registry())
+    paths = user_paths + system_paths
     vars = get_all_env_vars()
+    vars.pop("PATH", None)
+    if resolve:
+        for key, val in vars.items():
+            vars[key] = resolve_path(val)
+        for i, path in enumerate(paths):
+            paths[i] = resolve_path(path)
     out = Environment(paths=paths, vars=vars)
     return out

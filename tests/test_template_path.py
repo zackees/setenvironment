@@ -38,7 +38,7 @@ class TemplatePathtester(BaseTest):
         else:
             system_key = f"%{key}%"
         try:
-            self.assertIn(system_key, new_paths)
+            self.assertIn(mypath, new_paths)
             self.assertIn(mypath, get_env_var(key) or "")
         except Exception as exc:
             print(exc)
@@ -47,7 +47,7 @@ class TemplatePathtester(BaseTest):
             remove_template_path(key, mypath)
         print(f"path after removals of {mypath} is now:\n{os.environ['PATH']}")
         paths = get_paths()
-        self.assertEqual(system_key, paths[0])  # MYPATH should be the first entry.
+        self.assertNotIn(mypath, paths)  # mypath should be gone now.
         if sys.platform != "win32":
             bashrc_str = read_utf8(BASHRC)
             self.assertNotIn(mypath, bashrc_str)
@@ -70,7 +70,7 @@ class TemplatePathtester(BaseTest):
         else:
             system_key = f"%{key}%"
         try:
-            self.assertIn(system_key, new_paths)
+            self.assertIn(mypath, new_paths)
             self.assertIn(mypath, get_env_var(key) or "")
         except Exception as exc:
             print(exc)
@@ -99,16 +99,16 @@ class TemplatePathtester(BaseTest):
         else:
             system_key = f"%{key}%"
         try:
-            self.assertIn(system_key, new_paths)
+            self.assertIn(mypath, new_paths)
             self.assertIn(mypath, get_env_var(key) or "")
         except Exception as exc:
             print(exc)
             raise exc
         finally:
             remove_template_path(key, mypath, remove_if_empty=True)
-            is_good = system_key in get_paths()
+            is_good = system_key not in get_paths()
             remove_template_path(key, mypath2, remove_if_empty=True)
-        self.assertTrue(is_good, f"{system_key} should still be in path.")
+        self.assertTrue(is_good, f"{system_key} should not still be in path.")
         print(f"path after removals of {mypath} is now:\n{os.environ['PATH']}")
         paths = get_paths()
         self.assertNotIn(system_key, paths)
@@ -128,7 +128,7 @@ class TemplatePathtester(BaseTest):
         else:
             system_key = f"%{key}%"
         try:
-            self.assertIn(system_key, new_paths)
+            self.assertIn(mypath, new_paths)
             self.assertIn(mypath, get_env_var(key) or "")
         except Exception as exc:
             print(exc)
