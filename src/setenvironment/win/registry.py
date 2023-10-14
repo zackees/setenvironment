@@ -144,24 +144,55 @@ def win32_registry_broadcast_changes() -> None:
 
 def win32_registry_set_env_path_user(
     new_path: str, verbose=False, broad_cast_changes=True
-):
-    if verbose:
-        print(f"&&& Setting {new_path} to Windows PATH")
+) -> None:
+    win32_registry_set_all_env_vars_user(
+        {"PATH": new_path}, verbose, broad_cast_changes
+    )
+
+
+def win32_registry_set_all_env_vars_user(
+    env_vars: dict[str, str],
+    remove_missing_keys: bool = False,
+    verbose=False,
+    broad_cast_changes=True,
+) -> None:
+    """Sets multiple environment variables in the Windows registry for the current user."""
     try:
         with winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER,
-            "Environment",
-            0,
-            winreg.KEY_SET_VALUE,
+            winreg.HKEY_CURRENT_USER, "Environment", 0, winreg.KEY_ALL_ACCESS
         ) as key:
-            # Set the new value of the Path key
-            winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
-            winreg.CloseKey(key)
-            if broad_cast_changes:
-                win32_registry_broadcast_changes()
+            # If remove_missing_keys is set to True, then:
+            # 1. Enumerate all environment variables in the registry
+            # 2. Delete any env var that is not in the provided env_vars dictionary
+            if remove_missing_keys:
+                current_env_vars = {}
+                index = 0
+                while True:
+                    try:
+                        name, value, _type = winreg.EnumValue(key, index)
+                        current_env_vars[name] = value
+                        index += 1
+                    except OSError:
+                        # Reached end of registry key values
+                        break
+
+                for name in current_env_vars:
+                    if name not in env_vars:
+                        if verbose:
+                            print(f"&&& Deleting {name}")
+                        winreg.DeleteValue(key, name)
+
+            # Set or update the values from the provided dictionary
+            for name, value in env_vars.items():
+                if verbose:
+                    print(f"&&& Setting {name} to {value}")
+                winreg.SetValueEx(key, name, 0, winreg.REG_EXPAND_SZ, value)
+
     except Exception as exc:  # pylint: disable=broad-except
-        print(f"Failed to add path to registry because of {exc}")
-        raise
+        warnings.warn(f"An error occurred: {exc}")
+
+    if broad_cast_changes:
+        win32_registry_broadcast_changes()
 
 
 def win32_registry_get_env_path_user(verbose=False) -> str:
@@ -190,3 +221,14 @@ def win32_registry_make_environment() -> RegistryEnvironment:
     system: Environment = Environment(vars=system_env, paths=system_path_list)
     out = RegistryEnvironment(user=user, system=system)
     return out
+
+
+def win32_registry_save(user_environment: Environment) -> None:
+    """Saves the user environment. Note that system environment can't be saved."""
+    user_env = user_environment.vars.copy()
+    user_path = user_environment.paths
+    user_path_str = os.pathsep.join(user_path)
+    user_env["PATH"] = user_path_str
+    win32_registry_set_all_env_vars_user(
+        user_env, broad_cast_changes=False, remove_missing_keys=True)
+    win32_registry_broadcast_changes()

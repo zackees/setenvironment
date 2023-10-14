@@ -57,6 +57,33 @@ class WinPathTester(BaseTest):
         print(env)
         print("done")
 
+    @unittest.skipIf(sys.platform != "win32", "Windows only test")
+    def test_registry_manipulation(self) -> None:
+        """Test setting an environment variable."""
+        from setenvironment.win.registry import (
+            RegistryEnvironment,
+            win32_registry_make_environment,
+            win32_registry_save,
+        )
+
+        env: RegistryEnvironment = win32_registry_make_environment()
+        env.user.vars["BAR"] = "FOO"
+        env.user.paths.append("C:\\foo")
+        win32_registry_save(env.user)
+        try:
+            env2 = win32_registry_make_environment()
+            self.assertIn("BAR", env2.user.vars)
+            self.assertIn("C:\\foo", env2.user.paths)
+            self.assertEqual("FOO", env2.user.vars["BAR"])
+        finally:
+            env.user.vars.pop("BAR", None)
+            if "C:\\foo" in env.user.paths:
+                env.user.paths.remove("C:\\foo")
+            win32_registry_save(env.user)
+        env3 = win32_registry_make_environment()
+        self.assertNotIn("BAR", env3.user.vars)
+        self.assertNotIn("C:\\foo", env3.user.paths)
+
 
 if __name__ == "__main__":
     unittest.main()
