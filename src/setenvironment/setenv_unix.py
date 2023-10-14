@@ -301,7 +301,7 @@ def remove_template_group(env_var: str) -> None:
         os.environ["PATH"] = new_path_str
 
 
-def reload_environment(verbose: bool) -> None:
+def reload_environment(verbose: bool, resolve: bool) -> None:
     """Reloads the environment."""
     # This is nearly the same as win version. Please keep them in same.
     env: Environment = get_env()
@@ -310,8 +310,11 @@ def reload_environment(verbose: bool) -> None:
     for key, val in env_vars.items():
         if key == "PATH":
             continue
+        if resolve:
+            val = os.path.expandvars(val)
         os.environ[key] = val
-    path_list = [os.path.expandvars(path) for path in path_list]
+    if resolve:
+        path_list = [os.path.expandvars(path) for path in path_list]
     path_list = remove_adjascent_duplicates(path_list)
     path_list = [path.strip() for path in path_list if path.strip()]
     path_list_str = os.path.pathsep.join(path_list)

@@ -177,16 +177,17 @@ def remove_env_path(
         unix_remove_env_path(path, update_curr_environment=update_curr_environment)
 
 
-def reload_environment(verbose=False) -> None:
+def reload_environment(verbose=False, resolve=False) -> None:
     """Reloads the environment."""
     if _IS_WINDOWS:
         from .setenv_win32 import reload_environment as win32_reload_environment
 
+        # Note that windows always resolves the paths.
         win32_reload_environment(verbose=verbose)
     else:
         from .setenv_unix import reload_environment as unix_reload_environment
 
-        unix_reload_environment(verbose=verbose)
+        unix_reload_environment(verbose=verbose, resolve=resolve)
 
 
 def get_env() -> Environment:
