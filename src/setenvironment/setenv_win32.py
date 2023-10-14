@@ -419,7 +419,6 @@ def resolve_path(path: str) -> str:
     """Resolves a path."""
     if "%" not in path:
         return path
-    orig_path = path
     path_list = parse_paths_win32(path)
     resolve_path_list = []
     for path in path_list:

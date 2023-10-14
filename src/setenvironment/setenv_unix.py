@@ -12,9 +12,11 @@ import sys
 
 from setenvironment.bash_parser import (
     bash_append_lines,
+    bash_make_environment,
     bash_rc_file,
     bash_read_lines,
     bash_read_variable,
+    bash_save,
     bash_write_lines,
     read_bash_file_lines,
     set_bash_file_lines,
@@ -106,8 +108,6 @@ def add_env_path(
         os.environ["PATH"] = path + os.pathsep + os.environ["PATH"]
     export_cmd = f"export PATH={path}:$PATH"
     bash_append_lines([export_cmd])
-    if update_curr_environment:
-        os.system(export_cmd)
 
 
 def remove_env_path(path: str, update_curr_environment=True) -> None:
@@ -118,18 +118,13 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         if path in path_list:
             path_list.remove(path)
             os.environ["PATH"] = os.pathsep.join(path_list)
-    settings_file = bash_rc_file()
-    lines = read_bash_file_lines(settings_file)
-    found = False
-    for i, line in enumerate(lines):
-        if line.startswith("export PATH=") and path in line:
-            path_pieces = line.split(os.pathsep)
-            path_pieces.remove(path)
-            new_path = os.pathsep.join(path_pieces)
-            lines[i] = f"export PATH={new_path}"
-            found = True
-    if found:
-        bash_write_lines(lines)
+    env: Environment = bash_make_environment()
+    needs_save = False
+    while path in env.paths:
+        env.paths.remove(path)
+        needs_save = True
+    if needs_save:
+        bash_save(env)
 
 
 def add_template_path(

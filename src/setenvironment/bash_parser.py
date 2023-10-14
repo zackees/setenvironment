@@ -10,6 +10,7 @@ END_MARKER = "# END setenvironment"
 
 BASH_FILE_OVERRIDE: str | None = None
 
+
 def __get_system_bash_file() -> str:
     if sys.platform == "win32":
         raise NotImplementedError("Windows is not supported yet.")
@@ -21,6 +22,7 @@ def __get_system_bash_file() -> str:
     else:
         raise FileNotFoundError("Could not find any bash config file")
     return src
+
 
 def bash_rc_file() -> str:
     """Returns the target file."""
