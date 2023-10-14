@@ -448,9 +448,9 @@ def resolve_path(path: str) -> str:
 
 def get_env(resolve=False) -> Environment:
     """Returns the environment."""
-    user_paths = parse_paths_win32(get_env_path_registry())
     system_paths = parse_paths_win32(get_env_path_system_registry())
-    paths = user_paths + system_paths
+    user_paths = parse_paths_win32(get_env_path_registry())
+    paths = system_paths + user_paths
     vars = get_all_env_vars()
     vars.pop("PATH", None)
     if resolve:
