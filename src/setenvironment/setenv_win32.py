@@ -11,7 +11,7 @@ from setenvironment.types import Environment
 from setenvironment.util import remove_adjascent_duplicates
 from setenvironment.win.registry import (
     broadcast_changes,
-    get_all_env_vars,
+    get_all_user_vars,
     get_env_path_registry,
     get_env_path_system_registry,
     query_user_env,
@@ -272,7 +272,7 @@ def get_env(resolve=False) -> Environment:
     system_paths = parse_paths_win32(get_env_path_system_registry())
     user_paths = parse_paths_win32(get_env_path_registry())
     paths = user_paths + system_paths
-    vars = get_all_env_vars()
+    vars = get_all_user_vars()
     vars.pop("PATH", None)
     if resolve:
         for key, val in vars.items():

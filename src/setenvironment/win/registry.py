@@ -30,11 +30,9 @@ def _print(message):
     _DEFAULT_PRINT(f"** {message}", flush=True)
 
 
-def get_all_env_vars() -> dict[str, str]:
+def _get_environment_variables_from_registry(registry_path: str) -> dict[str, str]:
     env_vars: dict[str, str] = {}
-    completed_process = _command(
-        ["reg", "query", "HKCU\\Environment"], capture_output=True
-    )
+    completed_process = _command(["reg", "query", registry_path], capture_output=True)
     assert completed_process.returncode == 0, "Failed to get all env vars"
     stdout = _try_decode(completed_process.stdout)
     for line in stdout.splitlines():
@@ -45,6 +43,16 @@ def get_all_env_vars() -> dict[str, str]:
             if value is not None:
                 env_vars[name] = value
     return env_vars
+
+
+def get_all_user_vars() -> dict[str, str]:
+    return _get_environment_variables_from_registry("HKCU\\Environment")
+
+
+def get_all_system_vars() -> dict[str, str]:
+    return _get_environment_variables_from_registry(
+        "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
+    )
 
 
 def _command(*args, **kwargs):
@@ -68,6 +76,31 @@ def query_user_env(name: str) -> Optional[str]:
     current_path = None
     completed_process = _command(
         ["reg", "query", "HKCU\\Environment", "/v", name], capture_output=True
+    )
+    if completed_process.returncode == 0:
+        stdout = _try_decode(completed_process.stdout)
+        match = _REGISTERLY_VALUE_PATTERN.search(stdout)
+        if match:
+            current_path = match.group("value")
+            if current_path:
+                current_path = current_path.strip().replace("\r", "").replace("\n", "")
+
+    elif completed_process.returncode == 1:
+        return None
+    return current_path
+
+
+def query_system_env(name: str) -> Optional[str]:
+    current_path = None
+    completed_process = _command(
+        [
+            "reg",
+            "query",
+            "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+            "/v",
+            name,
+        ],
+        capture_output=True,
     )
     if completed_process.returncode == 0:
         stdout = _try_decode(completed_process.stdout)
@@ -125,7 +158,7 @@ def unset_env_var_cmd(name: str) -> None:
     )
     if completed_proc.returncode != 0:
         _print(f"Error happened while unsetting {name}")
-        _print(get_all_env_vars())
+        _print(get_all_user_vars())
         if completed_proc.stdout:
             _print(_try_decode(completed_proc.stdout))
 
