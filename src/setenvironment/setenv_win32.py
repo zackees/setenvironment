@@ -10,11 +10,12 @@ from typing import Optional
 from setenvironment.types import Environment
 from setenvironment.util import remove_adjascent_duplicates
 from setenvironment.win.registry import (
+    RegistryEnvironment,
     get_all_user_vars,
     win32_registry_broadcast_changes,
     win32_registry_get_env_path_system,
     win32_registry_get_env_path_user,
-    win32_registry_query_user_env,
+    win32_registry_make_environment,
     win32_registry_set_env_path_user,
     win32_registry_set_env_var_cmd_user,
     win32_registry_unset_env_var_cmd_user,
@@ -259,12 +260,19 @@ def resolve_path(path: str) -> str:
 
 
 def get_env_var(name: str, resolve=True) -> Optional[str]:
-    current_path = win32_registry_query_user_env(name)
-    if current_path is None:
+    env: RegistryEnvironment = win32_registry_make_environment()
+    if name == "PATH":
+        paths_list = env.user.paths
+        path_str = os.path.pathsep.join(paths_list)
+        if resolve:
+            path_str = resolve_path(path_str)
+        return path_str
+    current_value = env.user.vars.get(name, None)
+    if current_value is None:
         return None
-    if resolve and "%" in current_path:
-        current_path = resolve_path(current_path)
-    return current_path
+    if resolve and "%" in current_value:
+        current_value = resolve_path(current_value)
+    return current_value
 
 
 def get_env(resolve=False) -> Environment:

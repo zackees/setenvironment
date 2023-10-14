@@ -72,49 +72,6 @@ def _try_decode(byte_string: bytes) -> str:
     return "Error happened"
 
 
-def win32_registry_query_user_env(name: str) -> Optional[str]:
-    current_path = None
-    completed_process = _command(
-        ["reg", "query", "HKCU\\Environment", "/v", name], capture_output=True
-    )
-    if completed_process.returncode == 0:
-        stdout = _try_decode(completed_process.stdout)
-        match = _REGISTERLY_VALUE_PATTERN.search(stdout)
-        if match:
-            current_path = match.group("value")
-            if current_path:
-                current_path = current_path.strip().replace("\r", "").replace("\n", "")
-
-    elif completed_process.returncode == 1:
-        return None
-    return current_path
-
-
-def win32_registry_query_system_env(name: str) -> Optional[str]:
-    current_path = None
-    completed_process = _command(
-        [
-            "reg",
-            "query",
-            "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
-            "/v",
-            name,
-        ],
-        capture_output=True,
-    )
-    if completed_process.returncode == 0:
-        stdout = _try_decode(completed_process.stdout)
-        match = _REGISTERLY_VALUE_PATTERN.search(stdout)
-        if match:
-            current_path = match.group("value")
-            if current_path:
-                current_path = current_path.strip().replace("\r", "").replace("\n", "")
-
-    elif completed_process.returncode == 1:
-        return None
-    return current_path
-
-
 def get_env_from_shell() -> Environment:
     python_exe = sys.executable
     cmd = (
