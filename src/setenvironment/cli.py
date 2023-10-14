@@ -21,7 +21,7 @@ def _init_config_file(args):
     """Initialize the path to the config file."""
     config = args.config_file
     if config is not None and sys.platform != "win32":
-        bash_rc_set_file(config, ignore_error=True)
+        bash_rc_set_file(config)
         if not os.path.exists(config):
             os.makedirs(os.path.dirname(config), exist_ok=True)
             write_utf8(config, "")
@@ -66,9 +66,7 @@ def unsetenv() -> None:
 
 def addpath() -> None:
     """Add a path to the PATH environment variable."""
-    parser = argparse.ArgumentParser(
-        description="Add a path to the PATH environment variable"
-    )
+    parser = argparse.ArgumentParser(description="Add a path to the PATH environment variable")
     parser.add_argument("path", help="The path to add")
     parser.add_argument("--config-file", help="The config file to use")
     args = parser.parse_args()
@@ -79,9 +77,7 @@ def addpath() -> None:
 
 def removepath() -> None:
     """Remove a path from the PATH environment variable."""
-    parser = argparse.ArgumentParser(
-        description="Remove a path from the PATH environment variable"
-    )
+    parser = argparse.ArgumentParser(description="Remove a path from the PATH environment variable")
     parser.add_argument("path", help="The path to remove")
     parser.add_argument("--config-file", help="The config file to use")
     args = parser.parse_args()

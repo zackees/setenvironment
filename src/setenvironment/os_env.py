@@ -8,6 +8,7 @@ def os_env_make_environment() -> OsEnvironment:
     paths = os.environ["PATH"].split(os.pathsep)
     vars = os.environ.copy()
     vars.pop("PATH", None)
+    paths = [path.strip() for path in paths if path.strip() != ""]
     return OsEnvironment(vars, paths)
 
 
