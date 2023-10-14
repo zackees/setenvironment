@@ -14,6 +14,7 @@ from setenvironment.bash_parser import (
     bash_rc_set_file,
     bash_save,
 )
+from setenvironment.testing.basetest import BaseTest
 
 HERE = os.path.dirname(__file__)
 BASHRC = os.path.join(HERE, "bash_parser.mybashrc")
@@ -21,7 +22,7 @@ BASHRC = os.path.join(HERE, "bash_parser.mybashrc")
 bash_rc_set_file(BASHRC)
 
 
-class BashParserTester(unittest.TestCase):
+class BashParserTester(BaseTest):
     """Tester for the main module."""
 
     def test_bash_env(self) -> None:
@@ -33,6 +34,18 @@ class BashParserTester(unittest.TestCase):
         bash_save(env)
         env2: Environment = bash_make_environment()
         print(env2)
+
+    def test_bash_two_paths(self) -> None:
+        """Tests the behavior of adding two paths and how they are parsed back."""
+        env: Environment = bash_make_environment()
+        env.paths.append("/my/path")
+        env.paths.append("/my/path2")
+        bash_save(env)
+        env2: Environment = bash_make_environment()
+        print(env2)
+        self.assertEqual(2, len(env2.paths))
+        self.assertIn("/my/path", env2.paths)
+        self.assertIn("/my/path2", env2.paths)
 
 
 if __name__ == "__main__":

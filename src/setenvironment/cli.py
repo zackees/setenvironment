@@ -6,9 +6,9 @@ import argparse
 import os
 import sys
 
+from setenvironment.bash_parser import bash_rc_set_file
 from setenvironment.setenv import (
     add_env_path,
-    bash_rc_set_file,
     get_env_var,
     remove_env_path,
     set_env_var,

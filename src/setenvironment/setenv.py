@@ -16,21 +16,6 @@ from setenvironment.types import Environment
 _IS_WINDOWS = sys.platform == "win32"
 
 
-def bash_rc_set_file(
-    filepath: str = "~/.bash_aliases", ignore_error: bool = False
-) -> None:
-    """Sets the config file for the platform."""
-    # Only works for Unix/MacOS
-    if not _IS_WINDOWS:
-        # from .setenv_unix import bash_rc_set_file as unix_env_set_config_file
-        from .bash_parser import bash_rc_set_file as unix_env_set_config_file
-
-        unix_env_set_config_file(filepath)
-        return
-    if not ignore_error:
-        raise NotImplementedError("bash_rc_set_file is not implemented for Windows.")
-
-
 def set_env_var(
     var_name: str,
     var_value: Union[str, Path, int, float],

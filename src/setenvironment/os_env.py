@@ -15,7 +15,7 @@ class OsEnvironment:
 
     # override [] operator
     def __getitem__(self, key: str) -> str:
-        assert "path" not in key.lower(), "Use paths attribute instead."
+        assert "path" != key.lower(), "Use paths attribute instead."
         return self.vars[key]
 
 

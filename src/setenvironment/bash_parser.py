@@ -35,7 +35,7 @@ def bash_rc_file() -> str:
     return __get_system_bash_file()
 
 
-def bash_rc_set_file(filepath: str) -> None:
+def bash_rc_set_file(filepath: str | None) -> None:
     """Sets the target file."""
     global BASH_FILE_OVERRIDE
     BASH_FILE_OVERRIDE = filepath

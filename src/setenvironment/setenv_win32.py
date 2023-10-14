@@ -23,6 +23,7 @@ from setenvironment.win.refresh_env import REFRESH_ENV
 
 HERE = os.path.dirname(__file__)
 WIN_BIN_DIR = os.path.join(HERE, "win")
+ENABLE_BROADCAST_CHANGES = True
 
 
 _DEFAULT_PRINT = print
@@ -128,7 +129,9 @@ def get_reg_env_path() -> str:
     return path
 
 
-def broadcast_changes():
+def broadcast_changes() -> None:
+    if not ENABLE_BROADCAST_CHANGES:
+        return
     print("Broadcasting changes")
     rtn = subprocess.call("refreshenv", cwd=WIN_BIN_DIR, shell=True)
     if rtn != 0:
