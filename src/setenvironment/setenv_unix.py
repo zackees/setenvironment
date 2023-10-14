@@ -13,7 +13,13 @@ import sys
 from setenvironment.bash_parser import bash_make_environment, bash_rc_file, bash_save
 from setenvironment.types import Environment
 from setenvironment.util import parse_paths, remove_adjascent_duplicates
-from setenvironment.os_env import os_update_variable, os_remove_variable, OsEnvironment, os_env_make_environment
+from setenvironment.os_env import (
+    os_update_variable,
+    os_remove_variable,
+    OsEnvironment,
+    os_env_make_environment,
+)
+
 
 def set_env_var(name: str, value: str, update_curr_environment=True) -> None:
     """Sets an environment variable."""
@@ -64,9 +70,7 @@ def unset_env_var(name: str) -> None:
         bash_save(env)
 
 
-def add_env_path(
-    path: str, verbose: bool = False, update_curr_environment: bool = True
-) -> None:
+def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
     """Adds a path to the PATH environment variable."""
     if update_curr_environment:
         os_env: OsEnvironment = os_env_make_environment()
@@ -94,9 +98,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         bash_save(env)
 
 
-def add_template_path(
-    env_var: str, new_path: str, update_curr_environment=True
-) -> None:
+def add_template_path(env_var: str, new_path: str, update_curr_environment=True) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     if update_curr_environment:
@@ -112,9 +114,7 @@ def add_template_path(
     bash_save(env)
 
 
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
+def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     env: Environment = bash_make_environment()
@@ -142,27 +142,22 @@ def remove_template_group(env_var: str) -> None:
 
 def reload_environment(verbose: bool, resolve: bool) -> None:
     """Reloads the environment."""
-    # This is nearly the same as win version. Please keep them in same.
     env: Environment = get_env()
     path_list = env.paths
     env_vars = env.vars
+    os_env: OsEnvironment = os_env_make_environment()
     for key, val in env_vars.items():
         if key == "PATH":
             continue
         if resolve:
             val = os.path.expandvars(val)
-        os.environ[key] = val
+        os_env.vars[key] = val
     if resolve:
         path_list = [os.path.expandvars(path) for path in path_list]
     path_list = remove_adjascent_duplicates(path_list)
     path_list = [path.strip() for path in path_list if path.strip()]
-    path_list_str = os.path.pathsep.join(path_list)
-    path_list_str = path_list_str.replace(os.path.sep + os.path.sep, os.path.sep)
-    if path_list_str.endswith(os.path.pathsep):
-        path_list_str = path_list_str[:-1]
-    os.environ["PATH"] = path_list_str
-    if verbose:
-        print(f"Setting PATH to {path_list_str}")
+    os_env.paths = path_list
+    os_env.store()
 
 
 def combine_environments(parent: Environment, child: Environment) -> Environment:
