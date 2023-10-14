@@ -51,6 +51,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+**/unix.mybashrc
+
 # Translations
 *.mo
 *.pot
