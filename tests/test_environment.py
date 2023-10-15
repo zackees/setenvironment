@@ -19,7 +19,6 @@ from setenvironment import (
 from setenvironment.testing.basetest import BaseTest
 from setenvironment.types import Environment, OsEnvironment
 
-HERE = os.path.dirname(__file__)
 
 MY_PATH = os.path.join("setenvironment", "test", "path2")
 MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
@@ -58,7 +57,7 @@ def unix_check_exists(self: BaseTest) -> None:
     self.assertEqual(env.vars[MY_VAR[0]], MY_VAR[1])
 
 
-class ReloadEnvironmentTest(BaseTest):
+class EnvironmentTester(BaseTest):
     def tearDown(self) -> None:
         remove_env_path(MY_PATH)
         unset_env_var(MY_VAR[0])
@@ -68,7 +67,6 @@ class ReloadEnvironmentTest(BaseTest):
         # Sanity check.
         paths = os.environ["PATH"].split(os.pathsep)
         self.assertNotIn(MY_PATH, paths)
-        env: Environment = get_env()
         add_env_path(MY_PATH)
         set_env_var(MY_VAR[0], MY_VAR[1])
         reload_environment()
