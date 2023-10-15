@@ -13,7 +13,7 @@ import tempfile
 
 from setenvironment.bash_parser import bash_make_environment, bash_rc_file, bash_save
 from setenvironment.types import BashEnvironment, Environment, OsEnvironment
-from setenvironment.util import parse_paths, remove_adjascent_duplicates
+from setenvironment.util import remove_adjascent_duplicates
 
 
 def os_update_variable(name: str, value: str) -> None:
@@ -62,7 +62,7 @@ def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
         capture_output=True,
         universal_newlines=True,
         check=True,
-        env={},  # do not inherit parent environment},
+        env={},  # type: ignore # do not inherit parent environment},
     )
 
     # Cleanup: remove the temporary file
@@ -88,92 +88,66 @@ def unset_env_var(name: str) -> None:
     """Unsets an environment variable."""
     assert "$" not in name, "name should not contain $"
     assert name.lower() != "path", "Use remove_env_path to remove from PATH"
-    os_remove_variable(name)
     env: BashEnvironment = bash_make_environment()
-    if name in env.vars:
-        del env.vars[name]
-        bash_save(env)
+    os_env: OsEnvironment = OsEnvironment()
+    env.vars.pop(name, None)
+    os_env.vars.pop(name, None)
+    os_env.store()
+    env.save()
 
 
-def add_env_path(
-    path: str, verbose: bool = False, update_curr_environment: bool = True
-) -> None:
+def add_env_path(path: str, verbose: bool = False) -> None:
     """Adds a path to the PATH environment variable."""
-    if update_curr_environment:
-        os_env: OsEnvironment = OsEnvironment()
-        os_env.paths.insert(0, path)
-        os_env.store()
     env: BashEnvironment = bash_make_environment()
+    os_env: OsEnvironment = OsEnvironment()
     env.paths.append(path)
+    os_env.paths.insert(0, path)
+    os_env.store()
     bash_save(env)
 
 
-def remove_env_path(path: str, update_curr_environment=True) -> None:
+def remove_env_path(path: str) -> None:
     """Removes a path from the PATH environment variable."""
     # remove path from os.environ['PATH'] if it does not exist
-    if update_curr_environment:
-        os_env: OsEnvironment = OsEnvironment()
-        while path in os_env.paths:
-            os_env.paths.remove(path)
-        os_env.store()
     env: BashEnvironment = bash_make_environment()
-    needs_save = False
-    while path in env.paths:
+    os_env: OsEnvironment = OsEnvironment()
+    if path in os_env.paths:
+        os_env.paths.remove(path)
+        os_env.store()
+    if path in env.paths:
         env.paths.remove(path)
-        needs_save = True
-    if needs_save:
         bash_save(env)
 
 
-def add_template_path(
-    group_name: str, new_path: str, update_curr_environment=True
-) -> None:
+def add_template_path(group_name: str, new_path: str) -> None:
     assert "$" not in group_name, "group_name should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
-    if update_curr_environment:
-        os_env: OsEnvironment = OsEnvironment()
-        os_env.paths.insert(0, new_path)
-        os_env.store()
     env: BashEnvironment = bash_make_environment()
-    if group_name not in env.vars:
-        env.vars[group_name] = ""
-    var_paths = parse_paths(env.vars[group_name])
-    # var_paths.append(new_path)
-    var_paths.insert(0, new_path)
-    env.vars[group_name] = os.path.pathsep.join(var_paths)
-    key = f"${group_name}"
-    if key in env.paths:
-        env.paths.remove(key)
-    env.paths.insert(0, key)
-    bash_save(env)
+    os_env: OsEnvironment = OsEnvironment()
+    env.add_template_path(group_name, new_path)
+    os_env.add_template_path(group_name, new_path)
+    os_env.store()
+    env.save()
 
 
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
+def remove_template_path(env_var: str, path_to_remove: str) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     env: BashEnvironment = bash_make_environment()
-    if env_var not in env.vars:
-        return
-    var_paths = parse_paths(env.vars[env_var])
-    while path_to_remove in var_paths:
-        var_paths.remove(path_to_remove)
-    env.vars[env_var] = os.path.pathsep.join(var_paths)
-    bash_save(env)
-    if remove_if_empty and not var_paths:
-        remove_template_group(env_var)
+    os_env: OsEnvironment = OsEnvironment()
+    env.remove_template_path(env_var, path_to_remove)
+    os_env.remove_template_path(env_var, path_to_remove)
+    os_env.store()
+    env.save()
 
 
 def remove_template_group(env_var: str) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     env: Environment = bash_make_environment()
-    env.vars.pop(env_var, None)
-    path_list = os.environ["PATH"].split(os.pathsep)
-    system_key = f"${env_var}"
-    if system_key in path_list:
-        path_list.remove(env_var)
-        os.environ["PATH"] = os.pathsep.join(path_list)
+    os_env: OsEnvironment = OsEnvironment()
+    env.remove_template_group(env_var)
+    os_env.remove_template_group(env_var)
+    os_env.store()
     bash_save(env)
 
 

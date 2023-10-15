@@ -29,7 +29,7 @@ class TemplateGroupRemovalTester(BaseTest):
         key = "MYPATH"
         mypath = os.path.join("my", "path")
         add_template_path(key, mypath)
-        reload_environment(resolve=True)
+        reload_environment(resolve=False)
         new_paths = get_paths()
         print("path is now:\n", new_paths)
         if sys.platform != "win32":
@@ -37,14 +37,14 @@ class TemplateGroupRemovalTester(BaseTest):
         else:
             system_key = f"%{key}%"
         try:
-            self.assertIn(mypath, new_paths)
+            self.assertIn(system_key, new_paths)
             self.assertIn(mypath, get_env_var(key) or "")
         except Exception as exc:
             print(exc)
             raise exc
         finally:
             remove_template_group(key)
-        reload_environment(resolve=True)
+        reload_environment(resolve=False)
         print(f"path after removals of {mypath} is now:\n{os.environ['PATH']}")
         paths = get_paths()
         self.assertNotIn(system_key, paths)

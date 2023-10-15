@@ -57,14 +57,14 @@ class UnixPathTester(BaseTest):
     def test_get_env_vars_from_shell(self) -> None:
         """Test setting an env variable and then reloading it fromn the shell."""
         my_path = "/my/test/path"
-        add_env_path(my_path, update_curr_environment=False)
+        add_env_path(my_path)
         try:
             out: Environment = get_env_vars_from_shell(BASHRC)
             self.assertIn(my_path, out.paths)
             print(out)
             print("done")
         finally:
-            remove_env_path(my_path, update_curr_environment=True)
+            remove_env_path(my_path)
 
     @unittest.skipIf(sys.platform == "win32", "Windows does not have a shell.")
     def test_registry_write_then_reload(self) -> None:

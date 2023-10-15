@@ -60,7 +60,7 @@ class TemplatePathtester(BaseTest):
     def test_add_template_path_if_empty(self) -> None:
         """Test setting an environment variable."""
         add_template_path(KEY, MYPATH)
-        new_paths = get_paths()
+        new_paths = get_paths(resolve=True)
         print("path is now:\n", new_paths)
         if sys.platform != "win32":
             SYSTEM_KEY = f"${KEY}"
@@ -87,21 +87,21 @@ class TemplatePathtester(BaseTest):
         mypath2 = os.path.join("my", "path2")
         add_template_path(KEY, MYPATH)
         add_template_path(KEY, mypath2)
-        new_paths = get_paths()
+        new_paths = get_paths(resolve=False)
         print("path is now:\n", new_paths)
         if sys.platform != "win32":
             SYSTEM_KEY = f"${KEY}"
         else:
             SYSTEM_KEY = f"%{KEY}%"
         try:
-            self.assertIn(MYPATH, new_paths)
+            self.assertIn(SYSTEM_KEY, new_paths)
             self.assertIn(MYPATH, get_env_var(KEY) or "")
         except Exception as exc:
             print(exc)
             raise exc
         finally:
             remove_template_path(KEY, MYPATH)
-            is_good = SYSTEM_KEY not in get_paths()
+            is_good = SYSTEM_KEY not in get_paths(resolve=False)
             remove_template_path(KEY, mypath2)
         self.assertTrue(is_good, f"{SYSTEM_KEY} should not still be in path.")
         print(f"path after removals of {MYPATH} is now:\n{os.environ['PATH']}")
