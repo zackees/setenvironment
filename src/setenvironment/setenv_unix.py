@@ -119,38 +119,6 @@ def remove_env_path(path: str) -> None:
         bash_save(env)
 
 
-def add_template_path(group_name: str, new_path: str) -> None:
-    assert "$" not in group_name, "group_name should not contain $"
-    assert "$" not in new_path, "new_path should not contain $"
-    env: BashEnvironment = bash_make_environment()
-    os_env: OsEnvironment = OsEnvironment()
-    env.add_template_path(group_name, new_path)
-    os_env.add_template_path(group_name, new_path)
-    os_env.store()
-    env.save()
-
-
-def remove_template_path(env_var: str, path_to_remove: str) -> None:
-    assert "$" not in env_var, "env_var should not contain $"
-    assert "$" not in path_to_remove, "path_to_remove should not contain $"
-    env: BashEnvironment = bash_make_environment()
-    os_env: OsEnvironment = OsEnvironment()
-    env.remove_template_path(env_var, path_to_remove)
-    os_env.remove_template_path(env_var, path_to_remove)
-    os_env.store()
-    env.save()
-
-
-def remove_template_group(env_var: str) -> None:
-    assert "$" not in env_var, "env_var should not contain $"
-    env: Environment = bash_make_environment()
-    os_env: OsEnvironment = OsEnvironment()
-    env.remove_template_group(env_var)
-    os_env.remove_template_group(env_var)
-    os_env.store()
-    bash_save(env)
-
-
 def reload_environment(verbose: bool, resolve: bool) -> None:
     """Reloads the environment."""
     env: Environment = get_env()

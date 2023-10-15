@@ -1,5 +1,4 @@
 import os
-import sys
 from dataclasses import dataclass
 
 
@@ -52,48 +51,6 @@ class Environment:
         for path in group_path_list:
             while path in self.paths:
                 self.paths.remove(path)
-        if group_name in self.vars:
-            del self.vars[group_name]
-
-    def add_template_path(self, group_name: str, new_path: str) -> None:
-        assert "%" not in group_name, "env_var should not contain %"
-        assert "%" not in new_path, "new_path should not contain %"
-        assert "$" not in group_name, "env_var should not contain $"
-        assert "$" not in new_path, "new_path should not contain $"
-        system_key = f"%{group_name}%" if sys.platform == "win32" else f"${group_name}"
-        group_path_list = self.get_var_as_pathlist(group_name)
-        while new_path in group_path_list:
-            group_path_list.remove(new_path)
-        while system_key in self.paths:
-            self.paths.remove(system_key)
-        group_path_list.insert(0, new_path)
-        self.paths.insert(0, system_key)
-        self.set_var_pathlist(group_name, group_path_list)
-
-    def remove_template_path(self, group_name: str, path_to_remove: str) -> None:
-        assert "%" not in group_name, "env_var should not contain %"
-        assert "%" not in path_to_remove, "path_to_remove should not contain %"
-        assert "$" not in group_name, "env_var should not contain $"
-        assert "$" not in path_to_remove, "path_to_remove should not contain $"
-        system_key = f"%{group_name}%" if sys.platform == "win32" else f"${group_name}"
-        group_path_list = self.get_var_as_pathlist(group_name)
-        while path_to_remove in group_path_list:
-            group_path_list.remove(path_to_remove)
-        while system_key in self.paths:
-            self.paths.remove(system_key)
-        if group_path_list:  # reinsert key at front.
-            self.paths.insert(0, system_key)
-        if group_path_list:
-            self.set_var_pathlist(group_name, group_path_list)
-        else:
-            self.vars.pop(group_name, None)
-
-    def remove_template_group(self, group_name: str) -> None:
-        assert "%" not in group_name, "env_var should not contain %"
-        assert "$" not in group_name, "env_var should not contain $"
-        system_key = f"%{group_name}%" if sys.platform == "win32" else f"${group_name}"
-        while system_key in self.paths:
-            self.paths.remove(system_key)
         if group_name in self.vars:
             del self.vars[group_name]
 

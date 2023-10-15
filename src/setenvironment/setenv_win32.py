@@ -101,30 +101,6 @@ def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=
     os_env.store()
 
 
-def add_template_path(
-    group_name: str, new_path: str, update_curr_environment=True
-) -> None:
-    # Query the current environment from the registry
-    env: RegistryEnvironment = query_registry_environment()
-    os_env: OsEnvironment = os_env_make_environment()
-    env.user.add_template_path(group_name, new_path)
-    os_env.add_template_path(group_name, new_path)
-    # now save
-    env.save()
-    os_env.store()
-
-
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
-    env: RegistryEnvironment = query_registry_environment()
-    os_env: OsEnvironment = os_env_make_environment()
-    env.user.remove_template_path(env_var, path_to_remove)
-    os_env.remove_template_path(env_var, path_to_remove)
-    env.save()
-    os_env.store()
-
-
 def merge_os_paths(path_list: list[str], os_env: list[str]) -> list[str]:
     """Merges os paths."""
     out = []
@@ -133,15 +109,6 @@ def merge_os_paths(path_list: list[str], os_env: list[str]) -> list[str]:
             out.append(path)
     out.extend(os_env)
     return out
-
-
-def remove_template_group(env_var: str) -> None:
-    env: RegistryEnvironment = query_registry_environment()
-    os_env: OsEnvironment = os_env_make_environment()
-    env.user.remove_template_group(env_var)
-    os_env.remove_template_group(env_var)
-    env.save()
-    os_env.store()
 
 
 def path_list_to_str(path_list: list[str]) -> str:

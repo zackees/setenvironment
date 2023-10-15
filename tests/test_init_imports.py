@@ -19,15 +19,11 @@ class InitImportsTest(unittest.TestCase):
         from setenvironment import remove_env_path
         from setenvironment import set_env_var
         from setenvironment import unset_env_var
-        from setenvironment import add_template_path
-        from setenvironment import remove_template_path
         add_env_path = add_env_path
         get_env_var = get_env_var
         remove_env_path = remove_env_path
         set_env_var = set_env_var
         unset_env_var = unset_env_var
-        add_template_path = add_template_path
-        remove_template_path = remove_template_path
         # fmt: on
         # isort: on
 

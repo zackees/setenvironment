@@ -113,44 +113,6 @@ def add_env_path(new_path: Union[Path, str]) -> None:
         unix_add_env_path(new_path)
 
 
-def add_template_path(env_var: str, new_path: Union[Path, str]) -> None:
-    """Adds a path to the front of the PATH environment variable."""
-    new_path = str(new_path)
-    if _IS_WINDOWS:
-        from .setenv_win32 import add_template_path as win32_add_template_path
-
-        win32_add_template_path(env_var, new_path)
-    else:
-        from .setenv_unix import add_template_path as unix_add_template_path
-
-        unix_add_template_path(env_var, new_path)
-
-
-def remove_template_path(env_var: str, path: Union[Path, str]) -> None:
-    """Removes a path from the PATH environment variable."""
-    path = str(path)
-    if _IS_WINDOWS:
-        from .setenv_win32 import remove_template_path as win32_remove_template_path
-
-        win32_remove_template_path(env_var, path, True)
-    else:
-        from .setenv_unix import remove_template_path as unix_remove_template_path
-
-        unix_remove_template_path(env_var, path)
-
-
-def remove_template_group(env_var: str) -> None:
-    """Removes a path from the PATH environment variable."""
-    if _IS_WINDOWS:
-        from .setenv_win32 import remove_template_group as win32_remove_template_group
-
-        win32_remove_template_group(env_var)
-    else:
-        from .setenv_unix import remove_template_group as unix_remove_template_group
-
-        unix_remove_template_group(env_var)
-
-
 def remove_env_path(path: Union[Path, str]) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
