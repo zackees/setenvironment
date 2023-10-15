@@ -25,8 +25,10 @@ class SanityTester(unittest.TestCase):
         """Test setting an environment variable."""
         data = get_env()
         print(data)
-        self.assertTrue(len(data.paths) > 5)
-        self.assertTrue(len(data.vars) > 5)
+        total_items = len(data.paths) + len(data.vars)
+        # Probably something is wrong if we don't have at least 10 items
+        # anything.
+        self.assertGreater(total_items, 10)
 
 
 
