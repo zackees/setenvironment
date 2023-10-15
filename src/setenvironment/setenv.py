@@ -96,53 +96,43 @@ def unset_env_var(var_name: str, verbose=False, update_curr_environment=True) ->
         unix_unset_env_var(var_name)
 
 
-def add_env_path(
-    new_path: Union[Path, str], update_curr_environment: bool = True
-) -> None:
+def add_env_path(new_path: Union[Path, str]) -> None:
     """Adds a path to the front of the PATH environment variable."""
     new_path = str(new_path)
     if _IS_WINDOWS:
         from .setenv_win32 import add_env_path as win32_add_env_path
 
-        win32_add_env_path(new_path, update_curr_environment=update_curr_environment)
+        win32_add_env_path(new_path, update_curr_environment=True)
     else:
         from .setenv_unix import add_env_path as unix_add_env_path
 
-        unix_add_env_path(new_path, update_curr_environment=update_curr_environment)
+        unix_add_env_path(new_path, update_curr_environment=True)
 
 
-def add_template_path(
-    env_var: str, new_path: Union[Path, str], update_curr_environment: bool = True
-) -> None:
+def add_template_path(env_var: str, new_path: Union[Path, str]) -> None:
     """Adds a path to the front of the PATH environment variable."""
     new_path = str(new_path)
     if _IS_WINDOWS:
         from .setenv_win32 import add_template_path as win32_add_template_path
 
-        win32_add_template_path(
-            env_var, new_path, update_curr_environment=update_curr_environment
-        )
+        win32_add_template_path(env_var, new_path, update_curr_environment=True)
     else:
         from .setenv_unix import add_template_path as unix_add_template_path
 
-        unix_add_template_path(
-            env_var, new_path, update_curr_environment=update_curr_environment
-        )
+        unix_add_template_path(env_var, new_path, update_curr_environment=True)
 
 
-def remove_template_path(
-    env_var: str, path: Union[Path, str], remove_if_empty=False
-) -> None:
+def remove_template_path(env_var: str, path: Union[Path, str]) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if _IS_WINDOWS:
         from .setenv_win32 import remove_template_path as win32_remove_template_path
 
-        win32_remove_template_path(env_var, path, remove_if_empty)
+        win32_remove_template_path(env_var, path, True)
     else:
         from .setenv_unix import remove_template_path as unix_remove_template_path
 
-        unix_remove_template_path(env_var, path, remove_if_empty)
+        unix_remove_template_path(env_var, path, True)
 
 
 def remove_template_group(env_var: str) -> None:
@@ -157,19 +147,17 @@ def remove_template_group(env_var: str) -> None:
         unix_remove_template_group(env_var)
 
 
-def remove_env_path(
-    path: Union[Path, str], update_curr_environment: bool = True
-) -> None:
+def remove_env_path(path: Union[Path, str]) -> None:
     """Removes a path from the PATH environment variable."""
     path = str(path)
     if _IS_WINDOWS:
         from .setenv_win32 import remove_env_path as win32_remove_env_path
 
-        win32_remove_env_path(path, update_curr_environment=update_curr_environment)
+        win32_remove_env_path(path, update_curr_environment=True)
     else:
         from .setenv_unix import remove_env_path as unix_remove_env_path
 
-        unix_remove_env_path(path, update_curr_environment=update_curr_environment)
+        unix_remove_env_path(path, update_curr_environment=True)
 
 
 def reload_environment(verbose=False, resolve=False) -> None:

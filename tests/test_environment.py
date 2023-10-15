@@ -5,12 +5,14 @@ Test the main module
 # pylint: disable=fixme,import-outside-toplevel,line-too-long
 # flake8: noqa: E501
 import os
+import sys
 import unittest
 
 from setenvironment import (
     Environment,
     add_env_path,
     get_env,
+    reload_environment,
     remove_env_path,
     set_env_var,
     unset_env_var,
@@ -26,10 +28,32 @@ ORIG_OS_ENVIRON = os.environ.copy()
 ORIG_PATHS = os.environ["PATH"].split(os.pathsep)
 
 
+def win32_check_exists(self: BaseTest) -> None:
+    """Check that we are on win32."""
+    from setenvironment.setenv_win32 import query_registry_environment
+    from setenvironment.types import RegistryEnvironment
+
+    env: RegistryEnvironment = query_registry_environment()
+    self.assertIn(MY_PATH, env.user.paths)
+    self.assertIn(MY_VAR[0], env.user.vars.keys())
+    self.assertEqual(env.user.vars[MY_VAR[0]], MY_VAR[1])
+
+
+def unix_check_exists(self: BaseTest) -> None:
+    """Check that we are on unix."""
+    from setenvironment.bash_parser import bash_make_environment
+    from setenvironment.types import BashEnvironment
+
+    env: BashEnvironment = bash_make_environment()
+    self.assertIn(MY_PATH, env.paths)
+    self.assertIn(MY_VAR[0], env.vars.keys())
+    self.assertEqual(env.vars[MY_VAR[0]], MY_VAR[1])
+
+
 class ReloadEnvironmentTest(BaseTest):
     def tearDown(self) -> None:
-        remove_env_path(MY_PATH, update_curr_environment=False)
-        unset_env_var(MY_VAR[0], update_curr_environment=False)
+        remove_env_path(MY_PATH)
+        unset_env_var(MY_VAR[0])
 
     def test(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
@@ -37,13 +61,17 @@ class ReloadEnvironmentTest(BaseTest):
         paths = os.environ["PATH"].split(os.pathsep)
         self.assertNotIn(MY_PATH, paths)
         env: Environment = get_env()
-        add_env_path(MY_PATH, update_curr_environment=False)
-        set_env_var(MY_VAR[0], MY_VAR[1], update_curr_environment=False)
+        add_env_path(MY_PATH)
+        set_env_var(MY_VAR[0], MY_VAR[1])
+        reload_environment()
+        if sys.platform == "win32":
+            win32_check_exists(self)
+        else:
+            unix_check_exists(self)
         env = get_env()
         paths = os.environ["PATH"].split(os.pathsep)
-        self.assertNotIn(MY_PATH, paths)
         env = get_env()
-        self.assertIn(MY_PATH, env.paths)
+        self.assertIn(MY_PATH, paths)
         self.assertIn(MY_VAR[0], env.vars.keys())
         self.assertEqual(env.vars[MY_VAR[0]], MY_VAR[1])
 

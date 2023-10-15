@@ -26,7 +26,6 @@ from setenvironment.util import write_utf8
 class UnixPathTester(BaseTest):
     """Tester for the main module."""
 
-    @unittest.skipIf(sys.platform == "win32", "Windows does not support .bashrc")
     def test_read_bash_file_lines(self) -> None:
         """Test setting an environment variable."""
         lines = read_bash_file_lines(BASHRC)
@@ -43,7 +42,6 @@ class UnixPathTester(BaseTest):
         self.assertEqual(1, len(lines))
         self.assertEqual("foo", lines[0])
 
-    @unittest.skipIf(sys.platform == "win32", "Windows does not support .bashrc")
     def test_setting_env_var(self) -> None:
         """Test setting an environment variable."""
         lines = read_bash_file_lines(BASHRC)
@@ -55,7 +53,7 @@ class UnixPathTester(BaseTest):
         self.assertEqual("foo", lines[0])
         self.assertEqual("bar", lines[1])
 
-    @unittest.skipIf(sys.platform == "win32", "Windows does not support .bashrc")
+    @unittest.skipIf(sys.platform == "win32", "Windows does not have a shell.")
     def test_get_env_vars_from_shell(self) -> None:
         """Test setting an env variable and then reloading it fromn the shell."""
         my_path = "/my/test/path"
@@ -67,6 +65,29 @@ class UnixPathTester(BaseTest):
             print("done")
         finally:
             remove_env_path(my_path, update_curr_environment=True)
+
+    @unittest.skipIf(sys.platform == "win32", "Windows does not have a shell.")
+    def test_registry_write_then_reload(self) -> None:
+        """Test setting an environment variable."""
+        from setenvironment.setenv import reload_environment
+        from setenvironment.setenv_unix import BashEnvironment, bash_make_environment
+        from setenvironment.types import OsEnvironment
+
+        env_prev: BashEnvironment = bash_make_environment()
+        env: BashEnvironment = bash_make_environment()
+        env.vars["BAR"] = "FOO"
+        env.paths.append("C:\\foo")
+        env.save()
+        try:
+            os_env = OsEnvironment()
+            self.assertNotIn("BAR", os_env.vars)
+            self.assertNotIn("C:\\foo", os_env.paths)
+            reload_environment()
+            os_env = OsEnvironment()
+            self.assertIn("BAR", os_env.vars)
+            self.assertIn("C:\\foo", os_env.paths)
+        finally:
+            env_prev.save()
 
 
 if __name__ == "__main__":

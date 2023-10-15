@@ -92,46 +92,14 @@ def unset_env_var(var_name: str, verbose=False):
 
 def remove_env_path(path_to_remove: str, verbose=False, update_curr_environment=True):
     # convert / to \\ for Windows
-    path_to_remove = path_to_remove.replace("/", "\\")
-    path_str = get_env_path_user()
-    if path_to_remove not in path_str:
-        if verbose:
-            print(f"{path_to_remove} not in PATH which is\n{path_str}")
-        return
-    paths = parse_paths_win32(path_str)
-    paths = [path for path in paths if path != path_to_remove]
-    sep = os.path.pathsep
-    new_path_str = sep.join(paths)
-    win32_registry_set_env_path_user(
-        new_path_str, verbose=verbose, broad_cast_changes=update_curr_environment
-    )
-    os_environ_paths = parse_paths_win32(os.environ["PATH"])
-    os_environ_paths = [path for path in os_environ_paths if path != path_to_remove]
-    new_env_path_str = sep.join(os_environ_paths)
-    os.environ["PATH"] = new_env_path_str
-
-
-def add_template_path2(
-    env_var: str, new_path: str, update_curr_environment=True
-) -> None:
-    assert "%" not in env_var, "env_var should not contain %"
-    assert "%" not in new_path, "new_path should not contain %"
-    paths = parse_paths_win32(get_env_var("PATH") or "")
-    tmp_env_var = f"%{env_var}%"
-    something_changed = False
-    if tmp_env_var not in paths:
-        paths.insert(0, tmp_env_var)
-        new_path_str = os.path.pathsep.join(paths)
-        win32_registry_set_env_path_user(new_path_str, broad_cast_changes=False)
-        something_changed = True
-    var_paths = parse_paths_win32(get_env_var(env_var) or "")
-    if new_path not in var_paths:
-        var_paths.insert(0, new_path)
-        new_var_path_str = os.path.pathsep.join(var_paths)
-        set_env_var(env_var, new_var_path_str, update_curr_environment=False)
-        something_changed = True
-    if something_changed and update_curr_environment:
-        win32_registry_broadcast_changes()
+    env: RegistryEnvironment = query_registry_environment()
+    os_env: OsEnvironment = os_env_make_environment()
+    while path_to_remove in env.user.paths:
+        env.user.paths.remove(path_to_remove)
+    while path_to_remove in os_env.paths:
+        os_env.paths.remove(path_to_remove)
+    env.save()
+    os_env.store()
 
 
 def add_template_path(

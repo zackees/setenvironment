@@ -106,9 +106,6 @@ class Environment:
 class BashEnvironment(Environment):
     def save(self) -> None:
         """Saves the environment."""
-        if sys.platform == "win32":
-            warnings.warn("Saving environment is not supported on Windows.")
-            return
         from setenvironment.bash_parser import bash_save
 
         bash_save(self)
