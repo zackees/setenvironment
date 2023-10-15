@@ -18,7 +18,11 @@ from setenvironment.win.refresh_env import REFRESH_ENV
 
 HERE = os.path.dirname(__file__)
 WIN_BIN_DIR = os.path.join(HERE, "win")
-ENABLE_BROADCAST_CHANGES = False
+# ENABLE_BROADCAST_CHANGES = os.environ.get("ENABLE_BROADCAST_CHANGES", "1") == "1"
+# flip the default to False
+DISABLE_BROADCAST_CHANGES = (
+    os.environ.get("SETENVIRONMENT_DISABLE_BROADCAST_CHANGES", "0") == "1"
+)
 
 _DEFAULT_PRINT = print
 _REGISTERLY_VALUE_PATTERN = re.compile(r"    .+    (?P<type>.+)    (?P<value>.+)*")
@@ -87,7 +91,7 @@ def get_env_from_shell() -> Environment:
 
 
 def win32_registry_broadcast_changes() -> None:
-    if not ENABLE_BROADCAST_CHANGES:
+    if DISABLE_BROADCAST_CHANGES:
         return
     print("Broadcasting changes")
     rtn = subprocess.call("refreshenv", cwd=WIN_BIN_DIR, shell=True)

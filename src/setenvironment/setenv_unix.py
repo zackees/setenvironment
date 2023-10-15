@@ -167,6 +167,7 @@ def remove_from_path_group(group_name: str, path_to_remove: str) -> None:
     os_env.store()
     env.save()
 
+
 def remove_path_group(group_name: str) -> None:
     assert group_name != "PATH"
     env: BashEnvironment = bash_make_environment()
