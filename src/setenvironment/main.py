@@ -61,7 +61,7 @@ def parse_args() -> argparse.Namespace:
         "get", help="Get the value of an environment variable"
     )
     parser_get.add_argument("key", help="Name of the environment variable")
-    parser_unset = subparsers.add_parser("unset", help="Unset an environment variable")
+    parser_unset = subparsers.add_parser("remove", help="Unset an environment variable")
     parser_unset.add_argument("key", help="Name of the environment variable")
     parser_addpath = subparsers.add_parser(
         "addpath", help="Add a path to the PATH environment variable"
@@ -85,7 +85,7 @@ def main() -> int:
         do_set(args.key, args.value)
     elif args.mode == "get":
         print(do_get(args.key))
-    elif args.mode == "unset":
+    elif args.mode == "remove":
         do_unset(args.key)
     elif args.mode == "addpath":
         do_addpath(args.path)

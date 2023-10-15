@@ -13,8 +13,8 @@ from setenvironment.setenv import (
     add_to_path_group,
     get_env,
     reload_environment,
+    remove_from_path_group,
     remove_path_group,
-    remove_to_path_group,
 )
 from setenvironment.testing.basetest import BaseTest
 from setenvironment.types import Environment, OsEnvironment
@@ -79,7 +79,7 @@ class PathGroupTester(BaseTest):
             print(exc)
             raise exc
         finally:
-            remove_to_path_group(KEY, VAL)
+            remove_from_path_group(KEY, VAL)
         # now test the system environment to ensure they are gone
         env: OsEnvironment = OsEnvironment()
         self.assertNotIn(VAL, env.paths)

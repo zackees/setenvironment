@@ -52,7 +52,6 @@ class WinPathTester(BaseTest):
         self.assertIn("C:\\Windows", path_str)
         print("done")
 
-
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_temp_dir_is_resolved(self) -> None:
         """Test setting an environment variable."""

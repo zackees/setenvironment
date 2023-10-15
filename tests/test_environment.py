@@ -19,7 +19,6 @@ from setenvironment import (
 from setenvironment.testing.basetest import BaseTest
 from setenvironment.types import Environment, OsEnvironment
 
-
 MY_PATH = os.path.join("setenvironment", "test", "path2")
 MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
 

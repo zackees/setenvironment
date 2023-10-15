@@ -158,7 +158,7 @@ def get_env() -> Environment:
     return combine_environments(parent=shell_env, child=bash_env)
 
 
-def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
+def remove_from_path_group(group_name: str, path_to_remove: str) -> None:
     assert group_name != "PATH"
     env: BashEnvironment = bash_make_environment()
     os_env: OsEnvironment = OsEnvironment()

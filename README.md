@@ -13,7 +13,9 @@ Works with Windows, MacOS and Linux.
 ## Python API
 
 ```python
-from setenvironment import set_env_var, add_env_path, unset_env_var, remove_env_path, set_config_file
+from setenvironment import (
+    set_env_var, add_env_path, unset_env_var, remove_env_path, set_config_file, reload_environment, ...
+)
 # by default, ~/.bashrc is used
 set_env_var("FOO", "BAR")
 get_env_var("FOO") # returns BAR
@@ -26,18 +28,28 @@ set_env_var("FOO", "BAR")
 add_env_path("MYPATH")
 unset_env_var("FOO")
 remove_env_path("MYPATH")
-# These template functions keeps your os.environ["PATH"]
-# cleaner by grouping a bunch of paths into an expandable 
-# variable. This is particularly usefull to enable an
-# uninstall feature.
-# MYPATHKEY will show up in os.environ["PATHS"]
-# as $MYPATHKEY (linux) or %MYPATHKEY% (win).
-# The environmental variable MYPATHKEY will
-# point to the path value.
-add_template_path("MYPATHKEY", "/path/to/dir")
-remove_template_path("MYPATHKEY", "/path/to/dir", remove_if_empty=True)
-# Or elese you can just remove ALL of the paths at once.
-remove_template_group("MYPATHKEY")
+# Loads settings into the current environment. This reads the
+# registry on windows or the ~/.bashrc file on unix.
+reload_environment()
+# Path groups are usefull for uninstall programs. Each add
+# copies the path both into the PATH and also to the key.
+# When you want to remove paths you can query the key and selectively
+# remove paths that are in the set.
+add_to_path_group("MYPATHKEY", "/path/to/dir")
+remove_to_path_group("MYPATHKEY", "/path/to/dir")
+# Or else you can just remove ALL of the paths at once.
+remove_path_group("MYPATHKEY")
+```
+
+## Command line interface
+
+```bash
+# Setting environmental variables
+setenvironment set foo bar
+setenvironment remove foo
+# Adding and removing paths.
+setenvironment addpath /my/path
+setenvironment removepath /my/path
 ```
 
 ## Github

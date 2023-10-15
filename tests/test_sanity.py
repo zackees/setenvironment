@@ -31,6 +31,5 @@ class SanityTester(unittest.TestCase):
         self.assertGreater(total_items, 10)
 
 
-
 if __name__ == "__main__":
     unittest.main()

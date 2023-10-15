@@ -261,7 +261,7 @@ def add_path_group(group_name: str, new_path: str) -> None:
     win32_registry_save(env.user)
 
 
-def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
+def remove_from_path_group(group_name: str, path_to_remove: str) -> None:
     assert group_name != "PATH"
     env: RegistryEnvironment = query_registry_environment()
     os_env: OsEnvironment = os_env_make_environment()

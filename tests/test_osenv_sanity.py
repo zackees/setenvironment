@@ -14,12 +14,12 @@ from setenvironment.types import OsEnvironment
 
 class OsEnvironmentalSanity(BaseTest):
     """Tester for the main module."""
+
     def test_OsEnvironSanity(self) -> None:
         env = OsEnvironment()
         print(env)
         self.assertTrue(len(env.paths) > 5)
         self.assertTrue(len(env.vars) > 5)
-
 
 
 if __name__ == "__main__":

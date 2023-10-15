@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 CLEAR_ENVIRONMENT = True
 
+
 @dataclass
 class Environment:
     vars: dict[str, str]

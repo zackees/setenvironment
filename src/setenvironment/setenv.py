@@ -163,14 +163,14 @@ def add_to_path_group(group_name: str, new_path: str) -> None:
         unix_add_path_group(group_name, new_path)
 
 
-def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
+def remove_from_path_group(group_name: str, path_to_remove: str) -> None:
     """Removes a path from the PATH environment variable."""
     if _IS_WINDOWS:
-        from .setenv_win32 import remove_to_path_group as win32_remove_path_group
+        from .setenv_win32 import remove_from_path_group as win32_remove_path_group
 
         win32_remove_path_group(group_name, path_to_remove)
     else:
-        from .setenv_unix import remove_to_path_group as unix_remove_path_group
+        from .setenv_unix import remove_from_path_group as unix_remove_path_group
 
         unix_remove_path_group(group_name, path_to_remove)
 
