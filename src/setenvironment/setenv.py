@@ -188,11 +188,13 @@ def get_env() -> Environment:
 def add_to_path_group(group_name: str, new_path: str) -> None:
     """Adds a path to the front of the PATH environment variable."""
     if _IS_WINDOWS:
-        from .setenv_win32 import add_to_path_group as win32_add_path_group
+        from .setenv_win32 import add_path_group as win32_add_path_group
 
         win32_add_path_group(group_name, new_path)
     else:
-        raise NotImplementedError("add_to_path_group is not implemented on unix.")
+        from .setenv_unix import add_path_group as unix_add_path_group
+
+        unix_add_path_group(group_name, new_path)
 
 
 def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
@@ -202,7 +204,9 @@ def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
 
         win32_remove_path_group(group_name, path_to_remove)
     else:
-        raise NotImplementedError("remove_to_path_group is not implemented on unix.")
+        from .setenv_unix import remove_to_path_group as unix_remove_path_group
+
+        unix_remove_path_group(group_name, path_to_remove)
 
 
 # remove_path_group
@@ -213,4 +217,6 @@ def remove_path_group(group_name: str) -> None:
 
         win32_remove_path_group(group_name)
     else:
-        raise NotImplementedError("remove_path_group is not implemented on unix.")
+        from .setenv_unix import remove_path_group as unix_remove_path_group
+
+        unix_remove_path_group(group_name)

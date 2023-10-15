@@ -10,11 +10,10 @@ import subprocess
 import sys
 import warnings
 import winreg  # type: ignore
-from typing import Optional
 
 import win32gui  # type: ignore
 
-from setenvironment.types import Environment, RegistryEnvironment
+from setenvironment.types import Environment
 from setenvironment.win.refresh_env import REFRESH_ENV
 
 HERE = os.path.dirname(__file__)

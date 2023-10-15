@@ -1,6 +1,5 @@
 import os
 import sys
-import warnings
 from dataclasses import dataclass
 
 
@@ -112,9 +111,6 @@ class BashEnvironment(Environment):
 
     def load(self) -> None:
         """Loads the environment."""
-        if sys.platform == "win32":
-            warnings.warn("Loading environment is not supported on Windows.")
-            return
         from setenvironment.bash_parser import bash_make_environment
 
         env = bash_make_environment()

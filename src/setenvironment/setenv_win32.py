@@ -8,10 +8,9 @@ import os
 from typing import Optional
 
 from setenvironment.os_env import os_env_make_environment
-from setenvironment.types import Environment, OsEnvironment
+from setenvironment.types import Environment, OsEnvironment, RegistryEnvironment
 from setenvironment.util import remove_adjascent_duplicates
 from setenvironment.win.registry import (
-    RegistryEnvironment,
     get_all_system_vars,
     get_all_user_vars,
     win32_registry_broadcast_changes,
@@ -278,7 +277,7 @@ def win32_registry_save(user_environment: Environment) -> None:
     win32_registry_broadcast_changes()
 
 
-def add_to_path_group(group_name: str, new_path: str) -> None:
+def add_path_group(group_name: str, new_path: str) -> None:
     """Templates are hard and not well supported by the OS.
     Add the path and then add it to the group_name as well so
     we can remove it easily"""

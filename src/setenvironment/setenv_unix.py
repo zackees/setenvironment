@@ -11,7 +11,6 @@ import subprocess
 import sys
 
 from setenvironment.bash_parser import bash_make_environment, bash_rc_file, bash_save
-from setenvironment.os_env import OsEnvironment
 from setenvironment.types import BashEnvironment, Environment, OsEnvironment
 from setenvironment.util import parse_paths, remove_adjascent_duplicates
 
@@ -193,5 +192,35 @@ def get_env() -> Environment:
     """Returns the environment."""
     settings_file = bash_rc_file()
     shell_env: Environment = get_env_vars_from_shell(settings_file)
-    bash_env: Environment = bash_make_environment()
+    bash_env: Environment = OsEnvironment()
     return combine_environments(parent=shell_env, child=bash_env)
+
+
+def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
+    assert group_name != "PATH"
+    env: BashEnvironment = bash_make_environment()
+    os_env: OsEnvironment = OsEnvironment()
+    env.remove_from_path_group(group_name, path_to_remove)
+    os_env.remove_from_path_group(group_name, path_to_remove)
+    os_env.store()
+    env.save()
+
+
+def remove_path_group(group_name: str) -> None:
+    assert group_name != "PATH"
+    env: BashEnvironment = bash_make_environment()
+    os_env: OsEnvironment = OsEnvironment()
+    env.remove_path_group(group_name)
+    os_env.remove_path_group(group_name)
+    os_env.store()
+    env.save()
+
+
+def add_path_group(group_name: str, new_path: str) -> None:
+    assert group_name != "PATH"
+    env: BashEnvironment = bash_make_environment()
+    os_env: OsEnvironment = OsEnvironment()
+    env.add_to_path_group(group_name, new_path)
+    os_env.add_to_path_group(group_name, new_path)
+    os_env.store()
+    env.save()
