@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. ./activate.sh
+
 # Navigate to the directory containing your tests
 cd tests
 
