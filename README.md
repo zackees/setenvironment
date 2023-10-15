@@ -40,6 +40,25 @@ remove_template_path("MYPATHKEY", "/path/to/dir", remove_if_empty=True)
 remove_template_group("MYPATHKEY")
 ```
 
+## Github
+
+These are designed to be compatible with github runners.
+
+However, ubuntu runners don't have a ~/.bashrc file
+that is sourced by default. However adding this to your
+runner file will turn it on
+
+```
+name: Ubuntu_Tests
+
+# Directs GitHub to run tests using ~/.bashrc
+defaults:
+    run:
+      shell: bash -ieo pipefail {0}
+
+on: [push]
+```
+
 ## Command Line API
 
 ```bash
