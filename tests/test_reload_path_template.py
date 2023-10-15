@@ -8,7 +8,12 @@ Test the main module
 import os
 import unittest
 
-from setenvironment import add_template_path, reload_environment, remove_template_path
+from setenvironment import (
+    add_template_path,
+    reload_environment,
+    remove_template_path,
+    remove_template_group,
+)
 from setenvironment.testing.basetest import BaseTest
 from setenvironment.types import OsEnvironment
 
@@ -20,9 +25,10 @@ MY_VAR = ("SET_ENVIRONMENT_TEST_ENV_VAR", "foo")
 
 class ReloadPathTemplateTest(BaseTest):
     def tearDown(self) -> None:
-        remove_template_path(PATH_KEY, MY_PATH)
-        remove_template_path(PATH_KEY, MY_PATH2)
-        os.environ.pop(PATH_KEY, None)
+        remove_template_group(PATH_KEY)
+
+    def setUp(self) -> None:
+        remove_template_group(PATH_KEY)
 
     def test_one_path(self) -> None:
         """Tests that we can add an environmental variable and then reload it."""
