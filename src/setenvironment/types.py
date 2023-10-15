@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 
+CLEAR_ENVIRONMENT = False
 
 @dataclass
 class Environment:
@@ -105,7 +106,8 @@ class OsEnvironment(Environment):
         payload.update(self.vars)
         payload["PATH"] = path_str
         # Now write it out.
-        os.environ.clear()
+        if CLEAR_ENVIRONMENT:
+            os.environ.clear()
         os.environ.update(payload)
 
 
