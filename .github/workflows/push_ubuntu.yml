@@ -27,9 +27,8 @@ jobs:
         python -m pip install --upgrade pip
         sudo apt-get install libasound2-dev
         python -m pip install -e .
-        python -m pip install pytest
     - name: Run Tests
       run: |
-        pytest tests
+        ./tests.sh
     - name: Run System paths still working
       run: python tests/post_install.py
