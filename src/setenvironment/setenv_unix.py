@@ -79,9 +79,7 @@ def unset_env_var(name: str) -> None:
         bash_save(env)
 
 
-def add_env_path(
-    path: str, verbose: bool = False, update_curr_environment: bool = True
-) -> None:
+def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
     """Adds a path to the PATH environment variable."""
     if update_curr_environment:
         os_env: OsEnvironment = OsEnvironment()
@@ -109,9 +107,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         bash_save(env)
 
 
-def add_template_path(
-    group_name: str, new_path: str, update_curr_environment=True
-) -> None:
+def add_template_path(group_name: str, new_path: str, update_curr_environment=True) -> None:
     assert "$" not in group_name, "group_name should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     if update_curr_environment:
@@ -132,9 +128,7 @@ def add_template_path(
     bash_save(env)
 
 
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
+def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     env: BashEnvironment = bash_make_environment()
@@ -153,9 +147,9 @@ def remove_template_group(env_var: str) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     env: Environment = bash_make_environment()
     env.vars.pop(env_var, None)
-    # remove env_var from path
     path_list = os.environ["PATH"].split(os.pathsep)
-    if "$env_var" in path_list:
+    system_key = f"${env_var}"
+    if system_key in path_list:
         path_list.remove(env_var)
         os.environ["PATH"] = os.pathsep.join(path_list)
     bash_save(env)
