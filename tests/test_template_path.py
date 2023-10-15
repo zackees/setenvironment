@@ -101,7 +101,8 @@ class TemplatePathtester(BaseTest):
             raise exc
         finally:
             remove_template_path(KEY, MYPATH)
-            is_good = SYSTEM_KEY not in get_paths(resolve=False)
+            updated_paths = get_paths(resolve=False)
+            is_good = SYSTEM_KEY in updated_paths
             remove_template_path(KEY, mypath2)
         self.assertTrue(is_good, f"{SYSTEM_KEY} should not still be in path.")
         print(f"path after removals of {MYPATH} is now:\n{os.environ['PATH']}")
