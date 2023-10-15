@@ -17,7 +17,8 @@ class OsEnvironmentalSanity(BaseTest):
     def test_OsEnvironSanity(self) -> None:
         env = OsEnvironment()
         print(env)
-        self.assertTrue(False)
+        self.assertTrue(len(env.paths) > 5)
+        self.assertTrue(len(env.vars) > 5)
 
 
 

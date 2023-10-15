@@ -17,17 +17,17 @@ class SanityTester(unittest.TestCase):
         """Test setting an environment variable."""
         data = dict(os.environ)
         print(data)
-        self.assertTrue(data)
+        self.assertTrue(len(data) > 5)
         # os_env = OsEnvironment()
         # print(os_env)
-        self.fail("Force test_os_make_environment crash to read output\n" + str(data))
 
     def test_get_env(self) -> None:
         """Test setting an environment variable."""
         data = get_env()
         print(data)
-        self.assertTrue(data)
-        self.fail("Force test_get_env crash to read output: \n" + str(data))
+        self.assertTrue(len(data.paths) > 5)
+        self.assertTrue(len(data.vars) > 5)
+
 
 
 if __name__ == "__main__":
