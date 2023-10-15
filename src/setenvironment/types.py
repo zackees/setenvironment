@@ -100,10 +100,13 @@ class OsEnvironment(Environment):
 
     def store(self) -> None:
         """Stores the environment obj to the OS environment."""
-        os.environ.clear()
-        os.environ.update(self.vars)
         path_str = os.pathsep.join(self.paths)
-        os.environ["PATH"] = path_str
+        payload = {}
+        payload.update(self.vars)
+        payload["PATH"] = path_str
+        # Now write it out.
+        os.environ.clear()
+        os.environ.update(payload)
 
 
 @dataclass

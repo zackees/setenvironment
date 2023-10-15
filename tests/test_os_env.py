@@ -15,6 +15,7 @@ class OsEnvironmentTester(unittest.TestCase):
 
     def test_os_make_environment(self) -> None:
         """Test setting an environment variable."""
+
         os_env: OsEnvironment = OsEnvironment()
         self.assertTrue(os_env.vars)
         self.assertTrue(os_env.paths)
