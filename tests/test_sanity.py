@@ -19,8 +19,9 @@ class SanityTester(unittest.TestCase):
         data = dict(os.environ)
         print(data)
         self.assertTrue(data)
-        os_env = OsEnvironment()
-        print(os_env)
+        #os_env = OsEnvironment()
+        #print(os_env)
+        self.fail("Force crash to read outplut")
 
     def test_get_env(self) -> None:
         """Test setting an environment variable."""
