@@ -154,6 +154,7 @@ def bash_make_environment() -> BashEnvironment:
                 paths = [p for p in paths if p.lower() != "$path"]
             else:
                 vars[name] = value
+    paths = [p.strip() for p in paths if p.strip()]
     return BashEnvironment(vars, paths)
 
 
