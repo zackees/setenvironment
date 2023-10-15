@@ -52,7 +52,6 @@ def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
     with tempfile.NamedTemporaryFile(suffix=".sh", delete=False) as tmpfile:
         tmp_filename = tmpfile.name
         tmpfile.write(cmd_str.encode("utf-8"))
-        print("Wrote out to temporary file:", tmp_filename)
 
     # Make the shell script executable
     os.chmod(tmp_filename, os.stat(tmp_filename).st_mode | 0o111)

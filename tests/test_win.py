@@ -25,7 +25,7 @@ class WinPathTester(BaseTest):
         env: RegistryEnvironment = query_registry_environment()
         self.assertNotIn("value not set", env.user.paths)
 
-    # teardown
+    @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_print_failure(self) -> None:
         """Remove the environment variable."""
         from setenvironment.setenv_win32 import (
