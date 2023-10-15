@@ -45,18 +45,14 @@ def do_show() -> None:
     print(contents)
 
 
-def main() -> int:
-    """Main entry point."""
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Set environment variables from the command line."
     )
-
     parser.add_argument("--config", help="Path to the config file", default=None)
-
     subparsers = parser.add_subparsers(
         dest="mode", required=True, help="Sub-command help"
     )
-
     parser_set = subparsers.add_parser("set", help="Set an environment variable")
     parser_set.add_argument("key", help="Name of the environment variable")
     parser_set.add_argument("value", help="Value of the environment variable")
@@ -65,27 +61,25 @@ def main() -> int:
         "get", help="Get the value of an environment variable"
     )
     parser_get.add_argument("key", help="Name of the environment variable")
-
     parser_unset = subparsers.add_parser("unset", help="Unset an environment variable")
     parser_unset.add_argument("key", help="Name of the environment variable")
-
     parser_addpath = subparsers.add_parser(
         "addpath", help="Add a path to the PATH environment variable"
     )
     parser_addpath.add_argument("path", help="Path to be added")
-
     parser_removepath = subparsers.add_parser(
         "removepath", help="Remove a path from the PATH environment variable"
     )
     parser_removepath.add_argument("path", help="Path to be removed")
-
     subparsers.add_parser("show", help="Show the contents of the bashrc file")
-
     args = parser.parse_args()
+    return args
 
+def main() -> int:
+    """Main entry point."""
+    args = parse_args()
     if args.config is not None:
         bash_rc_set_file(args.config)
-
     if args.mode == "set":
         do_set(args.key, args.value)
     elif args.mode == "get":

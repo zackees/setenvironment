@@ -27,6 +27,7 @@ class SanityTester(unittest.TestCase):
         data = get_env()
         print(data)
         self.assertTrue(data)
+        self.fail("Force crash to read outplut")
 
 
 if __name__ == "__main__":
