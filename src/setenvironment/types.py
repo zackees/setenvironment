@@ -83,6 +83,10 @@ class Environment:
             self.paths.remove(system_key)
         if group_path_list:  # reinsert key at front.
             self.paths.insert(0, system_key)
+        if group_path_list:
+            self.set_var_pathlist(group_name, group_path_list)
+        else:
+            self.vars.pop(group_name, None)
 
     def remove_template_group(self, group_name: str) -> None:
         assert "%" not in group_name, "env_var should not contain %"

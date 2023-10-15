@@ -30,7 +30,7 @@ class TemplateGroupRemovalTester(BaseTest):
         mypath = os.path.join("my", "path")
         add_template_path(key, mypath)
         reload_environment(resolve=False)
-        new_paths = get_paths()
+        new_paths = get_paths(resolve=False)
         print("path is now:\n", new_paths)
         if sys.platform != "win32":
             system_key = f"${key}"
