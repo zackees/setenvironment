@@ -44,7 +44,7 @@ def set_env_var(
         )
 
 
-def get_env_var(var_name: str, verbose=False) -> Optional[str]:
+def get_env_var(var_name: str, verbose=False, resolve=None) -> Optional[str]:
     """Gets an environment variable for the platform."""
     if verbose:
         print(f"$$$ Getting {var_name}")
@@ -52,7 +52,7 @@ def get_env_var(var_name: str, verbose=False) -> Optional[str]:
         from .setenv_win32 import get_env_var as win32_get_env_var
 
         var_name = str(var_name)
-        return win32_get_env_var(var_name)
+        return win32_get_env_var(var_name, resolve=resolve)
     else:
         from .bash_parser import bash_read_variable
 
@@ -60,16 +60,20 @@ def get_env_var(var_name: str, verbose=False) -> Optional[str]:
         return bash_read_variable(var_name)
 
 
-def get_paths() -> list[str]:
-    paths = get_env_var("PATH") or ""
+def get_paths(resolve=None) -> list[str]:
+    if resolve is None:
+        resolve = True if _IS_WINDOWS else False
+    paths = get_env_var("PATH", resolve=resolve) or ""
     path_list = paths.split(os.path.pathsep)
     resolved_paths = []
     for path in path_list:
         if "$path" == path.lower():
-            # resolved_paths.append(path)
             continue
-        inner_resolved_paths = os.path.expandvars(path).split(os.path.pathsep)
-        resolved_paths.extend(inner_resolved_paths)
+        if resolve:
+            inner_resolved_paths = os.path.expandvars(path).split(os.path.pathsep)
+            resolved_paths.extend(inner_resolved_paths)
+        else:
+            resolved_paths.append(path)
     resolved_paths = [p for p in resolved_paths if p]
     return resolved_paths
 

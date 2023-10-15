@@ -115,7 +115,7 @@ class TemplatePathtester(BaseTest):
         """Test setting an environment variable."""
         remove_template_group(KEY)
         add_template_path(KEY, MYPATH)
-        new_paths = get_paths()
+        new_paths = get_paths(resolve=False)
         print("path is now:\n", new_paths)
         if sys.platform != "win32":
             SYSTEM_KEY = f"${KEY}"
