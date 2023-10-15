@@ -94,7 +94,7 @@ class OsEnvironment(Environment):
     def __init__(self):
         """Constructor that initializes from the OS environment."""
         self.paths = os.environ["PATH"].split(os.pathsep)
-        self.vars = os.environ.copy()
+        self.vars = dict(os.environ)
         self.vars.pop("PATH", None)
         self.paths = [path.strip() for path in self.paths if path.strip() != ""]
 
