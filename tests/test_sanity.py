@@ -7,6 +7,9 @@ Test the main module
 import os
 import unittest
 
+from setenvironment.setenv import get_env
+from setenvironment.types import OsEnvironment
+
 
 class SanityTester(unittest.TestCase):
     """Tester for the main module."""
@@ -14,6 +17,15 @@ class SanityTester(unittest.TestCase):
     def test_os_make_environment(self) -> None:
         """Test setting an environment variable."""
         data = dict(os.environ)
+        print(data)
+        self.assertTrue(data)
+        os_env = OsEnvironment()
+        print(os_env)
+
+    def test_get_env(self) -> None:
+        """Test setting an environment variable."""
+        data = get_env()
+        print(data)
         self.assertTrue(data)
 
 
