@@ -47,6 +47,23 @@ class PathGroupTester(BaseTest):
         self.assertNotIn(KEY, env.vars)
         print("done")
 
+    def test_environment_add_group_path_propagates_to_osenv(self) -> None:
+        add_to_path_group(KEY, VAL)
+        try:
+            env: OsEnvironment = OsEnvironment()
+            self.assertIn(VAL, env.paths)
+            self.assertIn(KEY, env.vars)
+            self.assertIn(VAL, env.vars[KEY])
+        except Exception as exc:
+            print(exc)
+            raise
+        finally:
+            remove_path_group(KEY)
+        env: OsEnvironment = OsEnvironment()
+        self.assertNotIn(VAL, env.paths)
+        self.assertNotIn(KEY, env.vars)
+        print("done")
+
     def test_add_group_path(self) -> None:
         """Test setting an environment variable."""
         remove_path_group(KEY)  # ensure it is not there

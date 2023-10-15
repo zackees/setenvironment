@@ -139,15 +139,7 @@ class OsEnvironment(Environment):
 
     def store(self) -> None:
         """Stores the environment obj to the OS environment."""
-        # os.environ = environment.vars.copy()
-        # find keys that don't exist and delete them
-        env_keys = self.vars.keys()
-        for key in os.environ.keys():
-            if "path" in key.lower():
-                continue
-            if key not in env_keys:
-                os.environ.pop(key, None)
-        # now update the rest of the keys.
+        os.environ.clear()
         os.environ.update(self.vars)
         path_str = os.pathsep.join(self.paths)
         os.environ["PATH"] = path_str
