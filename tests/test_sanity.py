@@ -21,14 +21,14 @@ class SanityTester(unittest.TestCase):
         self.assertTrue(data)
         #os_env = OsEnvironment()
         #print(os_env)
-        self.fail("Force crash to read outplut")
+        self.fail("Force test_os_make_environment crash to read output\n" + str(data))
 
     def test_get_env(self) -> None:
         """Test setting an environment variable."""
         data = get_env()
         print(data)
         self.assertTrue(data)
-        self.fail("Force crash to read outplut")
+        self.fail("Force test_get_env crash to read output: \n" + str(data))
 
 
 if __name__ == "__main__":
