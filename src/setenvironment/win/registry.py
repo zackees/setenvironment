@@ -94,9 +94,9 @@ def win32_registry_broadcast_changes() -> None:
     if DISABLE_BROADCAST_CHANGES:
         return
     print("Broadcasting changes")
-    rtn = subprocess.call("refreshenv", cwd=WIN_BIN_DIR, shell=True)
-    if rtn != 0:
-        warnings.warn("Failed to invoke refreshenv")
+    #rtn = subprocess.call("refreshenv", cwd=WIN_BIN_DIR, shell=True)
+    #if rtn != 0:
+    #    warnings.warn("Failed to invoke refreshenv")
 
     HWND_BROADCAST = 0xFFFF
     WM_SETTINGCHANGE = 0x001A
