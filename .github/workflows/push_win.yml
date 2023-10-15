@@ -29,7 +29,7 @@ jobs:
         python -m pip install pytest
     - name: Run Tests
       run: |
-        ./test.sh
+        python -m unittest discover tests
     - name: which git
       run: which git
     - name: Run System paths still working

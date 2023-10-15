@@ -28,6 +28,6 @@ jobs:
         python -m pip install -e .
     - name: Run Tests
       run: |
-        ./test.sh
+        python -m unittest discover tests
     - name: Run System paths still working
       run: python tests/post_install.py

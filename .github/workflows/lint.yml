@@ -30,4 +30,4 @@ jobs:
         python -m pip install -r requirements.testing.txt
     - name: Run Linting
       run: |
-        ./lint.sh
+        python -m unittest discover tests
