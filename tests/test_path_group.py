@@ -38,7 +38,7 @@ class PathGroupTester(BaseTest):
         # now remove it, since it's the only one, the group path should be removed too
         env.remove_from_path_group(KEY, VAL)
         self.assertNotIn(VAL, env.paths)
-        tmp = env.vars.get(KEY, [])
+        tmp: str = env.vars.get(KEY, "")
         self.assertNotIn(VAL, tmp)
         # now add it back and test the remove_group_path
         env.add_to_path_group(KEY, VAL)
@@ -59,7 +59,7 @@ class PathGroupTester(BaseTest):
             raise
         finally:
             remove_path_group(KEY)
-        env: OsEnvironment = OsEnvironment()
+        env = OsEnvironment()
         self.assertNotIn(VAL, env.paths)
         self.assertNotIn(KEY, env.vars)
         print("done")
