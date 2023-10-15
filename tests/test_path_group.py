@@ -64,7 +64,7 @@ class PathGroupTester(BaseTest):
         finally:
             remove_to_path_group(KEY, VAL)
         # now test the system environment to ensure they are gone
-        env: Environment = get_env()
+        env: OsEnvironment = OsEnvironment()
         self.assertNotIn(VAL, env.paths)
         self.assertNotIn(KEY, env.vars)
         print("done")

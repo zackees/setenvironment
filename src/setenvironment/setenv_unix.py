@@ -39,19 +39,24 @@ def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
     delim = "-------- BEGIN setenviorment.os_env_json --------"
     settings_file = settings_file or bash_rc_file()
     python_exe = sys.executable
-    cmd = (
-        f"source ~/.profile; "
-        f"source {settings_file}; "
-        f"echo {delim};"
-        f"{python_exe} -m setenvironment.os_env_json"
-    )
+    cmd = [
+        "source ~/.profile",
+        f'source "{settings_file}"',
+        f'echo "{delim}"',
+        f'"{python_exe}" -m setenvironment.os_env_json',
+    ]
+    cmd_str = " && ".join(cmd)
     completed_process = subprocess.run(
-        ["/bin/bash", "-c", cmd],
+        ["/bin/bash", "-c", cmd_str],
         capture_output=True,
         universal_newlines=True,
         check=True,
     )
-    json_str = completed_process.stdout.split(delim)[1].strip()
+    stdout = completed_process.stdout
+    parts = stdout.split(delim)
+    if len(parts) < 2:
+        raise RuntimeError("Could not parse environment from shell.")
+    json_str = parts[1].strip()
     json_data = json.loads(json_str)
     paths = json_data["PATH"]
     # remove adjascent duplicates
@@ -74,9 +79,7 @@ def unset_env_var(name: str) -> None:
         bash_save(env)
 
 
-def add_env_path(
-    path: str, verbose: bool = False, update_curr_environment: bool = True
-) -> None:
+def add_env_path(path: str, verbose: bool = False, update_curr_environment: bool = True) -> None:
     """Adds a path to the PATH environment variable."""
     if update_curr_environment:
         os_env: OsEnvironment = OsEnvironment()
@@ -104,9 +107,7 @@ def remove_env_path(path: str, update_curr_environment=True) -> None:
         bash_save(env)
 
 
-def add_template_path(
-    group_name: str, new_path: str, update_curr_environment=True
-) -> None:
+def add_template_path(group_name: str, new_path: str, update_curr_environment=True) -> None:
     assert "$" not in group_name, "group_name should not contain $"
     assert "$" not in new_path, "new_path should not contain $"
     if update_curr_environment:
@@ -127,9 +128,7 @@ def add_template_path(
     bash_save(env)
 
 
-def remove_template_path(
-    env_var: str, path_to_remove: str, remove_if_empty: bool
-) -> None:
+def remove_template_path(env_var: str, path_to_remove: str, remove_if_empty: bool) -> None:
     assert "$" not in env_var, "env_var should not contain $"
     assert "$" not in path_to_remove, "path_to_remove should not contain $"
     env: BashEnvironment = bash_make_environment()
@@ -204,6 +203,8 @@ def remove_to_path_group(group_name: str, path_to_remove: str) -> None:
     os_env.remove_from_path_group(group_name, path_to_remove)
     os_env.store()
     env.save()
+    os_env2: OsEnvironment = OsEnvironment()
+    assert group_name not in os_env2.vars
 
 
 def remove_path_group(group_name: str) -> None:

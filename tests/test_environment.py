@@ -9,7 +9,6 @@ import sys
 import unittest
 
 from setenvironment import (
-    Environment,
     add_env_path,
     get_env,
     reload_environment,
@@ -18,6 +17,7 @@ from setenvironment import (
     unset_env_var,
 )
 from setenvironment.testing.basetest import BaseTest
+from setenvironment.types import Environment
 
 HERE = os.path.dirname(__file__)
 
@@ -74,6 +74,15 @@ class ReloadEnvironmentTest(BaseTest):
         self.assertIn(MY_PATH, paths)
         self.assertIn(MY_VAR[0], env.vars.keys())
         self.assertEqual(env.vars[MY_VAR[0]], MY_VAR[1])
+
+    def test_remove_group_path(self) -> None:
+        env: Environment = Environment({}, [])
+        env.add_to_path_group("FOO", "bar")
+        self.assertIn("bar", env.paths)
+        self.assertIn("bar", env.vars["FOO"])
+        env.remove_from_path_group("FOO", "bar")
+        self.assertNotIn("bar", env.paths)
+        self.assertNotIn("FOO", env.vars)
 
 
 if __name__ == "__main__":

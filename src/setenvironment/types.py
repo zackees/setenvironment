@@ -14,7 +14,12 @@ class Environment:
 
     def set_var_pathlist(self, key: str, path_list: list[str]) -> None:
         """Sets a path list to an environment variable, after converting to string."""
-        self.vars[key] = os.path.pathsep.join(path_list)
+        path_list_str = os.path.pathsep.join(path_list)
+        if path_list_str.endswith(os.path.pathsep):
+            path_list_str = path_list_str[:-1]
+        if path_list_str.startswith(os.path.pathsep):
+            path_list_str = path_list_str[1:]
+        self.vars[key] = path_list_str
 
     def add_to_path_group(self, group_name: str, new_path: str) -> None:
         """Adds a path using the group feature."""
@@ -36,7 +41,10 @@ class Environment:
             group_path_list.remove(path_to_remove)
         while path_to_remove in self.paths:
             self.paths.remove(path_to_remove)
-        self.set_var_pathlist(group_name, group_path_list)
+        if group_path_list:
+            self.set_var_pathlist(group_name, group_path_list)
+        else:
+            self.remove_path_group(group_name)
 
     def remove_path_group(self, group_name: str) -> None:
         assert group_name != "PATH"
