@@ -132,6 +132,9 @@ def bash_read_variable(name: str) -> str | None:
     for line in lines:
         if line.startswith("export " + name + "="):
             out = line[7:].split("=")[1].strip()
+            if name != "PATH":
+                return out
+            out = out.replace(":$PATH", "")
             return out
     return None
 
@@ -168,5 +171,6 @@ def bash_save(environment: Environment) -> None:
         env_paths_str = env_paths_str[:-1]
     if env_paths_str.startswith(":"):
         env_paths_str = env_paths_str[1:]
-    lines.append(f"export PATH={env_paths_str}:$PATH")
+    if env_paths_str.strip():
+        lines.append(f"export PATH={env_paths_str}:$PATH")
     bash_write_lines(lines)

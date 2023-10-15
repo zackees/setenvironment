@@ -9,6 +9,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 
 from setenvironment.bash_parser import bash_make_environment, bash_rc_file, bash_save
 from setenvironment.types import BashEnvironment, Environment, OsEnvironment
@@ -45,13 +46,28 @@ def get_env_vars_from_shell(settings_file: str | None = None) -> Environment:
         f'echo "{delim}"',
         f'"{python_exe}" -m setenvironment.os_env_json',
     ]
-    cmd_str = " && ".join(cmd)
+    cmd_str = "; ".join(cmd)
+
+    # Create a temporary shell script and write the command to it
+    with tempfile.NamedTemporaryFile(suffix=".sh", delete=False) as tmpfile:
+        tmp_filename = tmpfile.name
+        tmpfile.write(cmd_str.encode("utf-8"))
+        print("Wrote out to temporary file:", tmp_filename)
+
+    # Make the shell script executable
+    os.chmod(tmp_filename, os.stat(tmp_filename).st_mode | 0o111)
+
+    # Execute the temporary shell script
     completed_process = subprocess.run(
-        ["/bin/bash", "-c", cmd_str],
+        ["/bin/bash", tmp_filename],
         capture_output=True,
         universal_newlines=True,
         check=True,
     )
+
+    # Cleanup: remove the temporary file
+    os.remove(tmp_filename)
+
     stdout = completed_process.stdout
     parts = stdout.split(delim)
     if len(parts) < 2:

@@ -29,6 +29,12 @@ MYPATH = os.path.join("my", "path")
 class TemplatePathtester(BaseTest):
     """Tester for the main module."""
 
+    def setUp(self) -> None:
+        remove_template_group(KEY)
+
+    def tearDown(self) -> None:
+        remove_template_group(KEY)
+
     def test_os_add_template_path(self) -> None:
         os_env = OsEnvironment()
         os_env.add_template_path(KEY, MYPATH)
@@ -53,7 +59,6 @@ class TemplatePathtester(BaseTest):
 
     def test_add_template_path_if_empty(self) -> None:
         """Test setting an environment variable."""
-        KEY = "MYPATH"
         add_template_path(KEY, MYPATH)
         new_paths = get_paths()
         print("path is now:\n", new_paths)
@@ -79,7 +84,6 @@ class TemplatePathtester(BaseTest):
 
     def test_add_template_path_if_empty_add_twice(self) -> None:
         """Test setting an environment variable."""
-        KEY = "MYPATH"
         mypath2 = os.path.join("my", "path2")
         add_template_path(KEY, MYPATH)
         add_template_path(KEY, mypath2)
@@ -109,7 +113,7 @@ class TemplatePathtester(BaseTest):
 
     def test_remove_template_group(self) -> None:
         """Test setting an environment variable."""
-        KEY = "MYPATH"
+        remove_template_group(KEY)
         add_template_path(KEY, MYPATH)
         new_paths = get_paths()
         print("path is now:\n", new_paths)
@@ -118,8 +122,9 @@ class TemplatePathtester(BaseTest):
         else:
             SYSTEM_KEY = f"%{KEY}%"
         try:
-            self.assertIn(MYPATH, new_paths)
-            self.assertIn(MYPATH, get_env_var(KEY) or "")
+            self.assertIn(SYSTEM_KEY, new_paths)
+            value: str = get_env_var(KEY) or ""
+            self.assertIn(MYPATH, value)
         except Exception as exc:
             print(exc)
             raise exc
