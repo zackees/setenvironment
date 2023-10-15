@@ -220,7 +220,11 @@ def query_registry_environment() -> RegistryEnvironment:
     user_env = get_all_user_vars()
     system_env = get_all_system_vars()
     user_path = user_env.pop("PATH", "")
+    if not user_path:
+        user_path = user_env.pop("Path", "")
     system_path = system_env.pop("PATH", "")
+    if not system_path:
+        system_path = system_env.pop("Path", "")
     user_path_list = user_path.split(os.pathsep)
     system_path_list = system_path.split(os.pathsep)
     # clear out empty strings
