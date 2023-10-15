@@ -34,9 +34,11 @@ def win32_check_exists(self: BaseTest) -> None:
     from setenvironment.types import RegistryEnvironment
 
     env: RegistryEnvironment = query_registry_environment()
+    sys.stderr.flush()
     sys.stdout.flush()
     print(env)
     sys.stdout.flush()
+    sys.stderr.flush()
     self.assertIn(MY_PATH, env.user.paths)
     self.assertIn(MY_VAR[0], env.user.vars.keys())
     self.assertEqual(env.user.vars[MY_VAR[0]], MY_VAR[1])
