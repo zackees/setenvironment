@@ -116,3 +116,22 @@ class RegistryEnvironment:
         from setenvironment.setenv_win32 import win32_registry_save
 
         win32_registry_save(self.user)
+
+    def __str__(self) -> str:
+        msg_user = str(self.user)
+        msg_system = str(self.system)
+        msg_user_lines = msg_user.splitlines()
+        msg_system_lines = msg_system.splitlines()
+        # shift everything by 4 spaces
+        msg_user_lines = ["    " + line for line in msg_user_lines]
+        msg_system_lines = ["    " + line for line in msg_system_lines]
+        msg_user = "\n".join(msg_user_lines)
+        msg_system = "\n".join(msg_system_lines)
+        msg = ""
+        msg += "RegistryEnvironment:\n"
+        msg += "  User:\n"
+        msg += msg_user
+        msg += "\n"
+        msg += "  System:\n"
+        msg += msg_system
+        return msg
