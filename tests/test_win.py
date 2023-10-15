@@ -25,7 +25,6 @@ class WinPathTester(BaseTest):
         env: RegistryEnvironment = query_registry_environment()
         self.assertNotIn("value not set", env.user.paths)
 
-
     # teardown
     def test_print_failure(self) -> None:
         """Remove the environment variable."""
@@ -33,6 +32,7 @@ class WinPathTester(BaseTest):
             RegistryEnvironment,
             query_registry_environment,
         )
+
         env: RegistryEnvironment = query_registry_environment()
         print(env)
         self.fail("force failure")
@@ -51,19 +51,6 @@ class WinPathTester(BaseTest):
         self.assertIn("C:\\Windows", paths)
         print("done")
 
-    @unittest.skipIf(sys.platform != "win32", "Windows only test")
-    def test_get_env_path_system_registry(self) -> None:
-        """Test setting an environment variable."""
-        from setenvironment.setenv_win32 import (
-            get_env_path_system,
-            get_env_path_user,
-            parse_paths_win32,
-        )
-
-        path_str = get_env_path_system() + ";" + get_env_path_user()
-        paths = parse_paths_win32(path_str)
-        self.assertIn("C:\\Windows", paths)
-        print("done")
 
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_temp_dir_is_resolved(self) -> None:

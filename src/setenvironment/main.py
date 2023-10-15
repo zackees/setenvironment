@@ -75,6 +75,7 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     return args
 
+
 def main() -> int:
     """Main entry point."""
     args = parse_args()

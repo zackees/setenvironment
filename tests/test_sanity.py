@@ -8,7 +8,6 @@ import os
 import unittest
 
 from setenvironment.setenv import get_env
-from setenvironment.types import OsEnvironment
 
 
 class SanityTester(unittest.TestCase):
@@ -19,8 +18,8 @@ class SanityTester(unittest.TestCase):
         data = dict(os.environ)
         print(data)
         self.assertTrue(data)
-        #os_env = OsEnvironment()
-        #print(os_env)
+        # os_env = OsEnvironment()
+        # print(os_env)
         self.fail("Force test_os_make_environment crash to read output\n" + str(data))
 
     def test_get_env(self) -> None:
