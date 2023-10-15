@@ -34,6 +34,7 @@ def win32_check_exists(self: BaseTest) -> None:
     from setenvironment.types import RegistryEnvironment
 
     env: RegistryEnvironment = query_registry_environment()
+    sys.stdout.flush()
     print(env)
     sys.stdout.flush()
     self.assertIn(MY_PATH, env.user.paths)
@@ -47,6 +48,7 @@ def unix_check_exists(self: BaseTest) -> None:
     from setenvironment.types import BashEnvironment
 
     env: BashEnvironment = bash_make_environment()
+    sys.stdout.flush()
     print(env)
     sys.stdout.flush()
     self.assertIn(MY_PATH, env.paths)
