@@ -8,7 +8,26 @@
 
 Finally, a cross platform way to set system environment variables and paths that are persistant across reboots.
 
-Works with Windows, MacOS and Linux.
+Works with Windows, MacOS and Linux and github runners, see note below.
+
+Extensively tested.
+
+## Command line interface
+
+```bash
+# Setting environmental variables
+setenvironment show
+setenviornment bashrc  # unix only.
+setenvironment set foo bar
+setenvironment has foo
+setenvironment get foo
+setenvironment del foo
+# Path manipulation.
+setenvironment addpath /my/path
+setenvironment get PATH
+setenvironment delpath /my/path
+setenvironment refresh "echo this command is in a refreshed environment"
+```
 
 ## Python API
 
@@ -41,24 +60,15 @@ remove_to_path_group("MYPATHKEY", "/path/to/dir")
 remove_path_group("MYPATHKEY")
 ```
 
-## Command line interface
-
-```bash
-# Setting environmental variables
-setenvironment set foo bar
-setenvironment remove foo
-# Adding and removing paths.
-setenvironment addpath /my/path
-setenvironment removepath /my/path
-```
 
 ## Github
 
 These are designed to be compatible with github runners.
 
 However, ubuntu runners don't have a ~/.bashrc file
-that is sourced by default. However adding this to your
-runner file will turn it on
+that is sourced by default.
+
+Add this to make it work:
 
 ```
 name: Ubuntu_Tests
@@ -70,23 +80,6 @@ defaults:
 
 on: [push]
 ```
-
-## Command Line API
-
-```bash
-> pip install setenvironment
-> setenviroment_set foo bar
-> setenvironment_get foo
-> setenviroment_unset foo
-> setenviroment_addpath /my/path
-> setenviroment_removepath /my/path
-# or use custom config file
-> setenvironment_set foo bar --config-file ~/.bash_profile
-# or set using an environment setting
-> export SETENVIRONMENT_CONFIG_FILE = ~/.bash_profile
-> setenviroment_set foo bar
-```
-
 
 ## Windows
 
@@ -117,22 +110,4 @@ defaults:
 ```
 
 # Release Notes
-  * 1.2.0: Win32 now resolves paths with variables in it since this wasn't being done before.
-  * 1.1.10: `reload_environment()` improvements on full environment reloading.
-  * 1.1.9: Adds `remove_template_group`
-  * 1.1.8: Updated finding the bashrc file to better support github runners that use ~/.profile.
-  * 1.1.6: Improved `reload_environment()` to preserve existing os paths.
-  * 1.1.5: Fixes unix paths where the path would be appended instead of prepended.
-  * 1.1.4: `reload_environment()` now supports template substitution.
-  * 1.1.3: Unix/Macos: bashrc now uses a START / END markers to contain environment settings.
-  * 1.1.1: Adds `add_template_path` and `remove_template_path`
-  * 1.1.0: stashes settings in ~/.bash_aliases, ~/.bash_profile, ~/.bashrc
-  * 1.0.10: Win32: path is now set in the user environment instead of the system environment (removes the need for admin rights)
-  * 1.0.9: Win32: Improve expansion of keys, remove duplicates found in os.environ['PATH']
-  * 1.0.8: Adds fix for windows expansion of keys
-  * 1.0.7: Adds get_env_var
-  * 1.0.6: Fixes readme
-  * 1.0.3: Fix relative links in badges to be absolute when uploaded to pypi
-  * 1.0.2: Fix badges on pypi
-  * 1.0.1: Adds setenvironment_get
-  * 1.0.0: Initial release
+  * 2.0.0: Rewrite. New command line api. Extensively tested on mac/win/ubuntu X github.

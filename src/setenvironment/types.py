@@ -1,3 +1,4 @@
+import json
 import os
 from dataclasses import dataclass
 
@@ -71,6 +72,10 @@ class Environment:
             msg += f"    {path}\n"
         return msg
 
+    def to_json(self) -> str:
+        """Returns a JSON representation of the object."""
+        return json.dumps({"vars": self.vars, "paths": self.paths}, indent=4)
+
 
 @dataclass
 class BashEnvironment(Environment):
@@ -141,3 +146,13 @@ class RegistryEnvironment:
         msg += "  System:\n"
         msg += msg_system
         return msg
+
+    def to_json(self) -> str:
+        """Returns a JSON representation of the object."""
+        return json.dumps(
+            {
+                "user": json.loads(self.user.to_json()),
+                "system": json.loads(self.system.to_json()),
+            },
+            indent=4,
+        )
