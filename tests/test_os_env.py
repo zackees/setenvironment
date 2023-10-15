@@ -15,10 +15,23 @@ class OsEnvironmentTester(unittest.TestCase):
 
     def test_os_make_environment(self) -> None:
         """Test setting an environment variable."""
-
         os_env: OsEnvironment = OsEnvironment()
-        self.assertTrue(os_env.vars)
-        self.assertTrue(os_env.paths)
+        print(os_env)
+        data = dict(os.environ)
+        paths = data["PATH"].split(os.pathsep)
+        for path in os_env.paths:
+            if path not in paths:
+                print("path not in paths: " + path)
+        data.pop("PATH", None)
+        items=  sorted(data.items())
+        print("VARS:")
+        for key, value in items:
+            print(f"  {key}={value}")
+        print("PATHS:")
+        for path in os_env.paths:
+            print(f"  {path}")
+        self.fail("Force test_os_make_environment crash to read output\n" + str(os_env))
+        
 
     def test_os_env_save_works(self) -> None:
         """Test that making and saving an os environment works."""

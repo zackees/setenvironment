@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 
-CLEAR_ENVIRONMENT = False
+CLEAR_ENVIRONMENT = True
 
 @dataclass
 class Environment:

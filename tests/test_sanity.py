@@ -13,7 +13,7 @@ from setenvironment.setenv import get_env
 class SanityTester(unittest.TestCase):
     """Tester for the main module."""
 
-    def test_os_make_environment(self) -> None:
+    def test_os_print_env(self) -> None:
         """Test setting an environment variable."""
         data = dict(os.environ)
         print(data)
