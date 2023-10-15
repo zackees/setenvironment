@@ -13,7 +13,7 @@ classifiers = ["Programming Language :: Python :: 3"]
 dependencies = ["pywin32; sys_platform == 'win32'"]
 # Change this with the version number bump.
 # Also make the change in zcmds/version.py
-version = "2.0.0"
+version = "2.0.1"
 
 [project.scripts]
 "setenvironment_set" = "setenvironment.cli:setenv"

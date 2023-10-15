@@ -96,4 +96,5 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
 
 
 # Release Notes
+  * 2.0.1: Bug fix.
   * 2.0.0: Rewrite. New command line api. Extensively tested on mac/win/ubuntu X github.
