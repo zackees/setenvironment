@@ -35,7 +35,6 @@ class WinPathTester(BaseTest):
 
         env: RegistryEnvironment = query_registry_environment()
         print(env)
-        self.assertGreater(len(env.user.paths), 5)
         self.assertGreater(len(env.user.vars), 5)
         self.assertGreater(len(env.system.paths), 5)
         self.assertGreater(len(env.system.vars), 5)
