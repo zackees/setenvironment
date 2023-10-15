@@ -76,16 +76,16 @@ class UnixPathTester(BaseTest):
         env_prev: BashEnvironment = bash_make_environment()
         env: BashEnvironment = bash_make_environment()
         env.vars["BAR"] = "FOO"
-        env.paths.append("C:\\foo")
+        env.paths.append("C:/foo")
         env.save()
         try:
             os_env = OsEnvironment()
             self.assertNotIn("BAR", os_env.vars)
-            self.assertNotIn("C:\\foo", os_env.paths)
+            self.assertNotIn("C:/foo", os_env.paths)
             reload_environment()
             os_env = OsEnvironment()
             self.assertIn("BAR", os_env.vars)
-            self.assertIn("C:\\foo", os_env.paths)
+            self.assertIn("C:/foo", os_env.paths)
         finally:
             env_prev.save()
 
