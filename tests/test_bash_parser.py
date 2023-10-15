@@ -35,6 +35,7 @@ class BashParserTester(BaseTest):
         bash_save(env)
         env2: BashEnvironment = bash_make_environment()
         print(env2)
+        print("done")
 
     def test_bash_two_paths(self) -> None:
         """Tests the behavior of adding two paths and how they are parsed back."""

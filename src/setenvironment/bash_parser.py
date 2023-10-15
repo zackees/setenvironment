@@ -163,5 +163,10 @@ def bash_save(environment: Environment) -> None:
     lines = []
     for name, value in environment.vars.items():
         lines.append(f"export {name}={value}")
-    lines.append(f"export PATH={':'.join(environment.paths)}:$PATH")
+    env_paths_str = ":".join(environment.paths)
+    if env_paths_str.endswith(":"):
+        env_paths_str = env_paths_str[:-1]
+    if env_paths_str.startswith(":"):
+        env_paths_str = env_paths_str[1:]
+    lines.append(f"export PATH={env_paths_str}:$PATH")
     bash_write_lines(lines)
