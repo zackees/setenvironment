@@ -166,9 +166,6 @@ def remove_from_path_group(group_name: str, path_to_remove: str) -> None:
     os_env.remove_from_path_group(group_name, path_to_remove)
     os_env.store()
     env.save()
-    os_env2: OsEnvironment = OsEnvironment()
-    assert group_name not in os_env2.vars
-
 
 def remove_path_group(group_name: str) -> None:
     assert group_name != "PATH"
