@@ -30,7 +30,6 @@ class PathGroupTester(BaseTest):
 
     def test_environment_group_path(self) -> None:
         """Tests that environment has correct behavior for group path manipulation."""
-        KEY = "PATH_GROUP_TEST"
         env = Environment({}, [])  # create empty environment.
         env.add_to_path_group(KEY, VAL)
         # assert VAL was added to the path and group
@@ -39,7 +38,8 @@ class PathGroupTester(BaseTest):
         # now remove it, since it's the only one, the group path should be removed too
         env.remove_from_path_group(KEY, VAL)
         self.assertNotIn(VAL, env.paths)
-        self.assertNotIn(VAL, env.vars[KEY])
+        tmp = env.vars.get(KEY, [])
+        self.assertNotIn(VAL, tmp)
         # now add it back and test the remove_group_path
         env.add_to_path_group(KEY, VAL)
         env.remove_path_group(KEY)
