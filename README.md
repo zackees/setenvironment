@@ -65,10 +65,7 @@ remove_path_group("MYPATHKEY")
 
 These are designed to be compatible with github runners.
 
-However, ubuntu runners don't have a ~/.bashrc file
-that is sourced by default.
-
-Add this to make it work:
+Ubuntu MUST use the following to make this package work.
 
 ```
 name: Ubuntu_Tests
@@ -97,17 +94,6 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
   * set the os.environ to the proper value
   * write the value to the .bashrc file (make sure it's chmod +w)
 
-## Github runnier - linux
-
-To force the ubuntu runner to use the ~/bashrc file, use the following:
-
-```
-name: Ubuntu_Fullinstall
-on: [push]
-defaults:
-    run:
-      shell: bash -ieo pipefail {0}
-```
 
 # Release Notes
   * 2.0.0: Rewrite. New command line api. Extensively tested on mac/win/ubuntu X github.
