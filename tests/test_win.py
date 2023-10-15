@@ -35,7 +35,10 @@ class WinPathTester(BaseTest):
 
         env: RegistryEnvironment = query_registry_environment()
         print(env)
-        self.fail("force failure")
+        self.assertGreater(len(env.user.paths), 5)
+        self.assertGreater(len(env.user.vars), 5)
+        self.assertGreater(len(env.system.paths), 5)
+        self.assertGreater(len(env.system.vars), 5)
 
     @unittest.skipIf(sys.platform != "win32", "Windows only test")
     def test_get_env_path_system_registry(self) -> None:
