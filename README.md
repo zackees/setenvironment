@@ -6,6 +6,7 @@
 
 [![Linting](https://github.com/zackees/setenvironment/actions/workflows/lint.yml/badge.svg)](https://github.com/zackees/setenvironment/actions/workflows/lint.yml)
 
+
 Finally, a cross platform way to set system environment variables and paths that are persistant across reboots.
 
 Works with Windows, MacOS and Linux and github runners, see note below.
@@ -100,3 +101,4 @@ Paths are set in either `~/.bash_aliases` or `~/.bash_profile` or `~/.bashrc` fi
   * 2.0.2: Re-enabled broadcast changes on win32, fixing new terminal launch.
   * 2.0.1: Bug fix.
   * 2.0.0: Rewrite. New command line api. Extensively tested on mac/win/ubuntu X github.
+
