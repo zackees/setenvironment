@@ -1,7 +1,6 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
-
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "setenvironment"
@@ -11,9 +10,8 @@ keywords = ["setenvironment"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = ["pywin32; sys_platform == 'win32'"]
-# Change this with the version number bump.
-# Also make the change in zcmds/version.py
 version = "2.0.3"
+readme = "README.md"
 
 [project.scripts]
 "setenvironment_set" = "setenvironment.cli:setenv"
@@ -22,3 +20,58 @@ version = "2.0.3"
 "setenvironment_addpath" = "setenvironment.cli:addpath"
 "setenvironment_removepath" = "setenvironment.cli:removepath"
 "setenvironment" = "setenvironment.main:main"
+
+[project.optional-dependencies]
+dev = [
+    "flake8",
+    "mypy",
+    "pylint",
+    "pytest",
+    "ruff",
+    "black",
+    "isort",
+    "pyright",
+    "tox",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "flake8",
+    "mypy",
+    "pylint",
+    "pytest",
+    "ruff",
+    "black",
+    "isort",
+    "pyright",
+    "tox",
+]
+
+[tool.uv.scripts]
+clean = "python -c \"import shutil, pathlib; [shutil.rmtree(p, ignore_errors=True) for p in pathlib.Path('.').rglob('__pycache__')]; [shutil.rmtree(p, ignore_errors=True) for p in pathlib.Path('.').glob('*.egg-info')]; [shutil.rmtree(p, ignore_errors=True) for p in [pathlib.Path('.pytest_cache'), pathlib.Path('.mypy_cache'), pathlib.Path('.ruff_cache'), pathlib.Path('dist'), pathlib.Path('build')] if p.exists()]\""
+install = "uv sync --all-extras"
+lint = { chain = ["ruff check --fix src tests", "isort src tests", "black src tests", "flake8 src tests", "mypy src tests", "pyright src tests"] }
+test = "python -m unittest discover -s tests"
+
+[tool.ruff]
+line-length = 100
+target-version = "py37"
+
+[tool.black]
+line-length = 100
+target-version = ['py37']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.7"
+typeCheckingMode = "basic"
